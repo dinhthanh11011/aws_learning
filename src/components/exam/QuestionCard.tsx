@@ -1,9 +1,10 @@
 'use client'
 import { useEffect } from 'react'
-import Link from 'next/link'
 import { motion, useReducedMotion } from 'motion/react'
-import { CATEGORIES, serviceBySlug, serviceLabel, type Question } from '@/content'
+import { type Question } from '@/content'
 import { Badge } from '@/components/ui/Badge'
+import { ServiceRef } from '@/components/service/ServiceRef'
+import { useServicePeekKey } from '@/hooks/useServicePeekKey'
 import { cn } from '@/lib/cn'
 
 /**
@@ -32,6 +33,8 @@ export function QuestionCard({
   onFlag?: () => void
 }) {
   const reduce = useReducedMotion()
+  // Once the answer is revealed, "s" walks the services this question turns on.
+  useServicePeekKey(question.serviceSlugs, revealed)
   const multi = question.type === 'multi'
   const correctCount = question.options.filter((o) => o.correct).length
 
@@ -47,6 +50,9 @@ export function QuestionCard({
   // Number keys pick options, F flags. Typing in a field must not trigger these.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // The quick-look panel and the palette sit over the question; picking an
+      // option by number behind an open dialog is never what was meant.
+      if (document.querySelector('[role="dialog"]')) return
       const el = document.activeElement
       if (
         el instanceof HTMLInputElement ||
@@ -181,24 +187,13 @@ export function QuestionCard({
           {question.serviceSlugs.length ? (
             <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border pt-3">
               <span className="mr-1 text-[11px] text-fg-subtle">Revise:</span>
-              {question.serviceSlugs.map((slug) => {
-                const svc = serviceBySlug.get(slug)
-                if (!svc) return null
-                return (
-                  <Link
-                    key={slug}
-                    href={`/services/${slug}`}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg-inset px-1.5 py-0.5 text-[11.5px] font-medium hover:border-border-strong"
-                  >
-                    <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ background: CATEGORIES[svc.category].token }}
-                      aria-hidden
-                    />
-                    {serviceLabel(svc)}
-                  </Link>
-                )
-              })}
+              {question.serviceSlugs.map((slug) => (
+                <ServiceRef key={slug} slug={slug} />
+              ))}
+              <span className="ml-auto text-[11px] text-fg-subtle">
+                or press <kbd className="rounded border border-border px-1">s</kbd> — the card
+                opens over this one
+              </span>
             </div>
           ) : null}
           {question.source ? (

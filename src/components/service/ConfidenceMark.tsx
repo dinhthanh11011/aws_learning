@@ -26,7 +26,11 @@ export function ConfidenceMark({ slug }: { slug: string }) {
       <span className="hidden text-[11px] uppercase tracking-wide text-fg-subtle sm:inline">
         Your call
       </span>
-      <div className="flex gap-0.5 rounded-lg border border-border bg-bg-inset p-0.5" role="group" aria-label="Self-rated confidence">
+      <div
+        className="flex gap-0.5 rounded-lg border border-border bg-bg-inset p-0.5"
+        role="group"
+        aria-label="Self-rated confidence"
+      >
         {[1, 2, 3, 4, 5].map((n) => (
           <button
             key={n}

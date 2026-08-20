@@ -76,7 +76,11 @@ for (const c of idleCosts) {
 
 for (const q of questions) {
   const r = QuestionSchema.safeParse(q)
-  if (!r.success) fail(`question ${q.id}`, r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '))
+  if (!r.success)
+    fail(
+      `question ${q.id}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
 }
 
 /* ── 2. Uniqueness ───────────────────────────────────────────────────────── */
@@ -185,11 +189,81 @@ for (const s of services) {
   if (!s.whenNotToUse.length) warn('depth', `service "${s.slug}" has no whenNotToUse entries`)
 }
 
+/**
+ * Facts taught only in a question explanation are invisible: the atlas does not
+ * carry them, so `cards.ts` cannot derive a card from them, and searching for
+ * them finds nothing. This audit reads the quantities out of every explanation
+ * and checks that each one also appears somewhere in the atlas entry of a
+ * service the question points at. A hit here means "promote this into
+ * `src/content/services/*` and let the question restate it", not "delete it".
+ */
+const atlasText = (slug: string): string => {
+  const s = serviceBySlug.get(slug)
+  if (!s) return ''
+  return [
+    s.oneLiner,
+    s.whatItIs,
+    ...s.whenToUse,
+    ...s.whenNotToUse,
+    ...s.keyNumbers.flatMap((n) => [n.label, n.value, n.note ?? '']),
+    ...s.examTraps,
+    ...s.confusedWith.map((c) => c.difference),
+    s.pricing ?? '',
+  ]
+    .join(' \n ')
+    .toLowerCase()
+    .replace(/,(?=\d)/g, '')
+}
+
+/** Only quantities carrying a unit — a bare "3" is noise, "15 minutes" is a fact. */
+const UNIT =
+  '%|gb\\/s|gib|tib|kib|mib|gb|tb|mb|kb|kib|bytes?|gbps|mbps|kbps|ms|tps|rps|iops|wcus?|rcus?|' +
+  'seconds?|minutes?|hours?|days?|weeks?|months?|years?|copies|replicas?|azs?|regions?|' +
+  'shards?|partitions?|vcpus?|acus?|connections?|attempts?|retries|nodes?|characters?|kilobytes?'
+// A trailing \\b would not fire after "%", which is exactly the case that matters most.
+const QUANTITY = new RegExp(`\\b(\\d[\\d.]*)\\s?(${UNIT})(?!\\w)`, 'gi')
+
+const orphanFacts: string[] = []
+for (const q of questions) {
+  const atlas = q.serviceSlugs.map(atlasText).join(' \n ')
+  const explanation = q.explanation.toLowerCase().replace(/,(?=\d)/g, '')
+  const missing = new Set<string>()
+  for (const [, value, unit] of explanation.matchAll(QUANTITY)) {
+    // Match on the number alone: the atlas may say "128 TiB" where the
+    // explanation says "128 TiB volume", and the unit wording varies more than
+    // the figure does.
+    if (!new RegExp(`\\b${value.replace('.', '\\.')}\\b`).test(atlas)) {
+      missing.add(`${value} ${unit}`)
+    }
+  }
+  if (missing.size) {
+    orphanFacts.push(
+      `question ${q.id} teaches ${[...missing].map((m) => `"${m}"`).join(', ')} but ` +
+        (q.serviceSlugs.length
+          ? `no atlas entry for ${q.serviceSlugs.join(', ')} mentions the figure`
+          : 'it references no service at all'),
+    )
+  }
+}
+if (orphanFacts.length) {
+  const shown = orphanFacts.slice(0, 12)
+  for (const o of shown) warn('atlas gap', o)
+  if (orphanFacts.length > shown.length) {
+    warn(
+      'atlas gap',
+      `…and ${orphanFacts.length - shown.length} more (${orphanFacts.length} total)`,
+    )
+  }
+}
+
 for (const certId of CERT_IDS) {
   const cov = examCoverage(certId)
   for (const d of cov.perDomain) {
     if (d.have < d.need) {
-      warn('exam coverage', `${certId} ${d.title}: ${d.have} questions, needs ${d.need} to fill a full paper without repeats`)
+      warn(
+        'exam coverage',
+        `${certId} ${d.title}: ${d.have} questions, needs ${d.need} to fill a full paper without repeats`,
+      )
     }
   }
 }

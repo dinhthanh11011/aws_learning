@@ -35,6 +35,7 @@ export const serverlessServices: Service[] = [
       {
         label: 'Deployment package',
         value: '50 MB zipped direct upload · 250 MB unzipped · 10 GB container image',
+        note: 'The console code editor only opens a package under 3 MB — the usual reason to move dependencies into a layer.',
       },
       { label: '/tmp ephemeral storage', value: '512 MB default, configurable to 10,240 MB' },
       {
@@ -46,6 +47,11 @@ export const serverlessServices: Service[] = [
       { label: 'Layers', value: 'Up to 5 per function, counting toward the 250 MB unzipped limit' },
       { label: 'Environment variables', value: '4 KB total' },
       { label: 'Synchronous payload', value: '6 MB request/response · 256 KB asynchronous' },
+      {
+        label: 'Response streaming',
+        value: 'Up to 20 MB soft limit, via a function URL or InvokeWithResponseStream',
+        note: 'Bytes reach the client as they are produced — the way past the 6 MB buffered response.',
+      },
     ],
     examTraps: [
       'Async invocations (S3, SNS, EventBridge) retry twice more, then send the event to a DLQ or an on-failure Destination. Synchronous invocations do not retry — the *caller* must.',

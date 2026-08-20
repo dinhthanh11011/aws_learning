@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
+import { useServicePeekKey } from '@/hooks/useServicePeekKey'
 
 /**
  * FSRS-backed review. The interval is chosen by the algorithm; what this screen
@@ -81,6 +83,8 @@ export function DrillSession() {
   useEffect(() => {
     if (!queue) return
     const onKey = (e: KeyboardEvent) => {
+      // Grading behind an open quick-look panel would mark a card you cannot see.
+      if (document.querySelector('[role="dialog"]')) return
       if (e.key === ' ') {
         e.preventDefault()
         setFlipped(true)
@@ -96,6 +100,14 @@ export function DrillSession() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [queue, flipped, grade])
+
+  // "s" opens the atlas card for the service behind the drill card, once it is
+  // flipped. Recall first, then read — the other order is just reading.
+  const peekSlugs = useMemo(
+    () => (queue && flipped ? (cardById.get(queue[i].cardId)?.serviceSlugs ?? []) : []),
+    [queue, i, flipped],
+  )
+  useServicePeekKey(peekSlugs, flipped)
 
   /* ── Idle ──────────────────────────────────────────────────────────────── */
   if (!queue) {
@@ -284,18 +296,21 @@ export function DrillSession() {
                 </p>
               ) : null}
               {def.serviceSlugs.length ? (
-                <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border pt-3">
+                <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-border pt-3">
+                  <span className="mr-1 text-[11px] text-fg-subtle">
+                    Read the card (<kbd className="rounded border border-border px-1">s</kbd>):
+                  </span>
                   {def.serviceSlugs.map((slug) => {
                     const svc = serviceBySlug.get(slug)
                     if (!svc) return null
                     return (
-                      <Link
+                      <a
                         key={slug}
-                        href={`/services/${slug}`}
+                        {...serviceLinkProps(slug)}
                         className="rounded-md border border-border bg-bg-inset px-1.5 py-0.5 text-[11.5px] font-medium hover:border-border-strong"
                       >
-                        {serviceLabel(svc)} →
-                      </Link>
+                        {serviceLabel(svc)}
+                      </a>
                     )
                   })}
                 </div>

@@ -22,6 +22,7 @@ import { Progress } from '@/components/ui/Progress'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 export function ProgressPanel() {
   const profile = useProfile()
@@ -225,12 +226,12 @@ export function ProgressPanel() {
                     style={{ background: CATEGORIES[s.category].token }}
                     aria-hidden
                   />
-                  <Link
-                    href={`/services/${s.slug}`}
+                  <a
+                    {...serviceLinkProps(s.slug)}
                     className="min-w-0 flex-1 truncate text-[13px] hover:text-accent"
                   >
                     {s.name}
-                  </Link>
+                  </a>
                   <Badge tone={s.tier === 1 ? 'accent' : s.tier === 2 ? 'info' : 'neutral'}>
                     {TIER_META[s.tier].label}
                   </Badge>
@@ -284,8 +285,8 @@ export function ProgressPanel() {
                   if (!svc) return null
                   return (
                     <li key={c.slug}>
-                      <Link
-                        href={`/services/${c.slug}`}
+                      <a
+                        {...serviceLinkProps(c.slug)}
                         className={cn(
                           'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[12.5px] font-medium transition-colors',
                           c.count >= 3
@@ -295,7 +296,7 @@ export function ProgressPanel() {
                       >
                         {serviceLabel(svc)}
                         <span className="nums">×{c.count}</span>
-                      </Link>
+                      </a>
                     </li>
                   )
                 })}
@@ -339,13 +340,13 @@ export function ProgressPanel() {
                           const svc = serviceBySlug.get(slug)
                           if (!svc) return null
                           return (
-                            <Link
+                            <a
                               key={slug}
-                              href={`/services/${slug}`}
+                              {...serviceLinkProps(slug)}
                               className="rounded border border-border bg-bg-inset px-1.5 text-[11px] hover:border-border-strong"
                             >
                               {serviceLabel(svc)}
-                            </Link>
+                            </a>
                           )
                         })}
                       </span>

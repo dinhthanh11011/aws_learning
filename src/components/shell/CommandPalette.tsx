@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CATEGORIES, search, TIER_META, type SearchHit } from '@/content'
+import { openService } from '@/lib/service-peek'
 import { cn } from '@/lib/cn'
 
 /**
@@ -57,10 +58,17 @@ export function CommandPalette() {
 
   const hits = useMemo(() => (q.length >= 2 ? search(q, undefined, 12) : []), [q])
 
-  const go = (hit: SearchHit) => {
+  /**
+   * A service opens in the quick-look panel by default and only navigates on
+   * ⌘/Ctrl+Enter. Searching for a service is nearly always "remind me", not
+   * "take me there", and mid-exam the second one costs the question.
+   */
+  const go = (hit: SearchHit, navigate = false) => {
     setOpen(false)
-    if (hit.kind === 'service') router.push(`/services/${hit.service.slug}`)
-    else if (hit.kind === 'task') router.push(`/map#${hit.task.id}`)
+    if (hit.kind === 'service') {
+      if (navigate) router.push(`/services/${hit.service.slug}`)
+      else openService(hit.service.slug)
+    } else if (hit.kind === 'task') router.push(`/map#${hit.task.id}`)
     else router.push('/decoder')
   }
 
@@ -73,6 +81,7 @@ export function CommandPalette() {
       role="dialog"
       aria-modal="true"
       aria-label="Search"
+      data-dialog="command-palette"
     >
       <div
         className="w-full max-w-xl overflow-hidden rounded-2xl border border-border-strong bg-bg-raised shadow-float"
@@ -98,7 +107,7 @@ export function CommandPalette() {
                 e.preventDefault()
                 setCursor((c) => Math.max(c - 1, 0))
               }
-              if (e.key === 'Enter' && hits[cursor]) go(hits[cursor])
+              if (e.key === 'Enter' && hits[cursor]) go(hits[cursor], e.metaKey || e.ctrlKey)
             }}
             placeholder="Search services, task statements, trigger phrases…"
             className="h-14 flex-1 bg-transparent text-[15px] outline-none placeholder:text-fg-subtle"
@@ -113,7 +122,7 @@ export function CommandPalette() {
                 <li key={`${hit.kind}-${i}`}>
                   <button
                     onMouseEnter={() => setCursor(i)}
-                    onClick={() => go(hit)}
+                    onClick={(e) => go(hit, e.metaKey || e.ctrlKey)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors',
                       i === cursor ? 'bg-bg-overlay' : 'hover:bg-bg-overlay/60',
@@ -178,6 +187,18 @@ export function CommandPalette() {
             <span className="text-fg-muted">least operational</span>.
           </p>
         )}
+
+        <div className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-2 text-[11px] text-fg-subtle">
+          <span>
+            <kbd className="rounded border border-border px-1 py-px">↵</kbd> quick look
+          </span>
+          <span>
+            <kbd className="rounded border border-border px-1 py-px">⌘↵</kbd> open the full page
+          </span>
+          <span>
+            <kbd className="rounded border border-border px-1 py-px">↑↓</kbd> move
+          </span>
+        </div>
       </div>
     </div>
   )

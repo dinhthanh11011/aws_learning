@@ -38,7 +38,7 @@ npm run content:check   # zod validation + referential integrity + coverage warn
 npm run typecheck       # tsc --noEmit, strict
 npm test                # 104 vitest tests over src/engines
 npx eslint src scripts  # must be 0 errors AND 0 warnings
-npm run build           # 151 prerendered pages
+npm run build           # 160 prerendered pages
 ```
 
 All five are currently clean. `npm run dev` for the app; drive it in a real
@@ -52,7 +52,7 @@ browser before saying a UI change works.
    statement is a build error rather than a blank screen the night before an exam.
 
 2. **SRS cards are derived, never hand-written.** `src/content/cards.ts` generates
-   ~1,387 cards from the service cards and triggers. Never add a card by hand — it
+   ~1,391 cards from the service cards and triggers. Never add a card by hand — it
    would drift out of step with the atlas and the learner would drill something the
    atlas contradicts.
 
@@ -89,13 +89,30 @@ browser before saying a UI change works.
    a quota is one AWS changes, mark it "verify". This is a study tool; a
    comfortable lie costs the user marks.
 
+10. **The atlas is the only place a fact lives.** A question explanation may
+    *restate* a fact, never introduce one. Everything teachable belongs in
+    `src/content/services/*` first, because that is what `cards.ts` derives from,
+    what search finds, and what the quick-look panel shows — a fact that exists
+    only in a question is drilled by nothing and findable by nobody.
+    `content:check` audits this: it reads the quantities out of every explanation
+    and warns when one appears in no referenced service's atlas entry.
+
+11. **A service reference opens the quick look, it does not navigate.** Inline
+    references use `ServiceRef` or `serviceLinkProps` from
+    `src/components/service/ServiceRef.tsx`, which render a real `<a href>` (so
+    ⌘-click still works) but open `ServicePeek` on a plain click. Navigating
+    mid-question costs the question, so in practice the learner does not look it
+    up at all. Both the panel and `/services/[slug]` render the same
+    `ServiceAtlas`, so they cannot drift. Any component with a global key
+    handler must bail while `[role="dialog"]` is in the DOM.
+
 ## Content status
 
 | | SAA-C03 | DVA-C02 |
 |---|---|---|
 | Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
-| Cards | 1,387 derived | shared corpus |
+| Cards | 1,391 derived | shared corpus |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

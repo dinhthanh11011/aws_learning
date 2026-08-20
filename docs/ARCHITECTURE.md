@@ -44,7 +44,7 @@ export is the only backup that exists.
 | `services/*.ts` | 141 service cards by category |
 | `service-registry.ts` | Aggregates the service files. Must **not** live at `services/index.ts` — see invariant 3 |
 | `questions/*.ts` | Exam-format questions; every option has a `why` |
-| `cards.ts` | **Derives** ~1,387 SRS cards from services + triggers + idle costs |
+| `cards.ts` | **Derives** ~1,391 SRS cards from services + triggers + idle costs |
 | `triggers.ts` | 47 keyword→answer mappings, each with its distractor |
 | `decision-trees.ts` | 5 which-service-should-I-use trees |
 | `big-picture.ts` | The 5-layer system view, 25 nodes, 7 traceable flows |
@@ -52,6 +52,17 @@ export is the only backup that exists.
 | `idle-costs.ts` | What a forgotten lab costs per month |
 | `labs.ts` | Lab metadata |
 | `index.ts` | The `@/content` barrel: lookups, reverse indexes, `search()`, `contentStats()`, `examCoverage()` |
+
+### Reaching the atlas from anywhere
+
+`ServiceAtlas` (`src/components/service/ServiceAtlas.tsx`) renders one service
+card and is used by both `/services/[slug]` and `ServicePeek`, the quick-look
+drawer mounted once in `AppShell`. `src/lib/service-peek.ts` is the store — a
+stack of slugs, so following "commonly confused with" inside the panel can be
+walked back. Anything mentioning a service inline uses `ServiceRef` or
+`serviceLinkProps`, and `useServicePeekKey` binds `s` to the services a question
+or drill card points at. The panel exists because navigating away mid-question
+costs the question, so without it the lookup simply does not happen.
 
 ### The tier system
 

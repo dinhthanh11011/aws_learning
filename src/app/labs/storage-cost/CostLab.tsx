@@ -1,11 +1,11 @@
 'use client'
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
 import { idleCosts, serviceBySlug } from '@/content'
 import { recordLab } from '@/db/repo'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
+import { openService } from '@/lib/service-peek'
 
 /**
  * Two models. The lifecycle side builds intuition for S3 class economics, which
@@ -173,13 +173,19 @@ export function CostLab() {
                     ) : null}
                   </span>
                   {svc ? (
-                    <Link
+                    <a
                       href={`/services/${c.slug}`}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        // The row itself is a toggle; the card link must not flip it.
+                        e.stopPropagation()
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+                        e.preventDefault()
+                        openService(c.slug)
+                      }}
                       className="shrink-0 text-[11.5px] text-accent hover:underline"
                     >
                       card →
-                    </Link>
+                    </a>
                   ) : null}
                 </button>
               </li>

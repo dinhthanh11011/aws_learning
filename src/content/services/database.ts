@@ -119,6 +119,12 @@ export const databaseServices: Service[] = [
           'Up to 5 secondary Regions · typical replication lag under 1 second · RTO under 1 minute',
       },
       { label: 'Backtrack', value: 'Rewind an Aurora MySQL cluster in place, without a restore' },
+      {
+        label: 'Storage billing modes',
+        value:
+          'Standard bills I/O per request · I/O-Optimized bundles I/O into a higher instance and storage rate',
+        note: 'I/O-Optimized becomes the cheaper mode once I/O is more than roughly 25% of the Aurora spend.',
+      },
     ],
     examTraps: [
       'Use the *reader* endpoint for read traffic. Pointing reads at the cluster endpoint sends every query to the writer — a common design error in questions.',
@@ -127,6 +133,7 @@ export const databaseServices: Service[] = [
       'Aurora Serverless v2 scales in fine-grained ACUs and can be mixed with provisioned instances in the same cluster. v1 scaled coarsely and had to pause — do not answer from v1 behaviour.',
       'Aurora Replica auto scaling adds replicas based on CPU or connections — the answer to "read load varies unpredictably".',
       'Multi-AZ is inherent in Aurora storage. There is no separate "enable Multi-AZ" toggle; you get availability by having a replica in another AZ to fail over to.',
+      'Aurora I/O-Optimized is the answer to "our bill is dominated by I/O charges and we want predictable cost" — roughly 25% of spend going on I/O is the threshold. It is a cluster configuration, not a different engine, and it does not make the workload faster.',
     ],
     confusedWith: [
       {
@@ -140,7 +147,7 @@ export const databaseServices: Service[] = [
       },
     ],
     pricing:
-      'Per instance-hour (or ACU-hour for Serverless), plus storage consumed, I/O requests, and backups.',
+      'Per instance-hour (or ACU-hour for Serverless), plus storage consumed, I/O requests, and backups. Two cluster storage configurations: Aurora Standard bills I/O per request, Aurora I/O-Optimized bundles it into a higher instance and storage rate and is cheaper above roughly 25% I/O spend.',
     docsUrl: `${D}/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html`,
     related: ['rds', 'aurora-serverless', 'rds-proxy', 'dynamodb', 'dms'],
   },
@@ -213,6 +220,11 @@ export const databaseServices: Service[] = [
     ],
     keyNumbers: [
       { label: 'Max item size', value: '400 KB, including attribute names' },
+      {
+        label: 'Key size',
+        value: 'Partition key up to 2,048 bytes · sort key up to 1,024 bytes',
+        note: 'Hard limits, like the 400 KB item — no support ticket raises them.',
+      },
       {
         label: 'Capacity modes',
         value: 'On-demand (per request) or Provisioned (RCU/WCU, with auto scaling)',

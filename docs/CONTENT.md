@@ -89,6 +89,14 @@ Enforced by schema or checker:
 - Option ids must be contiguous from `A` — the keyboard shortcuts depend on it
 - `single` needs exactly one correct; `multi` needs 2+ correct and 5+ options
 - `explanation` should generalise. A good one is quotable in isolation.
+- `explanation` may only **restate** facts the atlas already holds. If you write
+  a question around a figure or a behaviour that is not yet in
+  `src/content/services/*`, put it there first — a fact that lives only in an
+  explanation derives no SRS card, appears in no search, and is missing from the
+  quick-look panel the learner opens mid-question. `content:check` warns as
+  `atlas gap: question <id> teaches "25 %" but no atlas entry for aurora
+  mentions the figure`; the fix is always to add it to the service card, never
+  to soften the explanation.
 
 ### How many you need
 

@@ -1,12 +1,12 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { CATEGORIES, decisionTrees, serviceBySlug, serviceLabel, type DecisionTree } from '@/content'
 import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 export function DecisionTreeView() {
   const profile = useProfile()
@@ -146,8 +146,8 @@ function Walker({ tree }: { tree: DecisionTree }) {
                     <tr key={r.slug} className="border-b border-border last:border-0">
                       <td className="px-4 py-2">
                         {svc ? (
-                          <Link
-                            href={`/services/${svc.slug}`}
+                          <a
+                            {...serviceLinkProps(svc.slug)}
                             className="inline-flex items-center gap-1.5 font-medium hover:text-accent"
                           >
                             <span
@@ -156,7 +156,7 @@ function Walker({ tree }: { tree: DecisionTree }) {
                               aria-hidden
                             />
                             {serviceLabel(svc)}
-                          </Link>
+                          </a>
                         ) : (
                           r.slug
                         )}
@@ -197,12 +197,12 @@ function Answer({
         </p>
       ) : null}
       {svc ? (
-        <Link
-          href={`/services/${svc.slug}`}
+        <a
+          {...serviceLinkProps(svc.slug)}
           className="mt-3 inline-block text-[13px] font-medium text-accent hover:underline"
         >
           Open the {svc.name} card →
-        </Link>
+        </a>
       ) : null}
     </div>
   )

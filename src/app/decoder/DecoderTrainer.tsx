@@ -1,6 +1,5 @@
 'use client'
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { CATEGORIES, serviceBySlug, serviceLabel, triggersFor, type Trigger } from '@/content'
 import { useProfile } from '@/hooks/useProfile'
@@ -9,6 +8,7 @@ import { XP } from '@/engines/gamify/rules'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 type Mode = 'browse' | 'drill'
 
@@ -244,8 +244,8 @@ function ServicePill({
   const svc = serviceBySlug.get(slug)
   if (!svc) return null
   return (
-    <Link
-      href={`/services/${slug}`}
+    <a
+      {...serviceLinkProps(slug)}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-md border font-medium transition-colors',
         small ? 'px-1.5 py-0.5 text-[11.5px]' : 'px-2 py-1 text-[12.5px]',
@@ -260,6 +260,6 @@ function ServicePill({
         aria-hidden
       />
       {serviceLabel(svc)}
-    </Link>
+    </a>
   )
 }

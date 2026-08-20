@@ -20,9 +20,14 @@ Verified means: driven in a real browser, not just compiled.
   scenarios and a live trace, storage/teardown cost lab
 - **Everything else** — Mission Control, Big Picture, Roadmap, Service Atlas,
   Keyword Decoder, Decision Trees, Quiz, Progress, Settings, Onboarding
+- **Quick-look service panel** — `s` in a question or drill card, ⌘K → Enter, or
+  any inline service reference opens the full atlas card in a drawer over what
+  you were doing, with a back stack for "commonly confused with". Driven in the
+  browser on `/quiz`, `/drill` and `/services/aurora`
 - **Quality gates** — 0 lint messages, strict typecheck clean, Lighthouse 100 for
-  accessibility / best practices / SEO (desktop `/map`, mobile `/`), dark + light +
-  system themes, mobile layout, `prefers-reduced-motion` paths
+  best practices / SEO and 96 for accessibility (see the sidebar contrast note
+  below), dark + light + system themes, mobile layout,
+  `prefers-reduced-motion` paths
 
 ## Not built
 
@@ -86,9 +91,24 @@ at the specific AWS doc page. Multi-response questions need 5+ options.
 - **Bilingual summaries** — the user's own Notion docs are English body with
   Vietnamese "Nói ngắn gọn" callouts. An optional `viTldr` on services and lessons
   would match how they already study. Not in the schema yet
+- **Accessibility is 96, not 100, and has been for a while.** Lighthouse desktop
+  now fails one `color-contrast` check on *every* page, all of it in the
+  sidebar: the `text-accent` "Solutions Architect" subtitle, the accent pending
+  badge on Recall Drill, and the small accent badges. Pre-existing and unrelated
+  to any one page — fixing it is a token change in `globals.css`, not a layout
+  change
 - **CLS 0.068** on `/map` from client-side data hydration. Under the 0.1 "good"
   threshold; reserving space for the live-query regions would clear it
 - **`Tooltip` and `Card`/`CardLink`/`SectionTitle`** are written but barely used
+- **The quick-look panel is not wired into the labs' inline prose.** The VPC and
+  IAM labs mention services in body text that is still plain strings; making
+  those `ServiceRef`s is a small, obvious win
+- **Three atlas gaps were closed by the new `content:check` audit** (Aurora
+  Standard vs I/O-Optimized, Lambda response streaming and the 3 MB console
+  editing threshold, DynamoDB key-size limits). The audit only reads
+  *quantities* — a question that teaches a named feature or a behaviour the
+  atlas lacks still slips through. Extending it to capitalised feature names is
+  the obvious next step, and noisier
 
 ## Bugs found and fixed during the build
 

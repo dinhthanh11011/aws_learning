@@ -22,6 +22,7 @@ import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 /**
  * The roadmap. Phases are the learning order; task statements are the gated
@@ -241,9 +242,9 @@ export function RoadmapView() {
                             </div>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               {svcs.map((s) => (
-                                <Link
+                                <a
                                   key={s.slug}
-                                  href={`/services/${s.slug}`}
+                                  {...serviceLinkProps(s.slug)}
                                   title={`${s.name} — ${TIER_META[s.tier].label}`}
                                   className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg-inset px-1.5 py-0.5 text-[11.5px] hover:border-border-strong"
                                 >
@@ -253,7 +254,7 @@ export function RoadmapView() {
                                     aria-hidden
                                   />
                                   {serviceLabel(s)}
-                                </Link>
+                                </a>
                               ))}
                               {servicesForTask(tid).length > 6 ? (
                                 <span className="text-[11px] text-fg-subtle">

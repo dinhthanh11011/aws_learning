@@ -4,6 +4,7 @@ import { CATEGORIES, serviceLabel, TIER_META, type Service } from '@/content'
 import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 export function ServiceTile({
   service,
@@ -59,11 +60,11 @@ export function ServiceTile({
   )
 }
 
-/** Compact chip for inline service references inside prose. */
+/** Compact chip for inline service references inside prose. Opens the quick look. */
 export function ServiceChip({ slug, name, category }: { slug: string; name: string; category: keyof typeof CATEGORIES }) {
   return (
-    <Link
-      href={`/services/${slug}`}
+    <a
+      {...serviceLinkProps(slug)}
       className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg-inset px-1.5 py-0.5 text-[12px] font-medium transition-colors hover:border-border-strong hover:bg-bg-overlay"
     >
       <span
@@ -72,7 +73,7 @@ export function ServiceChip({ slug, name, category }: { slug: string; name: stri
         aria-hidden
       />
       {name}
-    </Link>
+    </a>
   )
 }
 

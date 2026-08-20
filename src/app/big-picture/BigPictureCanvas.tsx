@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
 import { motion, useReducedMotion } from 'motion/react'
 import { BP_NODES, FLOWS, LAYER_DEFS, LAYERS, type LayerId } from '@/content/big-picture'
 import { CATEGORIES, serviceBySlug, serviceLabel } from '@/content'
@@ -8,6 +7,7 @@ import { useMasteryInput } from '@/hooks/useMastery'
 import { serviceMastery } from '@/engines/progress/mastery'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
+import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 /**
  * Every service in a real system, on one canvas, tinted by how well *you* know
@@ -147,8 +147,8 @@ export function BigPictureCanvas() {
 
                       return (
                         <li key={n.slug}>
-                          <Link
-                            href={`/services/${n.slug}`}
+                          <a
+                            {...serviceLinkProps(n.slug)}
                             title={`${svc.name} — ${n.role}`}
                             className={cn(
                               'group relative flex w-[132px] flex-col gap-1 overflow-hidden rounded-xl border p-2.5 transition-all duration-300',
@@ -198,7 +198,7 @@ export function BigPictureCanvas() {
                                 />
                               ))}
                             </span>
-                          </Link>
+                          </a>
                         </li>
                       )
                     })}
@@ -290,12 +290,12 @@ export function BigPictureCanvas() {
                     const svc = serviceBySlug.get(f.at)
                     return (
                       <li key={f.at + f.symptom}>
-                        <Link
-                          href={`/services/${f.at}`}
+                        <a
+                          {...serviceLinkProps(f.at)}
                           className="text-[12px] font-semibold hover:text-accent"
                         >
                           {svc ? serviceLabel(svc) : f.at}
-                        </Link>
+                        </a>
                         <p className="mt-0.5 text-[12.5px] leading-relaxed text-fg-muted">
                           {f.symptom}
                         </p>
