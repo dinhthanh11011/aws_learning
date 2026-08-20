@@ -26,17 +26,15 @@ import { StudySteps } from './StudySteps'
 import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
-import { cn } from '@/lib/cn'
 import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 /** Sentinel for "the learner closed every phase", so it survives a reload too. */
 const COLLAPSED = 'none'
 
 /**
- * The roadmap. Phases are the learning order; task statements are the gated
- * nodes inside them. A phase unlocks when the one before it reaches three rings
- * on average — enough to have actually learned it, not enough to be perfect,
- * because waiting for perfect is how people stall.
+ * The roadmap. Phases are the learning order; task statements are the nodes
+ * inside them. Nothing is gated: the order is advice, and a learner who wants to
+ * jump ahead is better served by letting them than by a lock they resent.
  *
  * Which phase is expanded lives in `?phase=` rather than component state: the
  * roadmap is the page people leave to open a lab or a question and then come
@@ -103,17 +101,6 @@ export function RoadmapView() {
     return out
   }, [phases, masteryInput, certServices])
 
-  // A phase is available once the previous one averages three rings.
-  const unlocked = useMemo(() => {
-    const set = new Set<string>()
-    let allow = true
-    for (const p of phases) {
-      if (allow) set.add(p.id)
-      allow = (phaseScores.get(p.id)?.rings ?? 0) >= 3
-    }
-    return set
-  }, [phases, phaseScores])
-
   return (
     <div className="flex flex-col gap-5">
       <NextStepCard />
@@ -149,21 +136,12 @@ export function RoadmapView() {
         {phases.map((phase, idx) => {
           const score = phaseScores.get(phase.id)!
           const isOpen = open === phase.id
-          const available = unlocked.has(phase.id)
           const weeks = plan.weeks.filter((w) => w.phaseId === phase.id)
           const steps = phaseStepProgress(phase, doneSteps)
 
           return (
             <li key={phase.id}>
-              {/* Locked phases get a muted surface rather than reduced opacity:
-                  dimming a whole card drops its text below the contrast
-                  threshold, which fails an accessibility audit for real. */}
-              <div
-                className={cn(
-                  'surface overflow-hidden p-0',
-                  !available && 'border-dashed bg-bg-inset',
-                )}
-              >
+              <div className="surface overflow-hidden p-0">
                 <button
                   onClick={() => setOpen(isOpen ? null : phase.id)}
                   aria-expanded={isOpen}
@@ -179,7 +157,6 @@ export function RoadmapView() {
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="text-[15px] font-semibold tracking-tight">{phase.title}</span>
-                      {!available ? <Badge tone="neutral">🔒 locked</Badge> : null}
                       <Badge tone="neutral">
                         weeks {weeks[0]?.week ?? phase.weekFrom}–
                         {weeks.at(-1)?.week ?? phase.weekTo}
@@ -212,13 +189,6 @@ export function RoadmapView() {
                     animate={{ height: 'auto', opacity: 1 }}
                     className="border-t border-border bg-bg-inset px-4 py-4"
                   >
-                    {!available ? (
-                      <p className="mb-4 rounded-lg border border-warn/30 bg-warn-soft p-3 text-[12.5px] leading-relaxed text-fg-muted">
-                        This phase unlocks when the previous one averages three rings. You can still
-                        read ahead — the lock is a suggestion about ordering, not a wall.
-                      </p>
-                    ) : null}
-
                     <StudySteps
                       key={stepParam ?? 'auto'}
                       phase={phase}

@@ -182,9 +182,9 @@ marks. It states plainly when a date is not achievable.
 the set of ticked step ids: `nextStep()` returns the first unticked step in phase
 order, `phaseStepProgress()` counts one phase, `guidedProgress()` weights by
 minutes so a 45-minute reading does not count the same as a two-hour build. The
-rule is deliberately the simplest honest one — it does not skip ahead, and it does
-not hide a step because its phase is locked, because the lock is advice about
-ordering. A "next step" the learner cannot predict is one they stop trusting.
+rule is deliberately the simplest honest one — it does not skip ahead and it
+hides nothing; phases are not gated at all, the order is advice. A "next step"
+the learner cannot predict is one they stop trusting.
 
 `gamify/rules.ts`: XP only ever rewards recall (a correct hard question pays more
 than finishing a lesson). Streaks have earned freezes, because a streak that
