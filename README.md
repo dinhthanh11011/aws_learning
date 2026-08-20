@@ -34,7 +34,7 @@ and questions are written for this app.
 
 ```
 141  services      534  key numbers    452  exam traps
-186  questions      47  trigger phrases
+274  questions      47  trigger phrases
  27  task statements  5  decision trees   3  labs
 1,387 spaced-repetition cards (derived)
 ```
@@ -42,8 +42,9 @@ and questions are written for this app.
 `npm run content:check` validates every piece of content against its zod schema
 and fails on a dangling reference — a question pointing at a renamed task
 statement is a build error, not a blank screen the night before your exam. It
-also warns when the question bank cannot fill a full paper for a certification
-(both certs now fill one: SAA-C03 has 120 questions, DVA-C02 has 66).
+also warns when the question bank cannot fill a full paper for a certification.
+SAA-C03 has 142 questions and DVA-C02 has 132 — two consecutive full papers each,
+with no question repeated between them.
 
 ## Architecture
 

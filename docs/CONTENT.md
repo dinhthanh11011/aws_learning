@@ -96,19 +96,24 @@ A full paper needs `round(weight% × questionCount)` per domain with no repeats:
 
 | Cert | Domain | Need | Have |
 |---|---|---|---|
-| SAA-C03 | d1 Secure 30% | 19 | 30 |
-| | d2 Resilient 26% | 17 | 30 |
-| | d3 High-Performing 24% | 16 | 30 |
-| | d4 Cost-Optimized 20% | 13 | 30 |
-| DVA-C02 | d1 Development 32% | 21 | 21 |
-| | d2 Security 26% | 17 | 17 |
-| | d3 Deployment 24% | 16 | 16 |
-| | d4 Troubleshooting 18% | 12 | 12 |
+| SAA-C03 | d1 Secure 30% | 19 | 40 |
+| | d2 Resilient 26% | 17 | 36 |
+| | d3 High-Performing 24% | 16 | 34 |
+| | d4 Cost-Optimized 20% | 13 | 32 |
+| DVA-C02 | d1 Development 32% | 21 | 42 |
+| | d2 Security 26% | 17 | 34 |
+| | d3 Deployment 24% | 16 | 32 |
+| | d4 Troubleshooting 18% | 12 | 24 |
 
-Both certs now fill one full 65-question paper with no repeats. SAA has roughly
-1.8 papers of headroom; DVA sits exactly on its weighting, so a second paper that
-excludes everything seen in the first will report a shortfall — which is correct
-behaviour, not a bug. The next 30 DVA questions buy a genuine second paper.
+Both certs now serve **two** consecutive full 65-question papers with zero
+overlap — verified by sampling twice with the first paper's ids excluded. A third
+consecutive paper cannot be filled from unseen questions.
+
+Note a sampler behaviour that matters when you extend this: `sample()` prefers
+unseen questions but falls back to the full candidate set when a domain has too
+few, and it does *not* report that as a shortfall. So a third paper silently
+repeats rather than warning. If you add a repeat count to `SampleResult`, surface
+it in `/exam` — invariant 9 says the learner should be told.
 
 `content:check` prints exactly this and warns on shortfalls; `/exam` tells the
 learner rather than repeating questions.

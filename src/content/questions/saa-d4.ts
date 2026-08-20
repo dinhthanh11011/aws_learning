@@ -544,4 +544,40 @@ export const saaD4Questions: Question[] = [
       'Consolidated billing gives you two things worth remembering: volume-tier aggregation, and reservation and Savings Plans sharing across accounts — both controlled from the management account.',
     source: 'https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ri-turn-off.html',
   },
+  {
+    id: 'saa-d4-031',
+    certs: ['SAA-C03'],
+    taskId: 'saa-4.4',
+    type: 'single',
+    difficulty: 2,
+    serviceSlugs: ['cloudfront', 's3'],
+    stem: 'A site serves 400 TB a month of images directly from S3 to users worldwide. Finance asks for the largest reduction in data-transfer cost without changing where the objects are stored.',
+    options: [
+      { id: 'A', text: 'Serve the images through CloudFront with the S3 bucket as origin, since data transfer from S3 to CloudFront is free and CloudFront egress is cheaper at volume.', correct: true, why: 'Origin fetches from S3 to CloudFront are not charged, cache hits never reach the bucket at all, and CloudFront\'s per-GB rate is lower than S3\'s with volume discounts.' },
+      { id: 'B', text: 'Enable S3 Transfer Acceleration on the bucket.', correct: false, why: 'Acceleration is an upload-oriented feature and adds a per-GB charge on top of transfer.' },
+      { id: 'C', text: 'Move the objects to S3 Standard-Infrequent Access.', correct: false, why: 'That reduces storage cost and raises per-request retrieval cost, leaving egress untouched.' },
+      { id: 'D', text: 'Enable Requester Pays on the bucket.', correct: false, why: 'It shifts the cost to viewers, which for a public website means breaking it.' },
+    ],
+    explanation:
+      'Two facts that decide most egress questions: S3-to-CloudFront origin transfer is free, and a cache hit costs no origin transfer at all. Putting a CDN in front is nearly always both faster and cheaper.',
+    source: 'https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html',
+  },
+  {
+    id: 'saa-d4-032',
+    certs: ['SAA-C03'],
+    taskId: 'saa-4.1',
+    type: 'single',
+    difficulty: 2,
+    serviceSlugs: ['s3'],
+    stem: 'Before writing lifecycle rules for a 900 TB bucket, an architect must find out how old objects typically are when last accessed, per prefix, with evidence rather than assumption.',
+    options: [
+      { id: 'A', text: 'Enable S3 Storage Class Analysis, or S3 Storage Lens with advanced metrics, and use the access patterns it reports to set the transition ages.', correct: true, why: 'Both tools report observed access patterns and recommend transition points, which turns lifecycle configuration into a measurement rather than a guess.' },
+      { id: 'B', text: 'Transition everything to Standard-IA after 30 days and adjust later.', correct: false, why: 'It risks retrieval charges and the 30-day minimum duration on data that turns out to be hot.' },
+      { id: 'C', text: 'Enable S3 Inventory and read the object list.', correct: false, why: 'Inventory reports what exists, including size and storage class, not when objects were last read.' },
+      { id: 'D', text: 'Use S3 Intelligent-Tiering and skip the analysis.', correct: false, why: 'A perfectly good answer when the pattern is genuinely unknowable, and it does not produce the evidence the question asks for.' },
+    ],
+    explanation:
+      'Three S3 analysis tools: Inventory (what exists), Storage Class Analysis (when to transition), Storage Lens (organisation-wide metrics and recommendations). Intelligent-Tiering is what you choose when you accept never knowing.',
+    source: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/analytics-storage-class.html',
+  },
 ]

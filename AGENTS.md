@@ -93,14 +93,13 @@ browser before saying a UI change works.
 
 | | SAA-C03 | DVA-C02 |
 |---|---|---|
-| Questions | 120 (30 per domain) — ~1.8 full 65q papers | 66 — fills one full 65q paper exactly |
+| Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
 | Cards | 1,387 derived | shared corpus |
 
-Both banks now fill a full paper. DVA sits exactly on its domain weighting, so a
-second paper that excludes everything already seen will report a shortfall — the
-next 30 DVA questions are what buy real repeat practice. See
-[`docs/BACKLOG.md`](docs/BACKLOG.md).
+Both banks now serve two consecutive full papers with no repeated question. A
+third consecutive paper cannot be filled from unseen questions, and the sampler
+repeats silently rather than saying so — see [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Conventions
 

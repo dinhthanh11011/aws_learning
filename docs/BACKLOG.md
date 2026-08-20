@@ -45,23 +45,27 @@ and lessons. `phases.ts` already has empty `lessonIds` arrays waiting.
 Until it exists the teaching lives in the atlas, decoder, trees and labs — which
 is genuinely most of it. This is an enhancement, not a hole.
 
-### 2. Question banks — a second paper per cert
+### 2. Question banks — done, with one engine caveat
 
-**Done (August 2026):** DVA went from 30 to 66 and now fills a full 65-question
-paper with zero shortfall; SAA went from 80 to 120. Per-domain counts are in
-[`CONTENT.md`](CONTENT.md).
+**Done (August 2026):** SAA 80 → 142 (40/36/34/32) and DVA 30 → 132
+(42/34/32/24). Both certs now serve two consecutive full 65-question papers with
+zero overlap, verified by sampling twice with the first paper's ids excluded.
+Per-domain counts are in [`CONTENT.md`](CONTENT.md).
 
-What is left: DVA has no headroom. Its 66 questions map onto a 21/17/16/12
-allocation almost exactly, so a second paper that excludes everything seen in the
-first will report a shortfall — honestly, but it still limits repeat practice.
-Another 30 DVA questions (roughly 10/8/7/5) buys a genuine second paper. SAA has
-about 1.8 papers and would benefit from the same treatment later.
+**The caveat, and the next real task here:** `sample()` in
+`src/engines/exam/sampler.ts` prefers unseen questions but falls back to the full
+candidate set when a domain has too few unseen ones — and reports no shortfall
+when it does. So a *third* consecutive paper is 100% repeats and the learner is
+not told. That contradicts invariant 9. The fix is small: return a repeat count
+from `SampleResult` and surface it in `/exam` before the paper starts. Do that
+before adding a third paper's worth of questions.
 
 When writing more, the current bank is the style guide: a scenario stem with the
 constraint that decides the answer, four plausible options with a `why` on every
-one including the correct one, an `explanation` that states the general rule
-rather than restating the answer, and a `source` pointing at the specific AWS doc
-page. Multi-response questions need 5+ options — the exam format.
+one including the correct one — several distractors are deliberately "correct but
+not best", because that is the real exam's main trap — an `explanation` that
+states the general rule rather than restating the answer, and a `source` pointing
+at the specific AWS doc page. Multi-response questions need 5+ options.
 
 ### 3. Labs from the plan that were not built
 
