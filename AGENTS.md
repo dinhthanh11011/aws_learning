@@ -106,6 +106,27 @@ browser before saying a UI change works.
     `ServiceAtlas`, so they cannot drift. Any component with a global key
     handler must bail while `[role="dialog"]` is in the DOM.
 
+12. **A phase without `steps` is a syllabus, and a syllabus is a dead end.** The
+    phases say what a stretch of weeks is *about*; `steps` says what to do on
+    Tuesday evening — in order, with the pages to read, where in the app to do the
+    work, and the retrieval test that closes it. This was the gap that made the
+    roadmap unusable: it listed sixteen services and no first move. Step minutes
+    deliberately total **less** than the phase's `hours`, because the remainder is
+    unstructured building and drilling; padding the list to match would be a fake
+    plan. `content:check` fails a step whose id does not match its position, whose
+    action points at a route that does not exist, or whose phase claims more
+    guided hours than it has.
+
+13. **Ticking a step awards nothing and moves no ring.** A checkbox is a
+    self-report, and mastery is measured only from what was recalled, answered or
+    built — the lab, quiz or drill a step points at awards its own XP when the
+    work actually happens. Keep `steps` out of `MasteryInput` for that reason.
+
+14. **Every URL in a reading list has been checked to resolve.** All 84 were
+    curled before being committed. A 404 in a reading list costs the trust that
+    makes the learner follow the next one, so check new ones the same way rather
+    than writing a plausible-looking doc path from memory.
+
 ## Content status
 
 | | SAA-C03 | DVA-C02 |
@@ -113,6 +134,7 @@ browser before saying a UI change works.
 | Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
 | Cards | 1,391 derived | shared corpus |
+| Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

@@ -103,6 +103,19 @@ export const IconSliders = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+export const IconExternal = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M9 2h5v5M14 2 7.5 8.5" />
+    <path d="M12 9.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3.5" />
+  </svg>
+)
+
+export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="m3 8.5 3.5 3.5L13 4.5" />
+  </svg>
+)
+
 export const ICONS = {
   target: IconTarget,
   layers: IconLayers,
@@ -115,6 +128,8 @@ export const ICONS = {
   paper: IconPaper,
   chart: IconChart,
   sliders: IconSliders,
+  external: IconExternal,
+  check: IconCheck,
 } as const
 
 export type IconName = keyof typeof ICONS

@@ -17,8 +17,12 @@ import {
 } from '@/content'
 import { useProfile } from '@/hooks/useProfile'
 import { useMasteryInput } from '@/hooks/useMastery'
+import { useDoneSteps } from '@/hooks/useSteps'
 import { taskMastery } from '@/engines/progress/mastery'
 import { generate } from '@/engines/plan/generate'
+import { phaseStepProgress } from '@/engines/plan/steps'
+import { NextStepCard } from '@/components/map/NextStepCard'
+import { StudySteps } from './StudySteps'
 import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
@@ -41,6 +45,7 @@ const COLLAPSED = 'none'
 export function RoadmapView() {
   const profile = useProfile()
   const masteryInput = useMasteryInput()
+  const doneSteps = useDoneSteps()
   const reduce = useReducedMotion()
   const phases = useMemo(() => phasesFor(profile.targetCert), [profile.targetCert])
   const certServices = useMemo(() => servicesFor(profile.targetCert), [profile.targetCert])
@@ -51,6 +56,8 @@ export function RoadmapView() {
   // everything, and an id left over from the other cert falls back to the
   // default rather than showing a roadmap with nothing open.
   const phaseParam = searchParams.get('phase')
+  // A step to expand and scroll to, from the "what to do next" card.
+  const stepParam = searchParams.get('step')
   const open =
     phaseParam === COLLAPSED
       ? null
@@ -109,6 +116,8 @@ export function RoadmapView() {
 
   return (
     <div className="flex flex-col gap-5">
+      <NextStepCard />
+
       <div className="surface p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -142,6 +151,7 @@ export function RoadmapView() {
           const isOpen = open === phase.id
           const available = unlocked.has(phase.id)
           const weeks = plan.weeks.filter((w) => w.phaseId === phase.id)
+          const steps = phaseStepProgress(phase, doneSteps)
 
           return (
             <li key={phase.id}>
@@ -175,6 +185,11 @@ export function RoadmapView() {
                         {weeks.at(-1)?.week ?? phase.weekTo}
                       </Badge>
                       <Badge tone="neutral">{phase.hours} h</Badge>
+                      {phase.steps.length ? (
+                        <Badge tone={steps.done === steps.total ? 'ok' : 'neutral'}>
+                          {steps.done}/{steps.total} steps
+                        </Badge>
+                      ) : null}
                     </span>
                     <span className="mt-1 block text-[13px] leading-relaxed text-fg-muted">
                       {phase.purpose}
@@ -203,6 +218,13 @@ export function RoadmapView() {
                         read ahead — the lock is a suggestion about ordering, not a wall.
                       </p>
                     ) : null}
+
+                    <StudySteps
+                      key={stepParam ?? 'auto'}
+                      phase={phase}
+                      done={doneSteps}
+                      openStep={stepParam}
+                    />
 
                     <div className="mb-4">
                       <p className="text-[11px] font-semibold uppercase tracking-wide text-fg-subtle">

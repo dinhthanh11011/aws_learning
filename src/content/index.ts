@@ -84,6 +84,9 @@ export function tasksForService(slug: string): Task[] {
 
 export const triggersFor = (certId: CertId) => triggers.filter((t) => t.certs.includes(certId))
 export const phasesFor = (certId: CertId) => phases.filter((p) => p.certs.includes(certId))
+/** Every step of every phase for a cert, already in the order to do them. */
+export const stepsFor = (certId: CertId) => phasesFor(certId).flatMap((p) => p.steps)
+export const stepById = new Map(phases.flatMap((p) => p.steps).map((s) => [s.id, s]))
 export const phaseById = new Map(phases.map((p) => [p.id, p]))
 
 export const idleCostTotal = idleCosts.reduce((sum, c) => sum + c.usdPerMonth, 0)
@@ -179,5 +182,6 @@ export function contentStats(certId?: CertId) {
     keyNumbers: pool.reduce((n, s) => n + s.keyNumbers.length, 0),
     examTraps: pool.reduce((n, s) => n + s.examTraps.length, 0),
     questions: certId ? questionsFor(certId).length : questions.length,
+    steps: certId ? stepsFor(certId).length : phases.flatMap((p) => p.steps).length,
   }
 }

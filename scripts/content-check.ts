@@ -10,11 +10,13 @@ import {
   CertSchema,
   ServiceSchema,
   PhaseSchema,
+  StudyStepSchema,
   TriggerSchema,
   IdleCostSchema,
   certs,
   services,
   serviceBySlug,
+  labById,
   phases,
   triggers,
   idleCosts,
@@ -136,11 +138,85 @@ for (const t of triggers) {
   }
 }
 
+/**
+ * Routes a step is allowed to send someone to. Hard-coded rather than derived
+ * from the filesystem because a step pointing at a route that does not exist yet
+ * should fail here, not 404 in front of the learner.
+ */
+const ROUTES = new Set([
+  '/',
+  '/big-picture',
+  '/compare',
+  '/decoder',
+  '/drill',
+  '/exam',
+  '/labs',
+  '/labs/iam-puzzle',
+  '/labs/storage-cost',
+  '/labs/vpc-builder',
+  '/map',
+  '/progress',
+  '/quiz',
+  '/services',
+  '/settings',
+])
+
+const stepIds = new Set<string>()
+
 for (const p of phases) {
   for (const id of p.taskIds) {
     if (!taskById.has(id)) fail(`phase ${p.id}`, `references unknown task "${id}"`)
   }
   if (p.weekTo < p.weekFrom) fail(`phase ${p.id}`, 'weekTo is before weekFrom')
+
+  for (const id of p.labIds) {
+    // A warning rather than a failure: the roadmap already skips unknown lab
+    // ids, and several planned labs are still in the backlog.
+    if (!labById.has(id)) warn(`phase ${p.id}`, `labIds names lab "${id}", which does not exist`)
+  }
+
+  if (!p.steps.length)
+    warn(`phase ${p.id}`, 'has no steps — the roadmap will show it as a syllabus')
+
+  for (const [i, step] of p.steps.entries()) {
+    const where = `step ${step.id}`
+    const r = StudyStepSchema.safeParse(step)
+    if (!r.success) {
+      fail(where, r.error.issues.map((x) => `${x.path.join('.')} ${x.message}`).join('; '))
+    }
+    if (stepIds.has(step.id)) fail(where, 'duplicate step id')
+    stepIds.add(step.id)
+    // The id encodes its position, so a reordered array with stale ids would
+    // silently renumber what the learner sees.
+    const expected = `${p.id}-s${i + 1}`
+    if (step.id !== expected)
+      fail(where, `is at position ${i + 1}, so its id should be "${expected}"`)
+
+    for (const slug of step.serviceSlugs) {
+      if (!serviceBySlug.has(slug)) fail(where, `references unknown service "${slug}"`)
+    }
+    for (const a of step.actions) {
+      if (!ROUTES.has(a.href))
+        fail(where, `action "${a.label}" points at unknown route "${a.href}"`)
+    }
+    const readMinutes = step.reading.reduce((n, x) => n + x.minutes, 0)
+    if (readMinutes > step.minutes) {
+      fail(where, `reading is ${readMinutes} min but the step budget is ${step.minutes} min`)
+    }
+    if (step.kind === 'read' && !step.reading.length) {
+      warn(where, 'is a read step with nothing to read')
+    }
+  }
+
+  // Steps are the guided spine, not the whole phase — but they must not claim
+  // more time than the phase has.
+  const stepMinutes = p.steps.reduce((n, x) => n + x.minutes, 0)
+  if (stepMinutes > p.hours * 60) {
+    fail(
+      `phase ${p.id}`,
+      `steps total ${Math.round(stepMinutes / 60)} h but the phase is budgeted at ${p.hours} h`,
+    )
+  }
 }
 
 for (const c of idleCosts) {
@@ -284,6 +360,11 @@ console.log(`  exam traps      ${stats.examTraps}`)
 console.log(`  questions       ${questions.length}`)
 console.log(`  triggers        ${stats.triggers}`)
 console.log(`  phases          ${phases.length}`)
+console.log(
+  `  study steps     ${phases.flatMap((p) => p.steps).length}  (${Math.round(
+    phases.flatMap((p) => p.steps).reduce((n, x) => n + x.minutes, 0) / 60,
+  )} h guided of ${phases.reduce((n, p) => n + p.hours, 0)} h)`,
+)
 console.log('  ─────────────────────────────────────────')
 
 if (warnings.length) {

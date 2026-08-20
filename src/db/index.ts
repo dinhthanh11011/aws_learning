@@ -123,6 +123,19 @@ export interface DailyStat {
   correct: number
 }
 
+/**
+ * A ticked study step. The row's existence *is* the tick, so untick is a delete
+ * — there is no "false" state to get out of step with the UI.
+ *
+ * Deliberately kept out of the mastery calculation: ticking a box is
+ * self-reported, and mastery is measured only from what was recalled, answered
+ * or built. This is the plan checklist, not evidence.
+ */
+export interface StepRecord {
+  stepId: string
+  at: number
+}
+
 export interface ServiceMark {
   slug: string
   /** Self-rated 1–5 confidence. Honest self-rating drives the weak-spot view. */
@@ -142,6 +155,7 @@ class AwsDb extends Dexie {
   achievements!: Table<Achievement, string>
   dailyStats!: Table<DailyStat, string>
   serviceMarks!: Table<ServiceMark, string>
+  steps!: Table<StepRecord, string>
 
   constructor() {
     super('aws-learning')
@@ -156,6 +170,11 @@ class AwsDb extends Dexie {
       achievements: 'id, unlockedAt',
       dailyStats: 'day',
       serviceMarks: 'slug, confidence, starred',
+    })
+    // v2 adds the roadmap's study-step checklist. Additive only, so an existing
+    // profile upgrades without losing anything.
+    this.version(2).stores({
+      steps: 'stepId, at',
     })
   }
 }

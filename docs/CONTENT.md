@@ -19,6 +19,7 @@ npm run content:check && npm run typecheck && npm test
 | An IAM puzzle | `src/engines/policy/puzzles.ts` | One rule per puzzle |
 | A big-picture node or flow | `src/content/big-picture.ts` | Keep it ~25 nodes; the atlas is for lookup |
 | A phase change | `src/content/phases.ts` | Mirrors the user's Notion roadmap — keep in sync |
+| A study step | `src/content/phases.ts`, in that phase's `steps` | Ids must match position; check every URL resolves |
 
 ## A service card
 
@@ -159,6 +160,44 @@ with it, it is exam technique.
 `route.test.ts` asserts every challenge produces `expectDelivered`, and that a
 dropped packet's last hop names a `blockedBy` **and** a `fix`. If `VpcLab` sends a
 non-default packet for your challenge, add the mapping in the test's ternary.
+
+## A study step
+
+A step is one sitting. It is the difference between a roadmap that lists sixteen
+services and one that tells you what to do this evening.
+
+```ts
+{
+  id: 'phase-0-s3',                       // must match its index in the array
+  title: 'CIDR arithmetic until it is boring',
+  why: 'Every VPC question is subnetting in costume…',   // not a restated title
+  kind: 'read',                           // read | build | break | drill | quiz | recall
+  minutes: 90,
+  serviceSlugs: ['vpc'],                  // atlas entries, rendered as quick looks
+  reading: [{ label: '…', url: `${VPC}/subnet-sizing.html`, minutes: 20 }],
+  actions: [{ label: 'VPC Packet Tracer', href: '/labs/vpc-builder' }],
+  doneWhen: 'On paper, you can split 10.0.0.0/16 into /24s…',
+}
+```
+
+Rules that `content:check` enforces, so you find out now rather than in front of
+the learner:
+
+- **The id encodes the position.** Reordering the array without renumbering fails,
+  because otherwise the numbers the learner sees silently shift.
+- **`actions[].href` must be a real route** — the allowlist is in
+  `scripts/content-check.ts`. Never link a lab that is still in the backlog.
+- **`reading` minutes cannot exceed the step budget**, and the phase's steps
+  cannot claim more hours than the phase has.
+- **Every URL must resolve.** Curl it. A reading list that 404s costs the trust
+  that makes the learner follow the next one.
+
+And two rules the checker cannot enforce:
+
+- **`doneWhen` is always something produced from memory**, never "you have read
+  the page". Reading is not evidence of anything, which is the app's whole premise.
+- **`why` earns the next 90 minutes.** If it only restates the title, the step
+  reads as busywork and gets skipped.
 
 ## Writing register
 

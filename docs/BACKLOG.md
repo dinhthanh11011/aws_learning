@@ -29,6 +29,42 @@ Verified means: driven in a real browser, not just compiled.
   below), dark + light + system themes, mobile layout,
   `prefers-reduced-motion` paths
 
+## Added since the initial build
+
+### Study steps on the roadmap (August 2026)
+
+The roadmap used to show a phase's purpose, exit criteria, task statements and
+labs — a syllabus. Opening it told you that Foundations covers two task
+statements and sixteen services, and nothing about what to do first. Every phase
+now carries an ordered `steps` array: 61 sittings across the five phases, each
+with the AWS pages to read in order, the atlas entries to internalise, the app
+surface to do the work in, and a `doneWhen` that is always something produced
+from memory.
+
+- `src/content/phases.ts` — the steps. 84 doc URLs, all curled before committing
+- `src/content/schema.ts` — `StudyStepSchema`, `ReadingSchema`, `STEP_KINDS`
+- `src/engines/plan/steps.ts` — `nextStep`, `phaseStepProgress`, `guidedProgress`,
+  11 tests
+- `src/db` v2 — a `steps` table; row presence *is* the tick, so untick is a delete
+- `src/components/map/NextStepCard.tsx` — the next step, on `/map` and Mission
+  Control. `?step=` deep-links into it
+- `src/app/map/StudySteps.tsx` — the per-phase list
+- `scripts/content-check.ts` — step ids must match position, actions must point at
+  real routes, reading minutes must fit the step, steps must fit the phase
+
+Driven in a real browser at 1440 and 500 px, light and dark, both certs: ticking,
+persistence across navigation, the deep link, and the next-step card advancing.
+
+Deliberately **not** done: ticking a step awards no XP and moves no mastery ring.
+A checkbox is a self-report and mastery is measured from what was recalled,
+answered or built. Guided minutes total 107 h of the 178 h the phases budget, and
+the UI says so rather than padding the list to look complete.
+
+**The obvious next thing here:** steps' `read` targets are external AWS pages
+because there are no lessons. When the lesson player lands, a step should be able
+to point at a lesson id instead of a URL — the schema change is a union on
+`reading`, and the step frame already survives it.
+
 ## Not built
 
 ### 1. The lesson player — `/learn/[cert]/[lesson]`
@@ -100,6 +136,14 @@ at the specific AWS doc page. Multi-response questions need 5+ options.
 - **CLS 0.068** on `/map` from client-side data hydration. Under the 0.1 "good"
   threshold; reserving space for the live-query regions would clear it
 - **`Tooltip` and `Card`/`CardLink`/`SectionTitle`** are written but barely used
+- **Four phases name labs that do not exist** (`request-racer`, `az-drill`,
+  `ddb-keys`, `event-wiring` — the ones in section 3 below). `RoadmapView` skips
+  unknown ids so nothing breaks, and `content:check` now *warns* rather than
+  failing, because the intent is to build them. Either build them or drop the ids
+- **`/quiz` and `/exam` take no target in the URL.** The roadmap's "40 questions →"
+  and every step's quiz action land on the picker rather than the domain in
+  question. A `?domain=` param on `/quiz` would make several steps land exactly
+  where they say they will
 - **The quick-look panel is not wired into the labs' inline prose.** The VPC and
   IAM labs mention services in body text that is still plain strings; making
   those `ServiceRef`s is a small, obvious win

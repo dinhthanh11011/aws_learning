@@ -178,6 +178,14 @@ can do it in 130 minutes against four plausible options.
 (building) from compression because that is the phase whose loss reliably costs
 marks. It states plainly when a date is not achievable.
 
+`plan/steps.ts` answers "what do I do next" as a pure function of the phases and
+the set of ticked step ids: `nextStep()` returns the first unticked step in phase
+order, `phaseStepProgress()` counts one phase, `guidedProgress()` weights by
+minutes so a 45-minute reading does not count the same as a two-hour build. The
+rule is deliberately the simplest honest one — it does not skip ahead, and it does
+not hide a step because its phase is locked, because the lock is advice about
+ordering. A "next step" the learner cannot predict is one they stop trusting.
+
 `gamify/rules.ts`: XP only ever rewards recall (a correct hard question pays more
 than finishing a lesson). Streaks have earned freezes, because a streak that
 punishes one bad day trains people to quit. Nothing is purchasable and nothing is
@@ -185,7 +193,7 @@ random enough to feel like a slot machine.
 
 ## Data layer — `src/db/`
 
-`index.ts` is the Dexie schema (10 tables, version 1). `repo/index.ts` is the
+`index.ts` is the Dexie schema (11 tables, version 2 — v2 adds `steps`, the roadmap's checklist, additively). `repo/index.ts` is the
 **only** thing that touches Dexie — components never do. That keeps the
 persistence choice swappable and, more usefully, means there is no way to award
 XP and forget to advance the streak: `awardXp()` is the single write path and it
@@ -202,6 +210,9 @@ validates a `format` sentinel and version before clearing anything.
   the interaction and keyboard path are identical everywhere
 - `MasteryRing` — 5 rings; deliberately harder to misread at a glance than a
   percentage, and legible across a whole map
+- `NextStepCard` (`components/map/`) — the one instruction on the screen, on both
+  `/map` and Mission Control. `StudySteps` (`app/map/`) renders a phase's ordered
+  steps, expanding the first unticked one so opening a phase needs no click
 
 Keyboard paths matter because sessions are long: number keys pick options, `F`
 flags, `Space` flips a card, `1–4` grades it, `⌘K` or `/` searches.
@@ -212,7 +223,7 @@ flags, `Space` flips a card, `1–4` grades it, `⌘K` or `/` searches.
 |---|---|
 | `/` | Mission Control. Server component passes `nowMs` so the client never reads the clock in render |
 | `/big-picture` | 5 layers, 7 animated flows, failure list per flow |
-| `/map` | Phases gated on 3-ring average of the previous phase |
+| `/map` | Phases gated on 3-ring average of the previous phase. `?phase=` holds the open phase, `?step=` opens and scrolls to one step |
 | `/services`, `/services/[slug]` | 141 SSG pages |
 | `/decoder`, `/compare` | Trigger drill; decision-tree walker |
 | `/drill` | FSRS session. Seeds `srsCards` idempotently on first visit |

@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { NextStepCard } from '@/components/map/NextStepCard'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, today } from '@/db'
@@ -87,6 +88,10 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* The next roadmap step, before anything else: the daily missions below
+          say what kind of work to do, this says which topic. */}
+      <NextStepCard compact />
+
       {/* Today — the only thing that matters on opening the app. */}
       <section className="surface overflow-hidden p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3.5">

@@ -1,4 +1,4 @@
-import { db, DEFAULT_PROFILE, today, type Attempt, type DailyStat, type LabRecord, type LessonRecord, type MistakeNote, type Profile, type ServiceMark, type SrsCard } from '..'
+import { db, DEFAULT_PROFILE, today, type Attempt, type DailyStat, type LabRecord, type LessonRecord, type MistakeNote, type Profile, type ServiceMark, type SrsCard, type StepRecord } from '..'
 import { levelFromXp, touchStreak, XP } from '@/engines/gamify/rules'
 import type { CertId } from '@/content/schema'
 
@@ -222,6 +222,26 @@ export async function markService(slug: string, patch: Partial<ServiceMark>): Pr
   })
 }
 
+/* ── Study steps ─────────────────────────────────────────────────────────── */
+
+export const allSteps = () => db.steps.toArray()
+
+/**
+ * Ticking a step awards no XP and feeds no mastery ring. It is a self-report, and
+ * the app's whole premise is that progress is measured from what you recalled,
+ * answered or built — the lab, quiz and drill a step points at award their own XP
+ * when you actually do them.
+ */
+export async function setStepDone(stepId: string, done: boolean): Promise<void> {
+  if (done) await db.steps.put({ stepId, at: Date.now() })
+  else await db.steps.delete(stepId)
+}
+
+/** Clears a phase's ticks — the "start this phase again" escape hatch. */
+export async function clearSteps(stepIds: string[]): Promise<void> {
+  await db.steps.bulkDelete(stepIds)
+}
+
 /* ── Achievements ────────────────────────────────────────────────────────── */
 
 export const allAchievements = () => db.achievements.toArray()
@@ -248,6 +268,7 @@ export interface Backup {
   achievements: { id: string; unlockedAt: number }[]
   dailyStats: DailyStat[]
   serviceMarks: ServiceMark[]
+  steps: StepRecord[]
 }
 
 export async function exportAll(): Promise<Backup> {
@@ -265,6 +286,7 @@ export async function exportAll(): Promise<Backup> {
     achievements: await db.achievements.toArray(),
     dailyStats: await db.dailyStats.toArray(),
     serviceMarks: await db.serviceMarks.toArray(),
+    steps: await db.steps.toArray(),
   }
 }
 
@@ -285,7 +307,7 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
   }
   await db.transaction(
     'rw',
-    [db.profile, db.srsCards, db.attempts, db.lessons, db.exams, db.labs, db.mistakes, db.achievements, db.dailyStats, db.serviceMarks],
+    [db.profile, db.srsCards, db.attempts, db.lessons, db.exams, db.labs, db.mistakes, db.achievements, db.dailyStats, db.serviceMarks, db.steps],
     async () => {
       await Promise.all([
         db.srsCards.clear(),
@@ -297,6 +319,7 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
         db.achievements.clear(),
         db.dailyStats.clear(),
         db.serviceMarks.clear(),
+        db.steps.clear(),
       ])
       if (b.profile) await db.profile.put(b.profile)
       if (b.srsCards?.length) await db.srsCards.bulkPut(b.srsCards)
@@ -308,6 +331,8 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
       if (b.achievements?.length) await db.achievements.bulkPut(b.achievements)
       if (b.dailyStats?.length) await db.dailyStats.bulkPut(b.dailyStats)
       if (b.serviceMarks?.length) await db.serviceMarks.bulkPut(b.serviceMarks)
+      // Absent from backups taken before the roadmap had steps, hence the guard.
+      if (b.steps?.length) await db.steps.bulkPut(b.steps)
     },
   )
   return { ok: true, message: 'Backup restored.' }
@@ -325,6 +350,7 @@ export async function resetAll(): Promise<void> {
     db.achievements.clear(),
     db.dailyStats.clear(),
     db.serviceMarks.clear(),
+    db.steps.clear(),
   ])
 }
 

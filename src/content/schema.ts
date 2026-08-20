@@ -543,6 +543,50 @@ export type Lab = z.infer<typeof LabSchema>
    the ~15 services that carry most of both papers, then building, then drilling.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * One sitting. The phases say what a stretch of weeks is *about*; the steps say
+ * what to actually do on Tuesday evening, in order, and how you know you are
+ * done. A phase without steps is a syllabus, and a syllabus is what leaves
+ * someone staring at a list of sixteen services with no first move.
+ *
+ * `kind` is the shape of the work, and it maps onto the weekly loop: read,
+ * build, break, drill, quiz, recall. Anything a step points at must already
+ * exist — `content:check` fails on an unknown service slug or a relative href
+ * that is not a real route.
+ */
+export const STEP_KINDS = ['read', 'build', 'break', 'drill', 'quiz', 'recall'] as const
+export const StepKindSchema = z.enum(STEP_KINDS)
+export type StepKind = (typeof STEP_KINDS)[number]
+
+/** External reading, in the order it should be read. */
+export const ReadingSchema = z.object({
+  label: z.string().min(1),
+  url: z.string().url(),
+  /** Rough reading time, so a step's budget is visibly accounted for. */
+  minutes: z.number().int().positive(),
+})
+export type Reading = z.infer<typeof ReadingSchema>
+
+export const StudyStepSchema = z.object({
+  id: z.string().regex(/^phase-\d-s\d{1,2}$/),
+  title: z.string().min(1),
+  /** Why this sitting earns its place, in one line. Not a restatement of the title. */
+  why: z.string().min(1),
+  kind: StepKindSchema,
+  minutes: z.number().int().positive(),
+  /** Atlas entries to internalise. Rendered as quick-look references. */
+  serviceSlugs: z.array(z.string()).default([]),
+  reading: z.array(ReadingSchema).default([]),
+  /** Where in the app the work happens. */
+  actions: z.array(z.object({ label: z.string().min(1), href: z.string().min(1) })).default([]),
+  /**
+   * The retrieval test that closes the step. Always something you produce from
+   * memory, never "you have read the page" — reading is not evidence of anything.
+   */
+  doneWhen: z.string().min(1),
+})
+export type StudyStep = z.infer<typeof StudyStepSchema>
+
 export const PhaseSchema = z.object({
   id: z.string().regex(/^phase-\d$/),
   index: z.number().int().min(0),
@@ -557,6 +601,8 @@ export const PhaseSchema = z.object({
   exitCriteria: z.array(z.string().min(1)).min(1),
   lessonIds: z.array(z.string()).default([]),
   labIds: z.array(z.string()).default([]),
+  /** The ordered work inside the phase. This is the part a learner follows. */
+  steps: z.array(StudyStepSchema).default([]),
   /** Task statements this phase covers, for progress roll-up. */
   taskIds: z.array(z.string()).default([]),
 })
