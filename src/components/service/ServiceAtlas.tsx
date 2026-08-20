@@ -35,6 +35,14 @@ export function ServiceAtlas({
   onOpenService?: (slug: string) => void
 }) {
   const panel = layout === 'panel'
+  // One padding value per column, so every heading in a column starts on the
+  // same left edge. Mixed p-4/p-5 reads as a wobble when the cards are stacked.
+  const pad = panel ? 'p-4' : 'p-5'
+  // One heading recipe for every section. Colour is the only thing that varies —
+  // mixed case and tracking made the stack read as several different documents.
+  const h2 = 'mb-3 text-[13px] font-semibold uppercase tracking-wide'
+  // Sections that follow their heading with a caption own the gap themselves.
+  const h2Tight = h2.replace('mb-3', 'mb-1')
   const relatedTasks = tasksForService(s.slug)
   const relatedTriggers = triggers.filter(
     (t) => t.slugs.includes(s.slug) || t.notThis.some((n) => n.slug === s.slug),
@@ -66,18 +74,16 @@ export function ServiceAtlas({
   )
 
   const whatItIs = (
-    <section className="surface p-5">
-      <h2 className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        What it is
-      </h2>
+    <section className={cn('surface', pad)}>
+      <h2 className={cn(h2, 'text-fg-subtle')}>What it is</h2>
       <p className="text-[14.5px] leading-relaxed">{s.whatItIs}</p>
     </section>
   )
 
   const whenTo = (
     <div className={cn('grid gap-4', panel ? '' : 'sm:grid-cols-2')}>
-      <section className="surface border-ok/25 p-4">
-        <h2 className="mb-2.5 flex items-center gap-1.5 text-[13px] font-semibold text-ok">
+      <section className={cn('surface border-ok/25', pad)}>
+        <h2 className={cn(h2, 'flex items-center gap-1.5 text-ok')}>
           <span aria-hidden>✓</span> Reach for it when
         </h2>
         <ul className="flex flex-col gap-2">
@@ -91,8 +97,8 @@ export function ServiceAtlas({
       </section>
 
       {/* The half most study material skips, and the half that wins scenario questions. */}
-      <section className="surface border-bad/25 p-4">
-        <h2 className="mb-2.5 flex items-center gap-1.5 text-[13px] font-semibold text-bad">
+      <section className={cn('surface border-bad/25', pad)}>
+        <h2 className={cn(h2, 'flex items-center gap-1.5 text-bad')}>
           <span aria-hidden>✗</span> Do <em className="not-italic underline">not</em> reach for it
           when
         </h2>
@@ -109,8 +115,8 @@ export function ServiceAtlas({
   )
 
   const traps = s.examTraps.length ? (
-    <section className="surface border-warn/30 p-5">
-      <h2 className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wide text-warn">
+    <section className={cn('surface border-warn/30', pad)}>
+      <h2 className={cn(h2Tight, 'flex items-center gap-1.5 text-warn')}>
         <span aria-hidden>⚠</span> Exam traps
       </h2>
       <p className="mb-3 text-[12px] text-fg-subtle">
@@ -130,10 +136,8 @@ export function ServiceAtlas({
   ) : null
 
   const confused = s.confusedWith.length ? (
-    <section className="surface p-5">
-      <h2 className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        Commonly confused with
-      </h2>
+    <section className={cn('surface', pad)}>
+      <h2 className={cn(h2Tight, 'text-fg-subtle')}>Commonly confused with</h2>
       <p className="mb-3 text-[12px] text-fg-subtle">
         Two plausible options in the same question. Here is the line between them.
       </p>
@@ -164,10 +168,8 @@ export function ServiceAtlas({
   ) : null
 
   const phrases = relatedTriggers.length ? (
-    <section className="surface p-5">
-      <h2 className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        Question phrases that point here
-      </h2>
+    <section className={cn('surface', pad)}>
+      <h2 className={cn(h2Tight, 'text-fg-subtle')}>Question phrases that point here</h2>
       <p className="mb-3 text-[12px] text-fg-subtle">
         Spot these in a stem and you have narrowed the options before finishing it.
       </p>
@@ -196,10 +198,8 @@ export function ServiceAtlas({
   ) : null
 
   const numbers = s.keyNumbers.length ? (
-    <section className="surface p-4">
-      <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        The numbers
-      </h2>
+    <section className={cn('surface', panel ? pad : 'p-4')}>
+      <h2 className={cn(h2, 'text-fg-subtle')}>The numbers</h2>
       <dl className="flex flex-col gap-3">
         {s.keyNumbers.map((n) => (
           <div key={n.label}>
@@ -225,17 +225,15 @@ export function ServiceAtlas({
   ) : null
 
   const pricing = s.pricing ? (
-    <section className="surface p-4">
-      <h2 className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        How it is billed
-      </h2>
+    <section className={cn('surface', panel ? pad : 'p-4')}>
+      <h2 className={cn(h2, 'text-fg-subtle')}>How it is billed</h2>
       <p className="text-[13px] leading-relaxed text-fg-muted">{s.pricing}</p>
     </section>
   ) : null
 
   const idleCost = idle ? (
-    <section className="surface border-bad/30 p-4">
-      <h2 className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold text-bad">
+    <section className={cn('surface border-bad/30', panel ? pad : 'p-4')}>
+      <h2 className={cn(h2Tight, 'flex items-center gap-1.5 text-bad')}>
         <span aria-hidden>💸</span> Costs money while idle
       </h2>
       <p className="nums mb-2 text-[20px] font-semibold text-bad">
@@ -250,10 +248,8 @@ export function ServiceAtlas({
   ) : null
 
   const examined = relatedTasks.length ? (
-    <section className="surface p-4">
-      <h2 className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        Examined under
-      </h2>
+    <section className={cn('surface', panel ? pad : 'p-4')}>
+      <h2 className={cn(h2, 'text-fg-subtle')}>Examined under</h2>
       <ul className="flex flex-col gap-2">
         {relatedTasks.map((t) => {
           const d = domainById.get(t.domainId)
@@ -275,10 +271,8 @@ export function ServiceAtlas({
   ) : null
 
   const alongside = related.length ? (
-    <section className={panel ? '' : 'mt-8'}>
-      <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-fg-subtle">
-        Studied alongside
-      </h2>
+    <section className={panel ? cn('surface', pad) : 'mt-8'}>
+      <h2 className={cn(h2, 'text-fg-subtle')}>Studied alongside</h2>
       {panel ? (
         <ul className="flex flex-wrap gap-1.5">
           {related.map((r) => (
@@ -310,13 +304,14 @@ export function ServiceAtlas({
   ) : null
 
   if (panel) {
-    // Ordered for a glance mid-question: the numbers and the traps are what you
-    // came for, so they come before the prose.
+    // Ordered for a glance mid-question: one line of orientation first — the
+    // numbers mean nothing if you cannot place the service — then the two
+    // things you actually came for.
     return (
       <div className="flex flex-col gap-4">
+        {whatItIs}
         {numbers}
         {traps}
-        {whatItIs}
         {whenTo}
         {confused}
         {pricing}
