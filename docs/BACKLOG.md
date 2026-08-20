@@ -45,11 +45,23 @@ and lessons. `phases.ts` already has empty `lessonIds` arrays waiting.
 Until it exists the teaching lives in the atlas, decoder, trees and labs — which
 is genuinely most of it. This is an enhancement, not a hole.
 
-### 2. DVA question bank — highest value per hour
+### 2. Question banks — a second paper per cert
 
-30 questions against the 65 a full paper needs. Per-domain gaps are in
-[`CONTENT.md`](CONTENT.md). Roughly 35 more questions makes DVA papers as good as
-SAA ones. Nothing else in the app is blocked on anything.
+**Done (August 2026):** DVA went from 30 to 66 and now fills a full 65-question
+paper with zero shortfall; SAA went from 80 to 120. Per-domain counts are in
+[`CONTENT.md`](CONTENT.md).
+
+What is left: DVA has no headroom. Its 66 questions map onto a 21/17/16/12
+allocation almost exactly, so a second paper that excludes everything seen in the
+first will report a shortfall — honestly, but it still limits repeat practice.
+Another 30 DVA questions (roughly 10/8/7/5) buys a genuine second paper. SAA has
+about 1.8 papers and would benefit from the same treatment later.
+
+When writing more, the current bank is the style guide: a scenario stem with the
+constraint that decides the answer, four plausible options with a `why` on every
+one including the correct one, an `explanation` that states the general rule
+rather than restating the answer, and a `source` pointing at the specific AWS doc
+page. Multi-response questions need 5+ options — the exam format.
 
 ### 3. Labs from the plan that were not built
 

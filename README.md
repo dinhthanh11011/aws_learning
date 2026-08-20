@@ -34,7 +34,7 @@ and questions are written for this app.
 
 ```
 141  services      534  key numbers    452  exam traps
-110  questions      47  trigger phrases
+186  questions      47  trigger phrases
  27  task statements  5  decision trees   3  labs
 1,387 spaced-repetition cards (derived)
 ```
@@ -43,7 +43,7 @@ and questions are written for this app.
 and fails on a dangling reference — a question pointing at a renamed task
 statement is a build error, not a blank screen the night before your exam. It
 also warns when the question bank cannot fill a full paper for a certification
-(currently DVA: 30 questions against the 65 a full paper needs).
+(both certs now fill one: SAA-C03 has 120 questions, DVA-C02 has 66).
 
 ## Architecture
 

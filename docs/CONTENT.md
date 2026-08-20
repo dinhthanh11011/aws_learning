@@ -96,14 +96,19 @@ A full paper needs `round(weight% × questionCount)` per domain with no repeats:
 
 | Cert | Domain | Need | Have |
 |---|---|---|---|
-| SAA-C03 | d1 Secure 30% | 19 | 20 |
-| | d2 Resilient 26% | 17 | 20 |
-| | d3 High-Performing 24% | 16 | 20 |
-| | d4 Cost-Optimized 20% | 13 | 20 |
-| DVA-C02 | d1 Development 32% | 21 | **12** |
-| | d2 Security 26% | 17 | **6** |
-| | d3 Deployment 24% | 16 | **6** |
-| | d4 Troubleshooting 18% | 12 | **6** |
+| SAA-C03 | d1 Secure 30% | 19 | 30 |
+| | d2 Resilient 26% | 17 | 30 |
+| | d3 High-Performing 24% | 16 | 30 |
+| | d4 Cost-Optimized 20% | 13 | 30 |
+| DVA-C02 | d1 Development 32% | 21 | 21 |
+| | d2 Security 26% | 17 | 17 |
+| | d3 Deployment 24% | 16 | 16 |
+| | d4 Troubleshooting 18% | 12 | 12 |
+
+Both certs now fill one full 65-question paper with no repeats. SAA has roughly
+1.8 papers of headroom; DVA sits exactly on its weighting, so a second paper that
+excludes everything seen in the first will report a shortfall — which is correct
+behaviour, not a bug. The next 30 DVA questions buy a genuine second paper.
 
 `content:check` prints exactly this and warns on shortfalls; `/exam` tells the
 learner rather than repeating questions.

@@ -93,11 +93,13 @@ browser before saying a UI change works.
 
 | | SAA-C03 | DVA-C02 |
 |---|---|---|
-| Questions | 80 (20 per domain) — fills a full 65q paper | **30 — short of the 65 needed** |
+| Questions | 120 (30 per domain) — ~1.8 full 65q papers | 66 — fills one full 65q paper exactly |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
 | Cards | 1,387 derived | shared corpus |
 
-Extending the DVA question bank is the highest-value next task. See
+Both banks now fill a full paper. DVA sits exactly on its domain weighting, so a
+second paper that excludes everything already seen will report a shortfall — the
+next 30 DVA questions are what buy real repeat practice. See
 [`docs/BACKLOG.md`](docs/BACKLOG.md).
 
 ## Conventions
