@@ -1,6 +1,7 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, useReducedMotion } from 'motion/react'
 import {
   CATEGORIES,
@@ -24,11 +25,18 @@ import { Progress } from '@/components/ui/Progress'
 import { cn } from '@/lib/cn'
 import { serviceLinkProps } from '@/components/service/ServiceRef'
 
+/** Sentinel for "the learner closed every phase", so it survives a reload too. */
+const COLLAPSED = 'none'
+
 /**
  * The roadmap. Phases are the learning order; task statements are the gated
  * nodes inside them. A phase unlocks when the one before it reaches three rings
  * on average — enough to have actually learned it, not enough to be perfect,
  * because waiting for perfect is how people stall.
+ *
+ * Which phase is expanded lives in `?phase=` rather than component state: the
+ * roadmap is the page people leave to open a lab or a question and then come
+ * back to, and losing the phase they had open every time makes them re-find it.
  */
 export function RoadmapView() {
   const profile = useProfile()
@@ -36,7 +44,30 @@ export function RoadmapView() {
   const reduce = useReducedMotion()
   const phases = useMemo(() => phasesFor(profile.targetCert), [profile.targetCert])
   const certServices = useMemo(() => servicesFor(profile.targetCert), [profile.targetCert])
-  const [open, setOpen] = useState<string | null>(phases[0]?.id ?? null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // No param means the first phase, `none` means the learner collapsed
+  // everything, and an id left over from the other cert falls back to the
+  // default rather than showing a roadmap with nothing open.
+  const phaseParam = searchParams.get('phase')
+  const open =
+    phaseParam === COLLAPSED
+      ? null
+      : phaseParam && phases.some((p) => p.id === phaseParam)
+        ? phaseParam
+        : (phases[0]?.id ?? null)
+
+  const setOpen = useCallback(
+    (id: string | null) => {
+      const params = new URLSearchParams(searchParams)
+      params.set('phase', id ?? COLLAPSED)
+      // `replace`, not `push`: expanding a phase is not a step to go back
+      // through, but it does need to be on the entry we return to.
+      router.replace(`/map?${params}`, { scroll: false })
+    },
+    [router, searchParams],
+  )
 
   const plan = useMemo(
     () =>
