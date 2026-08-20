@@ -76,7 +76,7 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm"
       onClick={() => setOpen(false)}
       role="dialog"
       aria-modal="true"
@@ -112,7 +112,9 @@ export function CommandPalette() {
             placeholder="Search services, task statements, trigger phrases…"
             className="h-14 flex-1 bg-transparent text-[15px] outline-none placeholder:text-fg-subtle"
           />
-          <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px] text-fg-subtle">esc</kbd>
+          <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px] text-fg-subtle">
+            esc
+          </kbd>
         </div>
 
         {q.length >= 2 ? (

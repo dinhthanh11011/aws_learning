@@ -92,7 +92,7 @@ export function ServicePeek() {
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex justify-end bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex justify-end bg-black/50 backdrop-blur-sm"
       onClick={closeServicePeek}
     >
       <motion.div

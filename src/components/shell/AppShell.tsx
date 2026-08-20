@@ -4,6 +4,13 @@ import { Sidebar } from './Sidebar'
 import { CommandPalette } from './CommandPalette'
 import { ServicePeek } from '@/components/service/ServicePeek'
 
+/**
+ * The layer ladder, in one place so it cannot drift: mobile top bar `z-20`,
+ * nav drawer `z-30`, service quick look `z-40`, command palette `z-50`. All
+ * four are Tailwind's built-in steps on purpose — an arbitrary `z-[90]` that
+ * the class scan misses silently becomes `z-index: auto`, and then the sticky
+ * top bar paints over the panel on a narrow screen.
+ */
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -17,7 +24,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Mobile drawer */}
       {mobileOpen ? (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         >
           <aside
@@ -30,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b border-border bg-bg/85 px-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-20 flex h-12 items-center gap-2 border-b border-border bg-bg/85 px-3 backdrop-blur lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label="Open navigation"

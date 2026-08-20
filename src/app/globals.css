@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ── Palette ─────────────────────────────────────────────────────────────
    Dark-first: this is a night-study tool. Light mode is a first-class
@@ -9,28 +9,28 @@
    the two before painting (see ThemeScript).
    ──────────────────────────────────────────────────────────────────────── */
 :root {
-  --bg:            oklch(17% 0.015 265);
-  --bg-raised:     oklch(21% 0.018 265);
-  --bg-overlay:    oklch(25% 0.020 265);
-  --bg-inset:      oklch(14% 0.014 265);
-  --border:        oklch(31% 0.020 265);
+  --bg: oklch(17% 0.015 265);
+  --bg-raised: oklch(21% 0.018 265);
+  --bg-overlay: oklch(25% 0.02 265);
+  --bg-inset: oklch(14% 0.014 265);
+  --border: oklch(31% 0.02 265);
   --border-strong: oklch(42% 0.026 265);
-  --fg:            oklch(96% 0.004 265);
-  --fg-muted:      oklch(74% 0.014 265);
-  --fg-subtle:     oklch(68% 0.016 265);
+  --fg: oklch(96% 0.004 265);
+  --fg-muted: oklch(74% 0.014 265);
+  --fg-subtle: oklch(68% 0.016 265);
 
-  --accent:        oklch(72% 0.165 55);   /* AWS orange, the app's primary */
-  --accent-fg:     oklch(18% 0.02 55);
-  --accent-soft:   oklch(72% 0.165 55 / 0.14);
+  --accent: oklch(72% 0.165 55); /* AWS orange, the app's primary */
+  --accent-fg: oklch(18% 0.02 55);
+  --accent-soft: oklch(72% 0.165 55 / 0.14);
 
-  --ok:            oklch(74% 0.17 152);
-  --ok-soft:       oklch(74% 0.17 152 / 0.14);
-  --warn:          oklch(80% 0.15 85);
-  --warn-soft:     oklch(80% 0.15 85 / 0.14);
-  --bad:           oklch(66% 0.19 22);
-  --bad-soft:      oklch(66% 0.19 22 / 0.14);
-  --info:          oklch(72% 0.14 245);
-  --info-soft:     oklch(72% 0.14 245 / 0.14);
+  --ok: oklch(74% 0.17 152);
+  --ok-soft: oklch(74% 0.17 152 / 0.14);
+  --warn: oklch(80% 0.15 85);
+  --warn-soft: oklch(80% 0.15 85 / 0.14);
+  --bad: oklch(66% 0.19 22);
+  --bad-soft: oklch(66% 0.19 22 / 0.14);
+  --info: oklch(72% 0.14 245);
+  --info-soft: oklch(72% 0.14 245 / 0.14);
 
   --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4);
   --shadow-md: 0 4px 16px -2px oklch(0% 0 0 / 0.5);
@@ -47,62 +47,62 @@
    cannot share a declaration list across a media-query boundary. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg:            oklch(98.5% 0.003 265);
-    --bg-raised:     oklch(100% 0 0);
-    --bg-overlay:    oklch(100% 0 0);
-    --bg-inset:      oklch(95.5% 0.005 265);
-    --border:        oklch(90% 0.008 265);
+    --bg: oklch(98.5% 0.003 265);
+    --bg-raised: oklch(100% 0 0);
+    --bg-overlay: oklch(100% 0 0);
+    --bg-inset: oklch(95.5% 0.005 265);
+    --border: oklch(90% 0.008 265);
     --border-strong: oklch(80% 0.012 265);
-    --fg:            oklch(23% 0.015 265);
-    --fg-muted:      oklch(44% 0.016 265);
-    --fg-subtle:     oklch(50% 0.014 265);
+    --fg: oklch(23% 0.015 265);
+    --fg-muted: oklch(44% 0.016 265);
+    --fg-subtle: oklch(50% 0.014 265);
 
-    --accent:        oklch(60% 0.17 45);
-    --accent-fg:     oklch(99% 0.01 45);
-    --accent-soft:   oklch(60% 0.17 45 / 0.10);
+    --accent: oklch(60% 0.17 45);
+    --accent-fg: oklch(99% 0.01 45);
+    --accent-soft: oklch(60% 0.17 45 / 0.1);
 
-    --ok:            oklch(53% 0.15 152);
-    --ok-soft:       oklch(53% 0.15 152 / 0.10);
-    --warn:          oklch(58% 0.14 75);
-    --warn-soft:     oklch(58% 0.14 75 / 0.10);
-    --bad:           oklch(55% 0.19 22);
-    --bad-soft:      oklch(55% 0.19 22 / 0.10);
-    --info:          oklch(52% 0.15 245);
-    --info-soft:     oklch(52% 0.15 245 / 0.10);
+    --ok: oklch(53% 0.15 152);
+    --ok-soft: oklch(53% 0.15 152 / 0.1);
+    --warn: oklch(58% 0.14 75);
+    --warn-soft: oklch(58% 0.14 75 / 0.1);
+    --bad: oklch(55% 0.19 22);
+    --bad-soft: oklch(55% 0.19 22 / 0.1);
+    --info: oklch(52% 0.15 245);
+    --info-soft: oklch(52% 0.15 245 / 0.1);
 
-      --shadow-sm: 0 1px 2px oklch(50% 0.02 265 / 0.10);
+    --shadow-sm: 0 1px 2px oklch(50% 0.02 265 / 0.1);
     --shadow-md: 0 4px 16px -2px oklch(50% 0.02 265 / 0.14);
-    --shadow-lg: 0 16px 48px -8px oklch(50% 0.02 265 / 0.20);
+    --shadow-lg: 0 16px 48px -8px oklch(50% 0.02 265 / 0.2);
   }
 }
 
 :root[data-theme='light'] {
-  --bg:            oklch(98.5% 0.003 265);
-  --bg-raised:     oklch(100% 0 0);
-  --bg-overlay:    oklch(100% 0 0);
-  --bg-inset:      oklch(95.5% 0.005 265);
-  --border:        oklch(90% 0.008 265);
+  --bg: oklch(98.5% 0.003 265);
+  --bg-raised: oklch(100% 0 0);
+  --bg-overlay: oklch(100% 0 0);
+  --bg-inset: oklch(95.5% 0.005 265);
+  --border: oklch(90% 0.008 265);
   --border-strong: oklch(80% 0.012 265);
-  --fg:            oklch(23% 0.015 265);
-  --fg-muted:      oklch(44% 0.016 265);
-  --fg-subtle:     oklch(50% 0.014 265);
+  --fg: oklch(23% 0.015 265);
+  --fg-muted: oklch(44% 0.016 265);
+  --fg-subtle: oklch(50% 0.014 265);
 
-  --accent:        oklch(60% 0.17 45);
-  --accent-fg:     oklch(99% 0.01 45);
-  --accent-soft:   oklch(60% 0.17 45 / 0.10);
+  --accent: oklch(60% 0.17 45);
+  --accent-fg: oklch(99% 0.01 45);
+  --accent-soft: oklch(60% 0.17 45 / 0.1);
 
-  --ok:            oklch(53% 0.15 152);
-  --ok-soft:       oklch(53% 0.15 152 / 0.10);
-  --warn:          oklch(58% 0.14 75);
-  --warn-soft:     oklch(58% 0.14 75 / 0.10);
-  --bad:           oklch(55% 0.19 22);
-  --bad-soft:      oklch(55% 0.19 22 / 0.10);
-  --info:          oklch(52% 0.15 245);
-  --info-soft:     oklch(52% 0.15 245 / 0.10);
+  --ok: oklch(53% 0.15 152);
+  --ok-soft: oklch(53% 0.15 152 / 0.1);
+  --warn: oklch(58% 0.14 75);
+  --warn-soft: oklch(58% 0.14 75 / 0.1);
+  --bad: oklch(55% 0.19 22);
+  --bad-soft: oklch(55% 0.19 22 / 0.1);
+  --info: oklch(52% 0.15 245);
+  --info-soft: oklch(52% 0.15 245 / 0.1);
 
-  --shadow-sm: 0 1px 2px oklch(50% 0.02 265 / 0.10);
+  --shadow-sm: 0 1px 2px oklch(50% 0.02 265 / 0.1);
   --shadow-md: 0 4px 16px -2px oklch(50% 0.02 265 / 0.14);
-  --shadow-lg: 0 16px 48px -8px oklch(50% 0.02 265 / 0.20);
+  --shadow-lg: 0 16px 48px -8px oklch(50% 0.02 265 / 0.2);
 }
 
 /* ── AWS service-category hues ───────────────────────────────────────────
@@ -110,22 +110,22 @@
    canvas reads the same way a real AWS diagram does.
    ──────────────────────────────────────────────────────────────────────── */
 :root {
-  --cat-compute:    #ED7100;
-  --cat-containers: #F58536;
-  --cat-serverless: #D45B07;
-  --cat-storage:    #7AA116;
-  --cat-database:   #C925D1;
-  --cat-network:    #8C4FFF;
-  --cat-security:   #DD344C;
-  --cat-analytics:  #8C4FFF;
-  --cat-appint:     #E7157B;
-  --cat-mgmt:       #E7157B;
-  --cat-devtools:   #01A88D;
-  --cat-ml:         #01A88D;
-  --cat-migration:  #01A88D;
-  --cat-cost:       #01A88D;
-  --cat-frontend:   #E7157B;
-  --cat-media:      #8C4FFF;
+  --cat-compute: #ed7100;
+  --cat-containers: #f58536;
+  --cat-serverless: #d45b07;
+  --cat-storage: #7aa116;
+  --cat-database: #c925d1;
+  --cat-network: #8c4fff;
+  --cat-security: #dd344c;
+  --cat-analytics: #8c4fff;
+  --cat-appint: #e7157b;
+  --cat-mgmt: #e7157b;
+  --cat-devtools: #01a88d;
+  --cat-ml: #01a88d;
+  --cat-migration: #01a88d;
+  --cat-cost: #01a88d;
+  --cat-frontend: #e7157b;
+  --cat-media: #8c4fff;
 }
 
 @theme inline {
@@ -150,8 +150,8 @@
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --radius-card: 14px;
   --radius-node: 20px;
@@ -164,48 +164,69 @@
 }
 
 @layer base {
-  * { border-color: var(--border); }
+  * {
+    border-color: var(--border);
+  }
 
   html {
     color-scheme: dark;
     -webkit-text-size-adjust: 100%;
   }
   @media (prefers-color-scheme: light) {
-    html:not([data-theme='dark']) { color-scheme: light; }
+    html:not([data-theme='dark']) {
+      color-scheme: light;
+    }
   }
-  html[data-theme='light'] { color-scheme: light; }
-  html[data-theme='dark'] { color-scheme: dark; }
+  html[data-theme='light'] {
+    color-scheme: light;
+  }
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
 
   body {
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     overscroll-behavior-y: none;
   }
 
   /* Only ever show focus rings for keyboard users — but always show them. */
-  :focus { outline: none; }
+  :focus {
+    outline: none;
+  }
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
-  ::selection { background: var(--accent-soft); }
+  ::selection {
+    background: var(--accent-soft);
+  }
 
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
   ::-webkit-scrollbar-thumb {
     background: var(--border-strong);
     border-radius: 6px;
     border: 2px solid var(--bg);
   }
-  ::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-subtle);
+  }
 
   /* Tabular figures everywhere a number is being compared or counted down. */
-  .nums { font-variant-numeric: tabular-nums; }
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 @layer utilities {
@@ -220,7 +241,10 @@
     border-radius: var(--radius-card);
   }
   /* Text that should never be selected mid-drag in the labs / map. */
-  .no-select { user-select: none; -webkit-user-select: none; }
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
 
   .grid-bg {
     background-image:
@@ -234,10 +258,46 @@
 /* Anyone who asked for less motion gets stepped state changes instead of
    travel animations — the labs stay fully usable, they just don't fly. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* The quick look enters from the edge it is attached to: up from the bottom
+   as a sheet on a phone, in from the right as a drawer from 640px. It is a
+   CSS animation rather than a motion prop because the direction is a
+   breakpoint decision, and reading the viewport into state to pick one is
+   both a cascading render and a wrong answer on resize. */
+@keyframes peek-in-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes peek-in-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.peek-panel {
+  animation: peek-in-up 160ms ease-out;
+}
+@media (min-width: 640px) {
+  .peek-panel {
+    animation-name: peek-in-right;
   }
 }
