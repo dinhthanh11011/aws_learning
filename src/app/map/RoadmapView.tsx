@@ -28,7 +28,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
 import { serviceLinkProps } from '@/components/service/ServiceRef'
 
-/** Sentinel for "the learner closed every phase", so it survives a reload too. */
+/**
+ * Sentinel for "the learner closed every phase" — or every step — so a
+ * deliberate collapse survives a reload rather than springing back open.
+ */
 const COLLAPSED = 'none'
 
 /**
@@ -36,9 +39,10 @@ const COLLAPSED = 'none'
  * inside them. Nothing is gated: the order is advice, and a learner who wants to
  * jump ahead is better served by letting them than by a lock they resent.
  *
- * Which phase is expanded lives in `?phase=` rather than component state: the
- * roadmap is the page people leave to open a lab or a question and then come
- * back to, and losing the phase they had open every time makes them re-find it.
+ * Which phase and which step are expanded live in `?phase=` and `?step=` rather
+ * than component state: the roadmap is the page people leave to open a lab or a
+ * question and then come back to, and losing the phase and step they had open
+ * every time makes them re-find both.
  */
 export function RoadmapView() {
   const profile = useProfile()
@@ -54,7 +58,8 @@ export function RoadmapView() {
   // everything, and an id left over from the other cert falls back to the
   // default rather than showing a roadmap with nothing open.
   const phaseParam = searchParams.get('phase')
-  // A step to expand and scroll to, from the "what to do next" card.
+  // Which step is expanded, and — on arrival from the "what to do next" card —
+  // the one to scroll to.
   const stepParam = searchParams.get('step')
   const open =
     phaseParam === COLLAPSED
@@ -63,15 +68,32 @@ export function RoadmapView() {
         ? phaseParam
         : (phases[0]?.id ?? null)
 
-  const setOpen = useCallback(
-    (id: string | null) => {
+  // `replace`, not `push`: expanding a phase or a step is not a step to go back
+  // through, but it does need to be on the entry we return to.
+  const write = useCallback(
+    (edit: (params: URLSearchParams) => void) => {
       const params = new URLSearchParams(searchParams)
-      params.set('phase', id ?? COLLAPSED)
-      // `replace`, not `push`: expanding a phase is not a step to go back
-      // through, but it does need to be on the entry we return to.
+      edit(params)
       router.replace(`/map?${params}`, { scroll: false })
     },
     [router, searchParams],
+  )
+
+  const setOpen = useCallback(
+    (id: string | null) => {
+      write((params) => {
+        params.set('phase', id ?? COLLAPSED)
+        // The open step belonged to the phase we just left, so carrying it over
+        // would either match nothing or fight the new phase's own default.
+        params.delete('step')
+      })
+    },
+    [write],
+  )
+
+  const setOpenStep = useCallback(
+    (id: string | null) => write((params) => params.set('step', id ?? COLLAPSED)),
+    [write],
   )
 
   const plan = useMemo(
@@ -92,9 +114,7 @@ export function RoadmapView() {
         out.set(p.id, { score: 0, rings: 0 })
         continue
       }
-      const scores = tasks.map(
-        (t) => taskMastery(t!, certServices, masteryInput).score,
-      )
+      const scores = tasks.map((t) => taskMastery(t!, certServices, masteryInput).score)
       const score = scores.reduce((n, s) => n + s, 0) / scores.length
       out.set(p.id, { score, rings: Math.round(score * 5) })
     }
@@ -156,7 +176,9 @@ export function RoadmapView() {
 
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-[15px] font-semibold tracking-tight">{phase.title}</span>
+                      <span className="text-[15px] font-semibold tracking-tight">
+                        {phase.title}
+                      </span>
                       <Badge tone="neutral">
                         weeks {weeks[0]?.week ?? phase.weekFrom}–
                         {weeks.at(-1)?.week ?? phase.weekTo}
@@ -190,10 +212,10 @@ export function RoadmapView() {
                     className="border-t border-border bg-bg-inset px-4 py-4"
                   >
                     <StudySteps
-                      key={stepParam ?? 'auto'}
                       phase={phase}
                       done={doneSteps}
                       openStep={stepParam}
+                      onOpenStep={setOpenStep}
                     />
 
                     <div className="mb-4">
@@ -203,7 +225,10 @@ export function RoadmapView() {
                       <ul className="mt-1.5 flex flex-col gap-1.5">
                         {phase.exitCriteria.map((c) => (
                           <li key={c} className="flex gap-2 text-[13px] leading-snug text-fg-muted">
-                            <span className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-ok" aria-hidden />
+                            <span
+                              className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-ok"
+                              aria-hidden
+                            />
                             {c}
                           </li>
                         ))}
@@ -241,7 +266,9 @@ export function RoadmapView() {
                         const task = taskById.get(tid)
                         if (!task) return null
                         const domain = domainById.get(task.domainId)
-                        const m = masteryInput ? taskMastery(task, certServices, masteryInput) : null
+                        const m = masteryInput
+                          ? taskMastery(task, certServices, masteryInput)
+                          : null
                         const svcs = servicesForTask(tid).slice(0, 6)
                         const qCount = domain ? questionsForDomain(domain.id).length : 0
                         return (
@@ -298,9 +325,7 @@ export function RoadmapView() {
                         <ul className="flex flex-col gap-1">
                           {weeks.map((w) => (
                             <li key={w.week} className="flex gap-2.5 text-[12.5px]">
-                              <span className="nums w-14 shrink-0 text-fg-subtle">
-                                wk {w.week}
-                              </span>
+                              <span className="nums w-14 shrink-0 text-fg-subtle">wk {w.week}</span>
                               <span className="text-fg-muted">{w.focus}</span>
                             </li>
                           ))}

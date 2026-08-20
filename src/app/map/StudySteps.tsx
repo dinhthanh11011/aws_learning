@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Phase, StepKind, StudyStep } from '@/content'
@@ -15,7 +15,9 @@ import { cn } from '@/lib/cn'
  * still do not know what to do first".
  *
  * One step is expanded at a time, and it defaults to the first unticked one, so
- * opening a phase puts the next thing to do on screen without a click. Ticking a
+ * opening a phase puts the next thing to do on screen without a click. Which one
+ * is expanded is owned by `?step=` on the roadmap, not by state here, so leaving
+ * for the lab a step points at and coming back reopens the same step. Ticking a
  * step is a plain checkbox and awards nothing: the lab, quiz or drill it points
  * at awards its own XP when the work actually happens, and a checkbox that paid
  * out would be paying for a claim rather than for evidence.
@@ -30,6 +32,9 @@ const KIND: Record<StepKind, { label: string; tone: 'info' | 'accent' | 'warn' |
   recall: { label: 'recall', tone: 'ok' },
 }
 
+/** Matches the roadmap's sentinel: `none` is "closed", not "unset". */
+const COLLAPSED = 'none'
+
 const hours = (minutes: number) =>
   minutes >= 60 ? `${Math.round((minutes / 60) * 10) / 10} h` : `${minutes} min`
 
@@ -37,32 +42,42 @@ export function StudySteps({
   phase,
   done,
   openStep,
+  onOpenStep,
 }: {
   phase: Phase
   done: Set<string>
   /**
-   * A step to open on arrival, from `?step=` — which is how the "what to do
-   * next" card links straight at one. It comes in as a prop rather than being
-   * read from the hash inside an effect, because the list renders after the
-   * browser has already given up on scrolling to a fragment.
+   * The expanded step, from `?step=` — which is also how the "what to do next"
+   * card links straight at one. It comes in as a prop rather than being read
+   * from the hash inside an effect, because the list renders after the browser
+   * has already given up on scrolling to a fragment. `none` means the learner
+   * closed the step they had open, which is why it is not the same as absent.
    */
   openStep?: string | null
+  onOpenStep: (id: string | null) => void
 }) {
   const firstOpen = phase.steps.find((s) => !done.has(s.id))?.id ?? null
-  const linked = openStep && phase.steps.some((s) => s.id === openStep) ? openStep : null
-  const [expanded, setExpanded] = useState<string | null>(linked ?? firstOpen)
+  const named = openStep && phase.steps.some((s) => s.id === openStep) ? openStep : null
+  // An id from the other phase, or a step this phase no longer has, falls back
+  // to the default rather than opening nothing.
+  const expanded = openStep === COLLAPSED ? null : (named ?? firstOpen)
+
+  // Only the step we arrived with is scrolled to; toggling one open afterwards
+  // must not yank the page, and the param now changes on every toggle.
+  const arrivedAt = useRef(named)
 
   // Deliberately delayed: the phase panel above this list animates its height
   // from 0 to auto, so an immediate scroll aims at a target that then moves several
   // hundred pixels down. One scroll after the expand settles beats several during it.
   useEffect(() => {
-    if (!linked) return
+    const id = arrivedAt.current
+    if (!id) return
     const t = setTimeout(
-      () => document.getElementById(linked)?.scrollIntoView({ block: 'center' }),
+      () => document.getElementById(id)?.scrollIntoView({ block: 'center' }),
       400,
     )
     return () => clearTimeout(t)
-  }, [linked])
+  }, [])
   const guided = phase.steps.reduce((n, s) => n + s.minutes, 0)
   const doneCount = phase.steps.filter((s) => done.has(s.id)).length
 
@@ -90,7 +105,7 @@ export function StudySteps({
             done={done.has(step.id)}
             isNext={step.id === firstOpen}
             open={expanded === step.id}
-            onToggleOpen={() => setExpanded(expanded === step.id ? null : step.id)}
+            onToggleOpen={() => onOpenStep(expanded === step.id ? null : step.id)}
           />
         ))}
       </ol>

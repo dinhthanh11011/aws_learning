@@ -2,6 +2,7 @@
 import { useState, type ReactNode } from 'react'
 import { Sidebar } from './Sidebar'
 import { CommandPalette } from './CommandPalette'
+import { SearchButton } from './SearchButton'
 import { ServicePeek } from '@/components/service/ServicePeek'
 
 /**
@@ -45,7 +46,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             ☰
           </button>
-          <span className="text-[13px] font-semibold">AWS Trainer</span>
+          <span className="flex-1 text-[13px] font-semibold">AWS Trainer</span>
+          <SearchButton variant="icon" />
         </header>
 
         <main className="min-w-0 flex-1">{children}</main>

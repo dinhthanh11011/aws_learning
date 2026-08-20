@@ -8,6 +8,7 @@ import { levelFromXp, levelTitle } from '@/engines/gamify/rules'
 import { certById } from '@/content'
 import { cn } from '@/lib/cn'
 import { ThemeToggle } from './ThemeToggle'
+import { SearchButton } from './SearchButton'
 import { ICONS, type IconName } from '@/components/ui/Icon'
 
 interface NavItem {
@@ -25,7 +26,7 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: '/', label: 'Mission Control', icon: 'target', hint: 'Today’s plan and where you stand' },
       { href: '/big-picture', label: 'Big Picture', icon: 'layers', hint: 'Every service on one canvas' },
-      { href: '/map', label: 'Roadmap', icon: 'route', hint: 'The 29-week path, gated by mastery' },
+      { href: '/map', label: 'Roadmap', icon: 'route', hint: 'The 29-week path, phase by phase' },
     ],
   },
   {
@@ -85,6 +86,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </span>
         </span>
       </Link>
+
+      {/* Search has to be visible, not only ⌘K — see SearchButton. */}
+      <SearchButton />
 
       {/* Level and streak: the two numbers worth a permanent home. */}
       <div className="surface-inset px-3 py-2.5">

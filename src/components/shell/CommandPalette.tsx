@@ -1,36 +1,43 @@
 'use client'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import { CATEGORIES, search, TIER_META, type SearchHit } from '@/content'
 import { openService } from '@/lib/service-peek'
+import {
+  closeCommandPalette,
+  getCommandPaletteOpen,
+  getServerCommandPaletteOpen,
+  openCommandPalette,
+  subscribeCommandPalette,
+} from '@/lib/command-palette'
+import { IconSearch } from '@/components/ui/Icon'
 import { cn } from '@/lib/cn'
 
 /**
  * ⌘K search over services, task statements and trigger phrases. On a corpus
  * this size, getting to a service card in two keystrokes matters more than any
  * amount of navigation hierarchy.
+ *
+ * Open state lives in a module store rather than here, because a shortcut
+ * nobody is told about is a feature nobody has: `SearchButton` in the sidebar
+ * and the mobile top bar open the same palette, and they are not below this
+ * component in the tree.
  */
 export function CommandPalette() {
-  const [open, setOpen] = useState(false)
-  const [q, setQ] = useState('')
-  const [cursor, setCursor] = useState(0)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
-
-  const show = useCallback(() => {
-    setQ('')
-    setCursor(0)
-    setOpen(true)
-  }, [])
+  const open = useSyncExternalStore(
+    subscribeCommandPalette,
+    getCommandPaletteOpen,
+    getServerCommandPaletteOpen,
+  )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
-        if (open) setOpen(false)
-        else show()
+        if (open) closeCommandPalette()
+        else openCommandPalette()
       }
-      if (e.key === 'Escape') setOpen(false)
+      if (e.key === 'Escape') closeCommandPalette()
       // Bare "/" opens search, the way it does everywhere else — but never
       // while the user is typing into something.
       if (e.key === '/' && !open) {
@@ -41,20 +48,30 @@ export function CommandPalette() {
           (el as HTMLElement | null)?.isContentEditable
         if (!typing) {
           e.preventDefault()
-          show()
+          openCommandPalette()
         }
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, show])
-
-  // Focusing is a DOM side effect and belongs in an effect; resetting the query
-  // is state and belongs with the action that opens the palette, so the two are
-  // separated rather than both living here.
-  useEffect(() => {
-    if (open) requestAnimationFrame(() => inputRef.current?.focus())
   }, [open])
+
+  return open ? <PaletteDialog /> : null
+}
+
+/**
+ * The dialog is a separate component so that it mounts fresh on every open:
+ * that is what resets the query, with no effect writing state during render.
+ */
+function PaletteDialog() {
+  const [q, setQ] = useState('')
+  const [cursor, setCursor] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    requestAnimationFrame(() => inputRef.current?.focus())
+  }, [])
 
   const hits = useMemo(() => (q.length >= 2 ? search(q, undefined, 12) : []), [q])
 
@@ -64,7 +81,7 @@ export function CommandPalette() {
    * "take me there", and mid-exam the second one costs the question.
    */
   const go = (hit: SearchHit, navigate = false) => {
-    setOpen(false)
+    closeCommandPalette()
     if (hit.kind === 'service') {
       if (navigate) router.push(`/services/${hit.service.slug}`)
       else openService(hit.service.slug)
@@ -72,12 +89,10 @@ export function CommandPalette() {
     else router.push('/decoder')
   }
 
-  if (!open) return null
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm"
-      onClick={() => setOpen(false)}
+      onClick={() => closeCommandPalette()}
       role="dialog"
       aria-modal="true"
       aria-label="Search"
@@ -88,9 +103,7 @@ export function CommandPalette() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-border px-4">
-          <span className="text-fg-subtle" aria-hidden>
-            ⌕
-          </span>
+          <IconSearch className="shrink-0 text-fg-subtle" width={16} height={16} />
           <input
             ref={inputRef}
             value={q}

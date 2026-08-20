@@ -116,6 +116,13 @@ export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+export const IconSearch = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="7" cy="7" r="4.25" />
+    <path d="m10.25 10.25 3.25 3.25" />
+  </svg>
+)
+
 export const ICONS = {
   target: IconTarget,
   layers: IconLayers,
@@ -130,6 +137,7 @@ export const ICONS = {
   sliders: IconSliders,
   external: IconExternal,
   check: IconCheck,
+  search: IconSearch,
 } as const
 
 export type IconName = keyof typeof ICONS
