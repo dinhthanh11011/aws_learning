@@ -1,0 +1,227 @@
+/**
+ * Validates every piece of content against the zod schemas and, more usefully,
+ * checks that no id points at something that does not exist. A question tagged
+ * with a task statement that was renamed is a build failure here rather than a
+ * blank screen at 11pm the night before the exam.
+ *
+ * Run: npm run content:check
+ */
+import {
+  CertSchema,
+  ServiceSchema,
+  PhaseSchema,
+  TriggerSchema,
+  IdleCostSchema,
+  certs,
+  services,
+  serviceBySlug,
+  phases,
+  triggers,
+  idleCosts,
+  tasks,
+  taskById,
+  domains,
+  contentStats,
+  QuestionSchema,
+  questions,
+  examCoverage,
+  CERT_IDS,
+} from '../src/content'
+
+const problems: string[] = []
+const warnings: string[] = []
+
+const fail = (where: string, msg: string) => problems.push(`${where}: ${msg}`)
+const warn = (where: string, msg: string) => warnings.push(`${where}: ${msg}`)
+
+/* ── 1. Shape validation ─────────────────────────────────────────────────── */
+
+for (const cert of certs) {
+  const r = CertSchema.safeParse(cert)
+  if (!r.success)
+    fail(
+      `cert ${cert.id}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
+}
+for (const s of services) {
+  const r = ServiceSchema.safeParse(s)
+  if (!r.success)
+    fail(
+      `service ${s.slug}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
+}
+for (const p of phases) {
+  const r = PhaseSchema.safeParse(p)
+  if (!r.success)
+    fail(`phase ${p.id}`, r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '))
+}
+for (const t of triggers) {
+  const r = TriggerSchema.safeParse(t)
+  if (!r.success)
+    fail(
+      `trigger ${t.id}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
+}
+for (const c of idleCosts) {
+  const r = IdleCostSchema.safeParse(c)
+  if (!r.success)
+    fail(
+      `idleCost ${c.slug}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
+}
+
+for (const q of questions) {
+  const r = QuestionSchema.safeParse(q)
+  if (!r.success) fail(`question ${q.id}`, r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '))
+}
+
+/* ── 2. Uniqueness ───────────────────────────────────────────────────────── */
+
+const dupes = <T>(items: T[], key: (t: T) => string) => {
+  const seen = new Set<string>()
+  const dup = new Set<string>()
+  for (const i of items) {
+    const k = key(i)
+    if (seen.has(k)) dup.add(k)
+    seen.add(k)
+  }
+  return [...dup]
+}
+
+for (const d of dupes(services, (s) => s.slug)) fail('services', `duplicate slug "${d}"`)
+for (const d of dupes(tasks, (t) => t.id)) fail('tasks', `duplicate task id "${d}"`)
+for (const d of dupes(domains, (x) => x.id)) fail('domains', `duplicate domain id "${d}"`)
+for (const d of dupes(triggers, (t) => t.id)) fail('triggers', `duplicate trigger id "${d}"`)
+for (const d of dupes(phases, (p) => p.id)) fail('phases', `duplicate phase id "${d}"`)
+for (const d of dupes(questions, (q) => q.id)) fail('questions', `duplicate question id "${d}"`)
+
+/* ── 3. Referential integrity ────────────────────────────────────────────── */
+
+for (const task of tasks) {
+  for (const slug of task.serviceSlugs) {
+    if (!serviceBySlug.has(slug)) fail(`task ${task.id}`, `references unknown service "${slug}"`)
+  }
+}
+
+for (const s of services) {
+  for (const c of s.confusedWith) {
+    if (!serviceBySlug.has(c.slug))
+      fail(`service ${s.slug}`, `confusedWith unknown service "${c.slug}"`)
+    if (c.slug === s.slug) fail(`service ${s.slug}`, 'confusedWith points at itself')
+  }
+  for (const r of s.related) {
+    if (!serviceBySlug.has(r)) fail(`service ${s.slug}`, `related unknown service "${r}"`)
+    if (r === s.slug) fail(`service ${s.slug}`, 'related points at itself')
+  }
+}
+
+for (const t of triggers) {
+  for (const slug of t.slugs) {
+    if (!serviceBySlug.has(slug)) fail(`trigger ${t.id}`, `references unknown service "${slug}"`)
+  }
+  for (const n of t.notThis) {
+    if (!serviceBySlug.has(n.slug)) fail(`trigger ${t.id}`, `notThis unknown service "${n.slug}"`)
+  }
+  for (const d of t.domainIds) {
+    if (!domains.some((x) => x.id === d))
+      fail(`trigger ${t.id}`, `references unknown domain "${d}"`)
+  }
+}
+
+for (const p of phases) {
+  for (const id of p.taskIds) {
+    if (!taskById.has(id)) fail(`phase ${p.id}`, `references unknown task "${id}"`)
+  }
+  if (p.weekTo < p.weekFrom) fail(`phase ${p.id}`, 'weekTo is before weekFrom')
+}
+
+for (const c of idleCosts) {
+  if (!serviceBySlug.has(c.slug)) fail(`idleCost ${c.slug}`, 'references unknown service')
+}
+
+for (const q of questions) {
+  if (!taskById.has(q.taskId)) fail(`question ${q.id}`, `references unknown task "${q.taskId}"`)
+  for (const slug of q.serviceSlugs) {
+    if (!serviceBySlug.has(slug)) fail(`question ${q.id}`, `references unknown service "${slug}"`)
+  }
+  const ids = q.options.map((o) => o.id)
+  if (new Set(ids).size !== ids.length) fail(`question ${q.id}`, 'duplicate option ids')
+  // Options must be lettered contiguously from A, or the keyboard shortcuts lie.
+  const expected = ids.map((_, i) => String.fromCharCode(65 + i))
+  if (ids.join('') !== expected.join('')) {
+    fail(`question ${q.id}`, `option ids are ${ids.join('')}, expected ${expected.join('')}`)
+  }
+}
+
+/* ── 4. Exam-shape invariants ────────────────────────────────────────────── */
+
+for (const cert of certs) {
+  const total = cert.domains.reduce((n, d) => n + d.weight, 0)
+  if (total !== 100) fail(`cert ${cert.id}`, `domain weights sum to ${total}, not 100`)
+  if (cert.scoredCount > cert.questionCount) {
+    fail(`cert ${cert.id}`, 'scoredCount exceeds questionCount')
+  }
+  const indexes = cert.domains.map((d) => d.index).sort((a, b) => a - b)
+  if (indexes.some((v, i) => v !== i + 1)) fail(`cert ${cert.id}`, 'domain indexes are not 1..n')
+}
+
+/* ── 5. Coverage warnings (not failures) ─────────────────────────────────── */
+
+const referenced = new Set(tasks.flatMap((t) => t.serviceSlugs))
+for (const s of services) {
+  if (!referenced.has(s.slug)) {
+    warn('coverage', `service "${s.slug}" is not referenced by any task statement`)
+  }
+  if (s.tier === 1 && s.examTraps.length < 3) {
+    warn('depth', `core service "${s.slug}" has only ${s.examTraps.length} exam traps`)
+  }
+  if (s.tier === 1 && s.keyNumbers.length < 3) {
+    warn('depth', `core service "${s.slug}" has only ${s.keyNumbers.length} key numbers`)
+  }
+  if (!s.whenNotToUse.length) warn('depth', `service "${s.slug}" has no whenNotToUse entries`)
+}
+
+for (const certId of CERT_IDS) {
+  const cov = examCoverage(certId)
+  for (const d of cov.perDomain) {
+    if (d.have < d.need) {
+      warn('exam coverage', `${certId} ${d.title}: ${d.have} questions, needs ${d.need} to fill a full paper without repeats`)
+    }
+  }
+}
+
+/* ── Report ──────────────────────────────────────────────────────────────── */
+
+const stats = contentStats()
+console.log('\n  Content check')
+console.log('  ─────────────────────────────────────────')
+console.log(`  certs           ${certs.length}`)
+console.log(`  domains         ${stats.domains}`)
+console.log(`  task statements ${stats.tasks}`)
+console.log(
+  `  services        ${stats.services}  (core ${stats.tier1} · working ${stats.tier2} · recognise ${stats.tier3})`,
+)
+console.log(`  key numbers     ${stats.keyNumbers}`)
+console.log(`  exam traps      ${stats.examTraps}`)
+console.log(`  questions       ${questions.length}`)
+console.log(`  triggers        ${stats.triggers}`)
+console.log(`  phases          ${phases.length}`)
+console.log('  ─────────────────────────────────────────')
+
+if (warnings.length) {
+  console.log(`\n  ${warnings.length} warning(s):`)
+  for (const w of warnings) console.log(`    · ${w}`)
+}
+
+if (problems.length) {
+  console.error(`\n  ✗ ${problems.length} problem(s):`)
+  for (const p of problems) console.error(`    · ${p}`)
+  console.error('')
+  process.exit(1)
+}
+
+console.log('\n  ✓ all content valid, no dangling references\n')
