@@ -8,7 +8,7 @@ export const storageServices: Service[] = [
     name: 'Amazon S3',
     abbr: 'S3',
     category: 'storage',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner:
       'Object storage with eleven nines of durability and a storage class for every access pattern.',
@@ -107,7 +107,7 @@ export const storageServices: Service[] = [
     name: 'Amazon S3 Glacier storage classes',
     abbr: 'Glacier',
     category: 'storage',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Archive tiers: minutes to hours to retrieve, and very cheap to keep.',
     whatItIs:
@@ -160,7 +160,7 @@ export const storageServices: Service[] = [
     name: 'Amazon EBS',
     abbr: 'EBS',
     category: 'storage',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Network-attached block volumes for EC2 — the disk that survives a stop.',
     whatItIs:
@@ -214,7 +214,7 @@ export const storageServices: Service[] = [
     slug: 'instance-store',
     name: 'EC2 Instance Store',
     category: 'storage',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Physically attached NVMe/SSD — fastest, and wiped when the instance stops.',
     whatItIs:
@@ -257,7 +257,7 @@ export const storageServices: Service[] = [
     name: 'Amazon EFS',
     abbr: 'EFS',
     category: 'storage',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Elastic NFS filesystem that many Linux instances mount at once, across AZs.',
     whatItIs:
@@ -325,7 +325,7 @@ export const storageServices: Service[] = [
     name: 'Amazon FSx',
     abbr: 'FSx',
     category: 'storage',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Four managed third-party filesystems: Windows, Lustre, NetApp ONTAP, OpenZFS.',
     whatItIs:
@@ -375,7 +375,7 @@ export const storageServices: Service[] = [
     slug: 'storage-gateway',
     name: 'AWS Storage Gateway',
     category: 'storage',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner:
       'On-premises appliance that presents AWS storage as local NFS, SMB, iSCSI or a tape library.',
@@ -429,7 +429,7 @@ export const storageServices: Service[] = [
     slug: 'backup',
     name: 'AWS Backup',
     category: 'storage',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner:
       'One place to define backup plans, retention and cross-Region copies for many services.',

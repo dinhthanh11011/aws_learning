@@ -1,6 +1,23 @@
-import type { Cert, CertId, Concept, Domain, Service, Task } from './schema'
-import { saaC03 } from './certs/saa-c03'
-import { dvaC02 } from './certs/dva-c02'
+import type { CertId, Concept, Domain, Service, Task } from './schema'
+import {
+  DEFAULT_CERT_ID,
+  certById,
+  certFor,
+  certLabel,
+  certShort,
+  certs,
+  currentCertFor,
+  currentCerts,
+  familyLabel,
+  familyOf,
+  familyShort,
+  inScope,
+  resolveTaskId,
+  retirementTarget,
+  scopeFilterFor,
+  scopedFor,
+  taskAliasFor,
+} from './cert-registry'
 import {
   service,
   serviceBySlug,
@@ -36,9 +53,25 @@ export { decisionTrees, treeById }
 
 /* ── Certs, domains, tasks ───────────────────────────────────────────────── */
 
-export const certs: Cert[] = [saaC03, dvaC02]
-
-export const certById = new Map<CertId, Cert>(certs.map((c) => [c.id, c]))
+export {
+  certs,
+  certById,
+  certFor,
+  certLabel,
+  certShort,
+  currentCerts,
+  currentCertFor,
+  DEFAULT_CERT_ID,
+  familyOf,
+  familyShort,
+  familyLabel,
+  inScope,
+  scopedFor,
+  scopeFilterFor,
+  resolveTaskId,
+  retirementTarget,
+  taskAliasFor,
+}
 
 export const domains: Domain[] = certs.flatMap((c) => c.domains)
 export const domainById = new Map(domains.map((d) => [d.id, d]))
@@ -106,8 +139,8 @@ export function tasksForService(slug: string): Task[] {
 
 /* ── Triggers & phases ───────────────────────────────────────────────────── */
 
-export const triggersFor = (certId: CertId) => triggers.filter((t) => t.certs.includes(certId))
-export const phasesFor = (certId: CertId) => phases.filter((p) => p.certs.includes(certId))
+export const triggersFor = (certId: CertId) => scopedFor(triggers, certId)
+export const phasesFor = (certId: CertId) => scopedFor(phases, certId)
 /** Every step of every phase for a cert, already in the order to do them. */
 export const stepsFor = (certId: CertId) => phasesFor(certId).flatMap((p) => p.steps)
 export const stepById = new Map(phases.flatMap((p) => p.steps).map((s) => [s.id, s]))
@@ -188,7 +221,12 @@ export function search(rawQuery: string, certId?: CertId, limit = 20): SearchHit
 
 /** Questions belonging to a domain, resolved through their task statement. */
 export function questionsForDomain(domainId: string) {
-  const taskIds = new Set(domainById.get(domainId)?.tasks.map((t) => t.id) ?? [])
+  const tasksOfDomain = domainById.get(domainId)?.tasks ?? []
+  // A domain also owns the questions written against the task statements it
+  // absorbed from an earlier version of the same exam. Without this, the first
+  // renumbered version would report an empty bank while 142 perfectly good
+  // questions sat unused.
+  const taskIds = new Set(tasksOfDomain.flatMap((t) => [t.id, ...(t.supersedes ?? [])]))
   return questions.filter((q) => taskIds.has(q.taskId))
 }
 

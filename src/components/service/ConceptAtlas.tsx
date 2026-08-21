@@ -9,6 +9,7 @@ import {
   type Service,
 } from '@/content'
 import { Badge } from '@/components/ui/Badge'
+import { FamilyBadges } from '@/components/service/FamilyBadges'
 import { cn } from '@/lib/cn'
 
 /**
@@ -303,9 +304,7 @@ export function ConceptMeta({ concept: c, className }: { concept: Concept; class
       <Badge tone="info" title="A primitive the exam assumes rather than teaches.">
         Concept
       </Badge>
-      {c.certs.map((cert) => (
-        <Badge key={cert}>{cert}</Badge>
-      ))}
+      <FamilyBadges item={c} />
       <a
         href={c.docsUrl}
         target="_blank"

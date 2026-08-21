@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { CONCEPT_GROUP_META, conceptBySlug, conceptLabel, type Concept } from '@/content'
 import { openConcept } from '@/lib/peek'
 import { Badge } from '@/components/ui/Badge'
+import { FamilyBadges } from '@/components/service/FamilyBadges'
 import { cn } from '@/lib/cn'
 
 /**
@@ -99,9 +100,7 @@ export function ConceptTile({ concept: c, className }: { concept: Concept; class
       </div>
       <p className="line-clamp-2 pl-1.5 text-[12.5px] leading-snug text-fg-muted">{c.oneLiner}</p>
       <div className="flex flex-wrap items-center gap-1.5 pl-1.5">
-        {c.certs.map((cert) => (
-          <Badge key={cert}>{cert === 'SAA-C03' ? 'SAA' : 'DVA'}</Badge>
-        ))}
+        <FamilyBadges item={c} />
         {c.examTraps.length ? (
           <Badge tone="warn" title={`${c.examTraps.length} exam traps documented`}>
             ⚠ {c.examTraps.length}

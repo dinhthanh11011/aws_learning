@@ -10,7 +10,7 @@ export const decisionTrees: DecisionTree[] = [
     id: 'compute',
     title: 'Which compute?',
     question: 'You need to run code. Where should it run?',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     category: 'compute',
     rootId: 'duration',
     nodes: [
@@ -74,7 +74,7 @@ export const decisionTrees: DecisionTree[] = [
     id: 'database',
     title: 'Which database?',
     question: 'You need to store data. What should hold it?',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     category: 'database',
     rootId: 'relational',
     nodes: [
@@ -128,7 +128,7 @@ export const decisionTrees: DecisionTree[] = [
     id: 'storage',
     title: 'Which storage?',
     question: 'You need to store files. Which service?',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     category: 'storage',
     rootId: 'access',
     nodes: [
@@ -169,7 +169,7 @@ export const decisionTrees: DecisionTree[] = [
     id: 'integration',
     title: 'How should these components talk?',
     question: 'Two parts of the system need to communicate. How?',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     category: 'appint',
     rootId: 'sync',
     nodes: [
@@ -206,7 +206,7 @@ export const decisionTrees: DecisionTree[] = [
     id: 'edge',
     title: 'Which edge or global service?',
     question: 'Users are far away, or you need a fixed address. What goes in front?',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     category: 'network',
     rootId: 'protocol',
     nodes: [

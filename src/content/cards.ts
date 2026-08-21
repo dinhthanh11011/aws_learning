@@ -1,4 +1,5 @@
-import type { Card, CertId } from './schema'
+import type { Card, CertFamily, CertId } from './schema'
+import { inScope } from './cert-registry'
 import { services } from './service-registry'
 import { concepts } from './concept-registry'
 import { triggers } from './triggers'
@@ -23,8 +24,7 @@ export function buildCards(): Card[] {
   const out: Card[] = []
 
   for (const s of services) {
-    const certs = s.certs as CertId[]
-    const base = { certs, serviceSlugs: [s.slug] }
+    const base = { families: s.families, serviceSlugs: [s.slug] }
 
     // Numbers only for tier 1 and 2 — memorising a tier-3 quota is wasted effort.
     if (s.tier <= 2) {
@@ -57,7 +57,6 @@ export function buildCards(): Card[] {
         id: `vs:${s.slug}:${c.slug}`,
         kind: 'contrast',
         serviceSlugs: [s.slug, c.slug],
-        certs,
         front: `${s.name} versus ${c.slug.replace(/-/g, ' ')} — what is the dividing line?`,
         back: c.difference,
       })
@@ -96,8 +95,7 @@ export function buildCards(): Card[] {
    * one who can recite "a subnet is a range of addresses" cannot.
    */
   for (const c of concepts) {
-    const certs = c.certs as CertId[]
-    const base = { certs, serviceSlugs: c.serviceSlugs }
+    const base = { families: c.families, serviceSlugs: c.serviceSlugs }
 
     out.push({
       ...base,
@@ -154,7 +152,7 @@ export function buildCards(): Card[] {
     out.push({
       id: `trigger:${t.id}`,
       kind: 'whichService',
-      certs: t.certs as CertId[],
+      families: t.families,
       serviceSlugs: t.slugs,
       front: `A question says: ${t.phrase}\n\nWhat is it asking for?`,
       back: t.means,
@@ -169,7 +167,9 @@ export function buildCards(): Card[] {
     out.push({
       id: `cost:${c.slug}`,
       kind: 'number',
-      certs: ['SAA-C03'],
+      // Idle cost is an SAA cost-optimisation concern; the corpus has no
+      // per-family tagging for idle costs yet — see docs/BACKLOG.md.
+      families: ['saa'] as CertFamily[],
       serviceSlugs: [c.slug],
       front: `Roughly what does an idle ${c.label} cost per month?`,
       back: `~$${c.usdPerMonth}/month`,
@@ -182,4 +182,4 @@ export function buildCards(): Card[] {
 
 export const cards = buildCards()
 export const cardById = new Map(cards.map((c) => [c.id, c]))
-export const cardsFor = (certId: CertId) => cards.filter((c) => c.certs.includes(certId))
+export const cardsFor = (certId: CertId) => cards.filter((c) => inScope(c, certId))

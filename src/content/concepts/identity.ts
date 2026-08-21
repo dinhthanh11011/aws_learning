@@ -13,7 +13,7 @@ export const identityConcepts: Concept[] = [
     abbr: 'ARN',
     aka: ['ARN'],
     group: 'identity',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'The globally unique identifier for any AWS resource, in a fixed colon-separated shape.',
     whatItIs:
@@ -59,7 +59,7 @@ export const identityConcepts: Concept[] = [
     slug: 'principal',
     term: 'Principal',
     group: 'identity',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'The entity making a request: a user, a role session, a service, or another account.',
     whatItIs:
       'A principal is whoever is asking. It might be an IAM user, a role that something has assumed, an AWS service acting on your behalf such as lambda.amazonaws.com, another account, or an anonymous caller. Identity policies are attached to a principal; resource policies name one. Every authorisation decision starts by establishing which principal is asking.',
@@ -100,7 +100,7 @@ export const identityConcepts: Concept[] = [
     slug: 'identity-vs-resource-policy',
     term: 'Identity policy versus resource policy',
     group: 'identity',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'A policy attached to who is asking, versus one attached to what is being asked for.',
     whatItIs:
       'An identity-based policy hangs off a user, group or role and says what that identity may do. A resource-based policy hangs off the resource — a bucket, a queue, a KMS key, a Lambda function — and says who may act on it. Within one account, either can grant access on its own. Across accounts, you need both: the resource must allow the outside principal, and the outside principal must be allowed to call.',
@@ -144,7 +144,7 @@ export const identityConcepts: Concept[] = [
     term: 'Role assumption',
     aka: ['AssumeRole', 'temporary credentials', 'instance profile'],
     group: 'identity',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'Trading your identity for a short-lived set of credentials with a different permission set.',
     whatItIs:
@@ -192,7 +192,7 @@ export const identityConcepts: Concept[] = [
     slug: 'least-privilege',
     term: 'Least privilege',
     group: 'identity',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Granting only the permissions actually needed, and no more.',
     whatItIs:
       'Least privilege means starting from nothing and adding only what a task requires — specific actions, specific resources, and conditions that narrow when the permission applies. AWS gives you several tools for it: policy conditions, permissions boundaries, SCPs, and IAM Access Analyzer, which can generate a policy from what an identity has actually used.',

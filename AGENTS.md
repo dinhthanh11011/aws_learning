@@ -35,8 +35,9 @@ it exercises. If the answer is "none", it probably does not belong.
 
 ```bash
 npm run content:check   # zod validation + referential integrity + coverage warnings
+npm run content:fingerprint  # hash of the whole corpus — assert it around any file move
 npm run typecheck       # tsc --noEmit, strict
-npm test                # 115 vitest tests over src/engines
+npm test                # vitest over src/engines, src/content and src/db
 npx eslint src scripts  # must be 0 errors AND 0 warnings
 npm run build           # 198 prerendered pages
 ```
@@ -52,8 +53,9 @@ browser before saying a UI change works.
    statement is a build error rather than a blank screen the night before an exam.
 
 2. **SRS cards are derived, never hand-written.** `src/content/cards.ts` generates
-   ~1,391 cards from the service cards and triggers. Never add a card by hand — it
-   would drift out of step with the atlas and the learner would drill something the
+   every card from the service cards, concepts and triggers; run
+   `npm run content:check` for the live count. Never add a card by hand — it would
+   drift out of step with the atlas and the learner would drill something the
    atlas contradicts.
 
 3. **`src/content/service-registry.ts` must not be moved to `src/content/services/index.ts`.**
@@ -136,6 +138,33 @@ browser before saying a UI change works.
     curled before being committed. A 404 in a reading list costs the trust that
     makes the learner follow the next one, so check new ones the same way rather
     than writing a plausible-looking doc path from memory.
+
+16. **Content is tagged with an exam *family*, never an exam *version*.**
+    A service, concept, question, trigger or phase carries `families: ['saa']`,
+    not `certs: ['SAA-C03']`. A fact about S3 does not change when SAA-C03
+    becomes SAA-C04, so version tagging would mean re-editing all 141 services,
+    37 concepts and 274 questions for a revision that taught nothing new — the
+    worst possible ratio. `src/content/certs/*` says which family each version
+    belongs to, `cert-registry.ts` owns the single `inScope()` predicate every
+    `xFor(certId)` helper delegates to, and a version bump is one new cert file
+    plus two registry lines. Version-specific content uses a `versionScope`
+    override with a required `note`; `content:check` prints every override on
+    every run so the list cannot grow unseen, and ESLint fails a version literal
+    outside `src/content/certs/`, `cert-registry.ts`, `schema.ts` and
+    `src/db/migrate.ts`. A new version's tasks declare `supersedes` so existing
+    questions keep resolving — a question that resolves on no current paper is a
+    `content:check` failure, because it would otherwise vanish from every exam
+    silently.
+
+17. **A number the exam sets is read from the `Cert`, never typed into prose.**
+    Minutes, question count, pass score and the pass-accuracy anchor all live on
+    the cert. Both current papers happen to share 130/65/720, which is exactly
+    why hardcoding them looked harmless — and why nine places had drifted into
+    asserting them. If a component does not have the cert in hand, it does not
+    state the number. Note `passAccuracy` is deliberately *not* derived from
+    `passScore / scaleMax`: those agreeing at 0.72 is a coincidence of units, and
+    AWS does not publish the raw-to-scaled mapping.
+
 
 ## Content status
 

@@ -14,7 +14,7 @@ export const resilienceConcepts: Concept[] = [
     abbr: 'RPO',
     aka: ['RPO', 'acceptable data loss'],
     group: 'resilience',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'How much data you can afford to lose, measured backwards from the failure.',
     whatItIs:
       'RPO is the maximum age of the data you are willing to come back with. An RPO of one hour means that when the system returns, the most recent hour of writes may be gone and the business has accepted that. Because it describes data loss, RPO is set by how often you copy data somewhere safe — the interval between snapshots, or the lag of a replication stream.',
@@ -68,7 +68,7 @@ export const resilienceConcepts: Concept[] = [
     abbr: 'RTO',
     aka: ['RTO', 'acceptable downtime'],
     group: 'resilience',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'How long you can afford to be down, measured forwards from the failure.',
     whatItIs:
       'RTO is the maximum time between the failure and the service answering requests again. An RTO of 15 minutes means everything — detection, decision, failover, DNS propagation, warm-up — has to fit inside a quarter of an hour. Because it describes downtime, RTO is set by how much of the recovery environment is already running before the failure happens.',
@@ -118,7 +118,7 @@ export const resilienceConcepts: Concept[] = [
     term: 'The four disaster recovery strategies',
     aka: ['backup and restore', 'pilot light', 'warm standby', 'multi-site active-active'],
     group: 'resilience',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'Four named designs, ordered by what is already running when nothing has failed.',
     whatItIs:
       'AWS names four DR strategies and the exam expects you to map a stated RTO and RPO onto one of them. Backup and restore keeps copies and nothing else. Pilot light keeps the data replicated and the compute switched off. Warm standby keeps a scaled-down but live copy serving nothing. Multi-site active-active runs full capacity in both places, both taking traffic.',
@@ -156,7 +156,7 @@ export const resilienceConcepts: Concept[] = [
     slug: 'high-availability-vs-fault-tolerance',
     term: 'High availability versus fault tolerance',
     group: 'resilience',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'Recovering quickly from a failure, versus not being affected by one at all.',
     whatItIs:
       'A highly available design detects a failure and recovers from it fast — with a brief interruption. A fault-tolerant design absorbs the failure with no interruption at all, because the redundancy was already carrying load. Multi-AZ RDS is highly available: there is a failover, and it takes a minute or two. An Auto Scaling group behind a load balancer across three AZs is closer to fault tolerant: losing one AZ drops no requests.',
@@ -198,7 +198,7 @@ export const resilienceConcepts: Concept[] = [
     slug: 'multi-az-vs-multi-region',
     term: 'Multi-AZ versus multi-Region',
     group: 'resilience',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'How far apart the redundancy is, and therefore what failure it survives.',
     whatItIs:
       'Multi-AZ spreads a workload across Availability Zones inside one Region: cheap, low-latency, mostly a configuration flag, and it survives losing a data centre. Multi-Region duplicates the workload in another Region: expensive, latency-bound, needs explicit replication and a failover mechanism, and it survives losing the Region or meets a data-residency or global-latency requirement.',
@@ -243,7 +243,7 @@ export const resilienceConcepts: Concept[] = [
     slug: 'failover',
     term: 'Failover',
     group: 'resilience',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'Moving traffic from a failed component to a healthy one, and how long that takes.',
     whatItIs:
       'Failover is the mechanism that redirects work when something breaks: a load balancer stops sending requests to an unhealthy target, RDS promotes its standby, Route 53 answers with the secondary record, Auto Scaling replaces a terminated instance. Every failover has a detection time and a switch time, and the sum of the two is most of your RTO.',
@@ -287,7 +287,7 @@ export const resilienceConcepts: Concept[] = [
     slug: 'blast-radius',
     term: 'Blast radius',
     group: 'resilience',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'How much breaks when one thing breaks — and the boundaries you use to limit it.',
     whatItIs:
       'Blast radius is the scope of damage from a single failure, mistake or compromise. AWS gives you boundaries to contain it at several scales: the Availability Zone for physical failure, the account for permissions and quotas, the Region for regional events, the cell or shard for a noisy tenant. Choosing a boundary is choosing what a single bad event can take down.',

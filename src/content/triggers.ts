@@ -24,7 +24,7 @@ export const triggers: Trigger[] = [
         why: 'A cluster you size and tune is the opposite of least overhead — Glue or Athena is the managed answer.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d2', 'saa-d3', 'saa-d4'],
   },
   {
@@ -43,7 +43,7 @@ export const triggers: Trigger[] = [
         why: 'Ephemeral and host-bound — it does not survive a stop, let alone an AZ.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d2'],
   },
   {
@@ -58,7 +58,7 @@ export const triggers: Trigger[] = [
         why: 'RDS Multi-AZ is within one Region. A Region failure needs a cross-Region read replica or Aurora Global Database.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d2'],
   },
   {
@@ -72,7 +72,7 @@ export const triggers: Trigger[] = [
         why: 'A load balancer distributes synchronous requests; it does not buffer work or absorb a spike.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d2', 'dva-d1'],
   },
   {
@@ -87,7 +87,7 @@ export const triggers: Trigger[] = [
         why: 'A single queue delivers each message to one consumer. Two consumers on one queue split the work, they do not both get it.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d2', 'dva-d1'],
   },
   {
@@ -104,7 +104,7 @@ export const triggers: Trigger[] = [
       },
       { slug: 'sqs', why: 'Messages are deleted after processing, so there is nothing to replay.' },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d3', 'dva-d1'],
   },
   {
@@ -119,7 +119,7 @@ export const triggers: Trigger[] = [
         why: 'Correct only if you must write a consumer, need ordering, or need replay — otherwise it is more work than the question asked for.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -134,7 +134,7 @@ export const triggers: Trigger[] = [
         why: 'NAT reaches the actual internet. It is the thing this requirement is ruling out.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1', 'saa-d4'],
   },
   {
@@ -149,7 +149,7 @@ export const triggers: Trigger[] = [
         why: 'Security groups are allow-only. They physically cannot express a deny.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -164,7 +164,7 @@ export const triggers: Trigger[] = [
         why: 'Switching database engine is the largest application change there is.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d2', 'saa-d3'],
   },
   {
@@ -178,7 +178,7 @@ export const triggers: Trigger[] = [
         why: "Naming a specific cold class requires knowing the pattern. If you knew it, Intelligent-Tiering's monitoring fee would be waste.",
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d4'],
   },
   {
@@ -188,7 +188,7 @@ export const triggers: Trigger[] = [
       'S3 Object Lock in compliance mode, usually with Glacier Deep Archive for the storage class.',
     slugs: ['s3', 's3-glacier', 'backup'],
     notThis: [{ slug: 'kms', why: 'Encryption controls who can read it, not who can delete it.' }],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1', 'saa-d4'],
   },
   {
@@ -204,7 +204,7 @@ export const triggers: Trigger[] = [
         why: 'A commitment discounts steady usage; it is not the answer to "interruptible".',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d4'],
   },
   {
@@ -218,7 +218,7 @@ export const triggers: Trigger[] = [
         why: 'Interruption risk is unacceptable when the requirement is steady production capacity.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d4'],
   },
   {
@@ -232,7 +232,7 @@ export const triggers: Trigger[] = [
         why: 'A running warehouse for occasional queries is provisioned cost you were told to avoid.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -247,7 +247,7 @@ export const triggers: Trigger[] = [
         why: 'CloudFront may be the target, but the mechanism the question is testing is the alias record.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -262,7 +262,7 @@ export const triggers: Trigger[] = [
         why: 'IAM users are for AWS principals, never for your customers. Creating an IAM user per app user is always wrong.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d2'],
   },
   {
@@ -277,7 +277,7 @@ export const triggers: Trigger[] = [
         why: 'CloudFront caches HTTP; it gives you a domain name, not static IPs, and it does not carry arbitrary TCP/UDP.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -292,7 +292,7 @@ export const triggers: Trigger[] = [
         why: 'CPU utilisation is the wrong metric for a worker fleet — an idle worker waiting on a queue shows low CPU while work piles up.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d2', 'saa-d3'],
   },
   {
@@ -307,7 +307,7 @@ export const triggers: Trigger[] = [
         why: 'A VPN is more machinery than the question needs, and still leaves you managing SSH.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -326,7 +326,7 @@ export const triggers: Trigger[] = [
         why: 'Config shows what the configuration became, not who called the API.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d4'],
   },
   {
@@ -340,7 +340,7 @@ export const triggers: Trigger[] = [
         why: 'Security Hub aggregates and scores findings; it is not the enforcement mechanism.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -354,7 +354,7 @@ export const triggers: Trigger[] = [
         why: 'Adding read replicas adds read capacity. It does nothing about connection exhaustion.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d3', 'dva-d1'],
   },
   {
@@ -369,7 +369,7 @@ export const triggers: Trigger[] = [
         why: 'Multi-AZ adds no read capacity at all — the standby serves no traffic.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d3', 'dva-d4'],
   },
   {
@@ -384,7 +384,7 @@ export const triggers: Trigger[] = [
         why: 'Raising provisioned capacity makes an inefficient scan faster and more expensive — it does not fix the design.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d3', 'dva-d1'],
   },
   {
@@ -398,7 +398,7 @@ export const triggers: Trigger[] = [
         why: 'EFS is NFS and Linux-only. Any mention of Windows or SMB rules it out.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -409,7 +409,7 @@ export const triggers: Trigger[] = [
     notThis: [
       { slug: 'efs', why: 'EFS does not reach the parallel throughput HPC questions describe.' },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3'],
   },
   {
@@ -423,7 +423,7 @@ export const triggers: Trigger[] = [
         why: 'AWS Backup replaces the backup software; the question said the software stays.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d4'],
   },
   {
@@ -442,7 +442,7 @@ export const triggers: Trigger[] = [
         why: 'Right for recurring network transfer, wrong when the link is the bottleneck.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3', 'saa-d4'],
   },
   {
@@ -457,7 +457,7 @@ export const triggers: Trigger[] = [
         why: 'A snapshot-and-restore migration means downtime for the whole restore.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3', 'saa-d4'],
   },
   {
@@ -472,7 +472,7 @@ export const triggers: Trigger[] = [
         why: 'WAF cannot attach to an NLB — there is no HTTP layer there to inspect.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d2'],
   },
   {
@@ -487,7 +487,7 @@ export const triggers: Trigger[] = [
         why: 'A permissive security group cannot create a route that does not exist.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d1'],
   },
   {
@@ -502,7 +502,7 @@ export const triggers: Trigger[] = [
         why: 'Switching to a FIFO queue is a bigger change than needed and caps throughput — fix the timeout first.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d2', 'dva-d1'],
   },
   {
@@ -518,7 +518,7 @@ export const triggers: Trigger[] = [
         why: 'Right only if the workload is already a Beanstalk environment — otherwise it is the wrong layer.',
       },
     ],
-    certs: ['DVA-C02'],
+    families: ['dva'],
     domainIds: ['dva-d3'],
   },
   {
@@ -532,7 +532,7 @@ export const triggers: Trigger[] = [
         why: 'Parameter Store stores the value but has no gradual rollout, validation or rollback.',
       },
     ],
-    certs: ['DVA-C02'],
+    families: ['dva'],
     domainIds: ['dva-d3'],
   },
   {
@@ -546,7 +546,7 @@ export const triggers: Trigger[] = [
         why: 'Metadata attaches the value but cannot be filtered on. That is the entire distinction being tested.',
       },
     ],
-    certs: ['DVA-C02'],
+    families: ['dva'],
     domainIds: ['dva-d4'],
   },
   {
@@ -557,7 +557,7 @@ export const triggers: Trigger[] = [
     notThis: [
       { slug: 'systems-manager', why: 'Parameter Store SecureString encrypts but never rotates.' },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d2'],
   },
   {
@@ -572,7 +572,7 @@ export const triggers: Trigger[] = [
         why: 'Adding more IAM permissions changes nothing if the key policy excludes the principal.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d1', 'dva-d2'],
   },
   {
@@ -586,7 +586,7 @@ export const triggers: Trigger[] = [
         why: 'Correct for two or three VPCs, unmanageable beyond that — and never transitive.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3', 'saa-d4'],
   },
   {
@@ -601,7 +601,7 @@ export const triggers: Trigger[] = [
         why: 'Creating IAM users per account per person is the anti-pattern this replaces.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -615,7 +615,7 @@ export const triggers: Trigger[] = [
         why: 'Reserved concurrency guarantees and caps *how many* can run — it does not pre-warm anything.',
       },
     ],
-    certs: ['DVA-C02'],
+    families: ['dva'],
     domainIds: ['dva-d1', 'dva-d4'],
   },
   {
@@ -630,7 +630,7 @@ export const triggers: Trigger[] = [
         why: 'Migrating to a warehouse is a bigger change than the question asked for.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d3', 'saa-d4'],
   },
   {
@@ -645,7 +645,7 @@ export const triggers: Trigger[] = [
         why: 'Consolidating to one NAT gateway cuts the hourly fee but adds cross-AZ charges and a single point of failure.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d4'],
   },
   {
@@ -659,7 +659,7 @@ export const triggers: Trigger[] = [
         why: 'A bucket policy cannot express column- or row-level access — an object is a single unit.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1', 'saa-d3'],
   },
   {
@@ -677,7 +677,7 @@ export const triggers: Trigger[] = [
         why: 'Inspector scans software for vulnerabilities, not data for sensitivity.',
       },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -690,7 +690,7 @@ export const triggers: Trigger[] = [
       { slug: 'nacl', why: 'NACLs match IP, port and protocol. They cannot see a domain name.' },
       { slug: 'security-group', why: 'Same limitation, and allow-only besides.' },
     ],
-    certs: ['SAA-C03'],
+    families: ['saa'],
     domainIds: ['saa-d1'],
   },
   {
@@ -705,7 +705,7 @@ export const triggers: Trigger[] = [
         why: 'Chaining Lambda functions that call each other hides the state and hand-rolls the retries.',
       },
     ],
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     domainIds: ['saa-d2', 'dva-d1'],
   },
 ]

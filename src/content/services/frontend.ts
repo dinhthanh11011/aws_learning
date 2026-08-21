@@ -8,7 +8,7 @@ export const frontendServices: Service[] = [
     name: 'Amazon API Gateway',
     abbr: 'APIGW',
     category: 'frontend',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Managed front door for APIs — auth, throttling, caching, transformation.',
     whatItIs:
@@ -84,7 +84,7 @@ export const frontendServices: Service[] = [
     slug: 'amplify',
     name: 'AWS Amplify',
     category: 'frontend',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Full-stack hosting and backend scaffolding for web and mobile front ends.',
     whatItIs:
@@ -126,7 +126,7 @@ export const frontendServices: Service[] = [
     slug: 'device-farm',
     name: 'AWS Device Farm',
     category: 'frontend',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Test mobile and web apps on real physical devices in the cloud.',
     whatItIs:

@@ -8,7 +8,7 @@ export const databaseServices: Service[] = [
     name: 'Amazon RDS',
     abbr: 'RDS',
     category: 'database',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Managed relational databases — six engines, patched and backed up for you.',
     whatItIs:
@@ -88,7 +88,7 @@ export const databaseServices: Service[] = [
     slug: 'aurora',
     name: 'Amazon Aurora',
     category: 'database',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: "AWS's own MySQL/PostgreSQL-compatible engine on a distributed storage layer.",
     whatItIs:
@@ -155,7 +155,7 @@ export const databaseServices: Service[] = [
     slug: 'aurora-serverless',
     name: 'Amazon Aurora Serverless v2',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Aurora capacity that scales in fine steps with load, billed per ACU-second.',
     whatItIs:
@@ -200,7 +200,7 @@ export const databaseServices: Service[] = [
     name: 'Amazon DynamoDB',
     abbr: 'DDB',
     category: 'database',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner:
       'Serverless key-value and document store with single-digit-millisecond latency at any scale.',
@@ -307,7 +307,7 @@ export const databaseServices: Service[] = [
     slug: 'elasticache',
     name: 'Amazon ElastiCache',
     category: 'database',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Managed Redis (Valkey) or Memcached — microsecond reads in front of a slower store.',
     whatItIs:
@@ -367,7 +367,7 @@ export const databaseServices: Service[] = [
     slug: 'redshift',
     name: 'Amazon Redshift',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Petabyte-scale columnar data warehouse for analytical SQL.',
     whatItIs:
@@ -429,7 +429,7 @@ export const databaseServices: Service[] = [
     slug: 'rds-proxy',
     name: 'Amazon RDS Proxy',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Connection pooler in front of RDS/Aurora — the fix for Lambda connection storms.',
     whatItIs:
@@ -474,7 +474,7 @@ export const databaseServices: Service[] = [
     slug: 'documentdb',
     name: 'Amazon DocumentDB',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'MongoDB-compatible managed document database.',
     whatItIs:
@@ -504,7 +504,7 @@ export const databaseServices: Service[] = [
     slug: 'neptune',
     name: 'Amazon Neptune',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Managed graph database for highly connected data.',
     whatItIs:
@@ -532,7 +532,7 @@ export const databaseServices: Service[] = [
     slug: 'keyspaces',
     name: 'Amazon Keyspaces',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Serverless, Cassandra-compatible wide-column database.',
     whatItIs:

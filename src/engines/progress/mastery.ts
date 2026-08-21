@@ -24,6 +24,13 @@ export interface MasteryInput {
   labs: LabRecord[]
   marks: ServiceMark[]
   now?: Date
+  /**
+   * Maps a stored `taskId` onto the current exam version's task ids, so work
+   * done against a superseded task statement still counts. Defaults to
+   * identity. Supplied at the React boundary — the engine stays pure by taking
+   * the function rather than importing the cert registry.
+   */
+  taskAlias?: (taskId: string) => string
 }
 
 export interface Mastery {
@@ -130,8 +137,9 @@ export function serviceMastery(service: Service, input: MasteryInput): Mastery {
 /** Mastery of a task statement — rolls up its services plus direct attempts. */
 export function taskMastery(task: Task, services: Service[], input: MasteryInput): Mastery {
   const now = (input.now ?? new Date()).getTime()
-  const attempts = input.attempts.filter((a) => a.taskId === task.id)
-  const cards = input.cards.filter((c) => c.taskId === task.id)
+  const alias = input.taskAlias ?? ((id: string) => id)
+  const attempts = input.attempts.filter((a) => a.taskId && alias(a.taskId) === task.id)
+  const cards = input.cards.filter((c) => c.taskId && alias(c.taskId) === task.id)
   const relevant = services.filter((s) => task.serviceSlugs.includes(s.slug))
 
   const perService = relevant.map((s) => serviceMastery(s, input))
@@ -189,6 +197,16 @@ export function readiness(
   services: Service[],
   input: MasteryInput,
   certId: CertId,
+  opts: {
+    /**
+     * Does an attempt recorded against `attemptCertId` count as evidence for
+     * `certId`? Defaults to strict equality; callers pass a family comparison
+     * so that sitting SAA-C03 papers still counts once C03 retires. Without
+     * that, a retirement would silently wipe every learner's exam evidence and
+     * drop readiness back under the 70% cap overnight.
+     */
+    sameExam?: (attemptCertId: CertId) => boolean
+  } = {},
 ): {
   percent: number
   perDomain: { domainId: string; title: string; weight: number; score: number; marksAtStake: number }[]
@@ -208,10 +226,11 @@ export function readiness(
   })
   const weighted = perDomain.reduce((n, d) => n + d.score * d.weight, 0) / 100
 
-  const examAttempts = input.attempts.filter((a) => a.source === 'exam' && a.certId === certId)
+  const sameExam = opts.sameExam ?? ((id: CertId) => id === certId)
+  const examAttempts = input.attempts.filter((a) => a.source === 'exam' && sameExam(a.certId))
   const examEvidence = Math.min(1, examAttempts.length / 130) // two full papers
   // Without exam evidence the ceiling is 70%: content mastery is necessary but
-  // it is not proof you can do it in 130 minutes against four plausible options.
+  // it is not proof you can do it against the clock and four plausible options.
   const cap = 0.7 + 0.3 * examEvidence
   const capped = weighted > cap
   const percent = Math.round(Math.min(weighted, cap) * 100)

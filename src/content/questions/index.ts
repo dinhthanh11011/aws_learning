@@ -1,4 +1,5 @@
 import type { CertId, Question } from '../schema'
+import { inScope } from '../cert-registry'
 import { saaD1Questions } from './saa-d1'
 import { saaD2Questions } from './saa-d2'
 import { saaD3Questions } from './saa-d3'
@@ -15,6 +16,6 @@ export const questions: Question[] = [
 
 export const questionById = new Map(questions.map((q) => [q.id, q]))
 
-export const questionsFor = (certId: CertId) => questions.filter((q) => q.certs.includes(certId))
+export const questionsFor = (certId: CertId) => questions.filter((q) => inScope(q, certId))
 
 export const questionsForTask = (taskId: string) => questions.filter((q) => q.taskId === taskId)

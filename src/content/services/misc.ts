@@ -10,7 +10,7 @@ export const miscServices: Service[] = [
     name: 'AWS Database Migration Service',
     abbr: 'DMS',
     category: 'migration',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Migrates and continuously replicates databases with minimal downtime.',
     whatItIs:
@@ -63,7 +63,7 @@ export const miscServices: Service[] = [
     slug: 'datasync',
     name: 'AWS DataSync',
     category: 'migration',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Fast, scheduled, validated transfer of files and objects into or within AWS.',
     whatItIs:
@@ -110,7 +110,7 @@ export const miscServices: Service[] = [
     slug: 'snow-family',
     name: 'AWS Snow Family',
     category: 'migration',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Physical devices shipped to you for offline data transfer and edge compute.',
     whatItIs:
@@ -158,7 +158,7 @@ export const miscServices: Service[] = [
     slug: 'transfer-family',
     name: 'AWS Transfer Family',
     category: 'migration',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed SFTP, FTPS, FTP and AS2 endpoints backed by S3 or EFS.',
     whatItIs:
@@ -205,7 +205,7 @@ export const miscServices: Service[] = [
     name: 'AWS Application Migration Service',
     abbr: 'MGN',
     category: 'migration',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Lift-and-shift servers into EC2 by continuous block-level replication.',
     whatItIs:
@@ -240,7 +240,7 @@ export const miscServices: Service[] = [
     slug: 'cost-explorer',
     name: 'AWS Cost Explorer',
     category: 'cost',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Visualise and forecast spend, and get commitment recommendations.',
     whatItIs:
@@ -294,7 +294,7 @@ export const miscServices: Service[] = [
     slug: 'budgets',
     name: 'AWS Budgets',
     category: 'cost',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Set cost, usage, RI or Savings Plans thresholds and get alerted — or act.',
     whatItIs:
@@ -334,7 +334,7 @@ export const miscServices: Service[] = [
     name: 'AWS Cost and Usage Report',
     abbr: 'CUR',
     category: 'cost',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'The complete, line-item billing dataset delivered to S3.',
     whatItIs:
@@ -367,7 +367,7 @@ export const miscServices: Service[] = [
     slug: 'savings-plans',
     name: 'Savings Plans & Reserved Instances',
     category: 'cost',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Commit to steady usage for up to ~72% off — the main compute cost lever.',
     whatItIs:
@@ -434,7 +434,7 @@ export const miscServices: Service[] = [
     slug: 'sagemaker',
     name: 'Amazon SageMaker AI',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Build, train and deploy your own machine learning models.',
     whatItIs:
@@ -468,7 +468,7 @@ export const miscServices: Service[] = [
     slug: 'comprehend',
     name: 'Amazon Comprehend',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Natural language processing: sentiment, entities, key phrases, PII, language.',
     whatItIs:
@@ -503,7 +503,7 @@ export const miscServices: Service[] = [
     slug: 'rekognition',
     name: 'Amazon Rekognition',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Image and video analysis: objects, faces, text, moderation.',
     whatItIs:
@@ -533,7 +533,7 @@ export const miscServices: Service[] = [
     slug: 'textract',
     name: 'Amazon Textract',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Extracts text, forms and tables from scanned documents.',
     whatItIs:
@@ -566,7 +566,7 @@ export const miscServices: Service[] = [
     slug: 'transcribe',
     name: 'Amazon Transcribe',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Speech to text, batch or streaming.',
     whatItIs:
@@ -588,7 +588,7 @@ export const miscServices: Service[] = [
     slug: 'polly',
     name: 'Amazon Polly',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Text to lifelike speech, with SSML control.',
     whatItIs:
@@ -612,7 +612,7 @@ export const miscServices: Service[] = [
     slug: 'translate',
     name: 'Amazon Translate',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Neural machine translation between languages.',
     whatItIs:
@@ -637,7 +637,7 @@ export const miscServices: Service[] = [
     slug: 'lex',
     name: 'Amazon Lex',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Conversational interfaces — chatbots and voice bots.',
     whatItIs:
@@ -668,7 +668,7 @@ export const miscServices: Service[] = [
     slug: 'kendra',
     name: 'Amazon Kendra',
     category: 'ml',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Natural-language enterprise search across your document repositories.',
     whatItIs:
@@ -705,7 +705,7 @@ export const miscServices: Service[] = [
     slug: 'elastic-transcoder',
     name: 'Amazon Elastic Transcoder',
     category: 'media',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Legacy media transcoding service for converting video formats.',
     whatItIs:
@@ -730,7 +730,7 @@ export const miscServices: Service[] = [
     slug: 'kinesis-video-streams',
     name: 'Amazon Kinesis Video Streams',
     category: 'media',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Ingests, stores and indexes live video from cameras and devices.',
     whatItIs:
@@ -764,7 +764,7 @@ export const miscServices: Service[] = [
     slug: 'global-infrastructure',
     name: 'AWS Global Infrastructure',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner:
       'Regions, Availability Zones and edge locations — the geography every design rests on.',
@@ -829,7 +829,7 @@ export const miscServices: Service[] = [
     slug: 'timestream',
     name: 'Amazon Timestream',
     category: 'database',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Purpose-built time-series database for IoT and operational metrics.',
     whatItIs:

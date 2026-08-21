@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Page } from '@/components/shell/AppShell'
 import { CATEGORIES, labs } from '@/content'
 import { Badge } from '@/components/ui/Badge'
+import { FamilyBadges } from '@/components/service/FamilyBadges'
 
 export const metadata = { title: 'Labs · AWS Trainer' }
 
@@ -40,9 +41,7 @@ export default function LabsPage() {
                   ))}
                 </ul>
                 <div className="flex flex-wrap gap-1.5">
-                  {lab.certs.map((c) => (
-                    <Badge key={c}>{c}</Badge>
-                  ))}
+                  <FamilyBadges item={lab} />
                 </div>
               </Link>
             </li>

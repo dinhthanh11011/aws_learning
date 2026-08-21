@@ -45,7 +45,26 @@ export function ExamReview({ examId }: { examId: string }) {
     )
   }
 
-  const cert = certById.get(exam.certId)!
+  // A stored session records the paper actually sat, which can outlive the
+  // registry if a version is ever removed rather than retired. Scoring needs
+  // that cert's scale and weights, so say so plainly instead of crashing on a
+  // non-null assertion.
+  const cert = certById.get(exam.certId)
+  if (!cert) {
+    return (
+      <div className="surface p-6">
+        <h2 className="text-[15px] font-semibold tracking-tight">Cannot score this paper</h2>
+        <p className="mt-1 text-[14px] text-fg-muted">
+          It was sat against {exam.certId}, which this version of the app no longer knows about, so
+          its domain weighting and scale are unavailable. Your answers are still stored.
+        </p>
+        <Link href="/exam" className="mt-3 inline-block text-[13px] text-accent hover:underline">
+          Back to the simulator
+        </Link>
+      </div>
+    )
+  }
+
   const result = score(cert, rows.map((r) => r.q), exam.answers)
   const wrongCount = rows.filter((r) => !r.correct).length
 
@@ -61,7 +80,7 @@ export function ExamReview({ examId }: { examId: string }) {
     <div className="flex flex-col gap-4">
       <div className="surface flex flex-wrap items-center gap-3 p-4">
         <Badge tone={exam.passed ? 'ok' : 'bad'}>
-          {exam.scaled} · {exam.passed ? 'Pass' : 'Below 720'}
+          {exam.scaled} · {exam.passed ? 'Pass' : `Below ${cert.passScore}`}
         </Badge>
         <span className="text-[13px] text-fg-subtle">
           {result.rawCorrect}/{result.rawTotal} correct · {new Date(exam.startedAt).toLocaleString()}

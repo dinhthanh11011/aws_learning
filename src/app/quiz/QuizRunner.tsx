@@ -28,7 +28,7 @@ export function QuizRunner() {
   const profile = useProfile()
   const cert = certById.get(profile.targetCert)!
   const domains = domainsFor(profile.targetCert)
-  const masteryInput = useMasteryInput()
+  const masteryInput = useMasteryInput(profile.targetCert)
   const certServices = useMemo(() => servicesFor(profile.targetCert), [profile.targetCert])
 
   const [queue, setQueue] = useState<Question[] | null>(null)

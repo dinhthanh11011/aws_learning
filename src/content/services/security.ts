@@ -8,7 +8,7 @@ export const securityServices: Service[] = [
     name: 'AWS IAM',
     abbr: 'IAM',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Who may perform which action on which resource, under which conditions.',
     whatItIs:
@@ -86,7 +86,7 @@ export const securityServices: Service[] = [
     name: 'AWS STS',
     abbr: 'STS',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Mints short-lived credentials — the mechanism behind every role assumption.',
     whatItIs:
@@ -140,7 +140,7 @@ export const securityServices: Service[] = [
     slug: 'iam-identity-center',
     name: 'AWS IAM Identity Center',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Workforce single sign-on across every account in the organisation.',
     whatItIs:
@@ -193,7 +193,7 @@ export const securityServices: Service[] = [
     slug: 'organizations',
     name: 'AWS Organizations',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Multi-account structure with consolidated billing and service control policies.',
     whatItIs:
@@ -245,7 +245,7 @@ export const securityServices: Service[] = [
     slug: 'control-tower',
     name: 'AWS Control Tower',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Prescriptive, automated multi-account landing zone with guardrails.',
     whatItIs:
@@ -301,7 +301,7 @@ export const securityServices: Service[] = [
     name: 'AWS Resource Access Manager',
     abbr: 'RAM',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Share specific resources across accounts without duplicating them.',
     whatItIs:
@@ -344,7 +344,7 @@ export const securityServices: Service[] = [
     slug: 'directory-service',
     name: 'AWS Directory Service',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed Active Directory, or a connector to the one you already run.',
     whatItIs:
@@ -390,7 +390,7 @@ export const securityServices: Service[] = [
     slug: 'cognito',
     name: 'Amazon Cognito',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: "Sign-up, sign-in and AWS credentials for your application's end users.",
     whatItIs:
@@ -452,7 +452,7 @@ export const securityServices: Service[] = [
     name: 'AWS KMS',
     abbr: 'KMS',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Managed encryption keys, integrated into almost every AWS service.',
     whatItIs:
@@ -530,7 +530,7 @@ export const securityServices: Service[] = [
     slug: 'cloudhsm',
     name: 'AWS CloudHSM',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Dedicated single-tenant hardware security modules that only you can access.',
     whatItIs:
@@ -576,7 +576,7 @@ export const securityServices: Service[] = [
     name: 'AWS Certificate Manager',
     abbr: 'ACM',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Free public TLS certificates that renew themselves, for AWS-integrated services.',
     whatItIs:
@@ -626,7 +626,7 @@ export const securityServices: Service[] = [
     slug: 'secrets-manager',
     name: 'AWS Secrets Manager',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner:
       'Stores secrets, encrypts them with KMS, and rotates database credentials automatically.',
@@ -675,7 +675,7 @@ export const securityServices: Service[] = [
     slug: 'waf',
     name: 'AWS WAF',
     category: 'security',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Layer 7 web application firewall — SQL injection, XSS, bad bots, rate limits.',
     whatItIs:
@@ -738,7 +738,7 @@ export const securityServices: Service[] = [
     slug: 'shield',
     name: 'AWS Shield',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner:
       'DDoS protection — Standard is free and automatic, Advanced adds response teams and cost protection.',
@@ -791,7 +791,7 @@ export const securityServices: Service[] = [
     slug: 'guardduty',
     name: 'Amazon GuardDuty',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Continuous threat detection from logs — no agents, one click to enable.',
     whatItIs:
@@ -845,7 +845,7 @@ export const securityServices: Service[] = [
     slug: 'inspector',
     name: 'Amazon Inspector',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Automated vulnerability scanning for EC2, container images and Lambda.',
     whatItIs:
@@ -884,7 +884,7 @@ export const securityServices: Service[] = [
     slug: 'macie',
     name: 'Amazon Macie',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Finds and classifies sensitive data — PII, credentials, financial data — in S3.',
     whatItIs:
@@ -918,7 +918,7 @@ export const securityServices: Service[] = [
     slug: 'detective',
     name: 'Amazon Detective',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: "Builds a behaviour graph so you can investigate a finding's root cause.",
     whatItIs:
@@ -949,7 +949,7 @@ export const securityServices: Service[] = [
     slug: 'security-hub',
     name: 'AWS Security Hub',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner:
       'One dashboard aggregating findings from every security service, with compliance scores.',
@@ -993,7 +993,7 @@ export const securityServices: Service[] = [
     slug: 'network-firewall',
     name: 'AWS Network Firewall',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed stateful network firewall and IPS for an entire VPC.',
     whatItIs:
@@ -1045,7 +1045,7 @@ export const securityServices: Service[] = [
     slug: 'firewall-manager',
     name: 'AWS Firewall Manager',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner:
       'Central policy manager for WAF, Shield Advanced, Network Firewall and security groups.',
@@ -1076,7 +1076,7 @@ export const securityServices: Service[] = [
     slug: 'audit-manager',
     name: 'AWS Audit Manager',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Continuously collects evidence and assembles audit-ready reports.',
     whatItIs:
@@ -1111,7 +1111,7 @@ export const securityServices: Service[] = [
     slug: 'artifact',
     name: 'AWS Artifact',
     category: 'security',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: "Self-service portal for AWS's own compliance reports and agreements.",
     whatItIs:

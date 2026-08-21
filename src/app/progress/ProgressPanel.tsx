@@ -7,6 +7,7 @@ import {
   CATEGORIES,
   certById,
   domainsFor,
+  familyOf,
   serviceBySlug,
   serviceLabel,
   servicesFor,
@@ -26,7 +27,7 @@ import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 export function ProgressPanel() {
   const profile = useProfile()
-  const masteryInput = useMasteryInput()
+  const masteryInput = useMasteryInput(profile.targetCert)
   const cert = certById.get(profile.targetCert)!
   const domains = domainsFor(profile.targetCert)
   const certServices = useMemo(() => servicesFor(profile.targetCert), [profile.targetCert])
@@ -42,7 +43,11 @@ export function ProgressPanel() {
   const unlocked = useLiveQuery(() => db.achievements.toArray(), [], [])
 
   const ready = masteryInput
-    ? readiness(domains, certServices, masteryInput, profile.targetCert)
+    ? readiness(domains, certServices, masteryInput, profile.targetCert, {
+            // A paper sat for an earlier version of the same exam is still
+            // evidence you can work under time pressure.
+            sameExam: (id) => familyOf(id) === familyOf(profile.targetCert),
+          })
     : null
 
   const serviceRings = useMemo(() => {

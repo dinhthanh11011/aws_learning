@@ -16,6 +16,19 @@ export interface SampleOptions {
   weakDomains?: Record<string, number>
   /** Deterministic ordering for tests. */
   rng?: () => number
+  /**
+   * Overrides the in-scope test. The default is a family match, which is right
+   * for every question in the corpus today; pass this to honour a
+   * `versionScope` override, which only the cert registry can evaluate. The
+   * engine stays pure by taking the predicate rather than importing it.
+   */
+  inScope?: (q: Question) => boolean
+  /**
+   * Maps a question's `taskId` onto this cert's task ids, so a question written
+   * for an earlier version of the same exam still lands in the right domain.
+   * Defaults to identity.
+   */
+  alias?: (taskId: string) => string
 }
 
 /** Number of questions per domain, matching the published weighting. */
@@ -61,6 +74,8 @@ export function sample(opts: SampleOptions): SampleResult {
   const { cert, pool, exclude } = opts
   const count = opts.count ?? cert.questionCount
   const rng = opts.rng ?? Math.random
+  const inScope = opts.inScope ?? ((q: Question) => q.families.includes(cert.family))
+  const alias = opts.alias ?? ((taskId: string) => taskId)
   const alloc = allocate(cert, count)
   const shortfall: SampleResult['shortfall'] = []
   const picked: Question[] = []
@@ -73,7 +88,7 @@ export function sample(opts: SampleOptions): SampleResult {
     if (!want) continue
 
     let candidates = pool.filter(
-      (q) => domainOf.get(q.taskId) === domain.id && q.certs.includes(cert.id),
+      (q) => domainOf.get(alias(q.taskId)) === domain.id && inScope(q),
     )
     const unseen = candidates.filter((q) => !exclude?.has(q.id))
     // Prefer unseen questions, but fall back rather than short-change a domain.

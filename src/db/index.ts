@@ -1,5 +1,7 @@
 import Dexie, { type Table } from 'dexie'
-import type { CertId } from '@/content/schema'
+import type { CertFamily, CertId } from '@/content/schema'
+import { DEFAULT_CERT_ID } from '@/content/cert-registry'
+import { normaliseSrsRow } from './migrate'
 
 /**
  * Everything you do lives in this browser, in IndexedDB. No account, no server,
@@ -34,7 +36,13 @@ export interface Profile {
 export interface SrsCard {
   /** Content card id, or `q:<questionId>` for a card generated from a wrong answer. */
   cardId: string
-  certs: CertId[]
+  /**
+   * Families, not exam versions: the row outlives the paper it was generated
+   * for, so tagging it with a version would strand it the day that version
+   * retires. Whether a card is in scope for a *specific* version is decided by
+   * `cardsFor()` in the content layer, which can see `versionScope`.
+   */
+  families: CertFamily[]
   serviceSlugs: string[]
   taskId?: string
   /** Serialised ts-fsrs card state. */
@@ -176,6 +184,21 @@ class AwsDb extends Dexie {
     this.version(2).stores({
       steps: 'stepId, at',
     })
+    // v3 retags SRS cards from exam versions to exam families, so a version
+    // bump no longer strands a learner's review history. The index changes with
+    // it, hence a version rather than a plain upgrade.
+    this.version(3)
+      .stores({
+        srsCards: 'cardId, due, *serviceSlugs, *families, taskId',
+      })
+      .upgrade((tx) =>
+        tx
+          .table('srsCards')
+          .toCollection()
+          .modify((row) => {
+            normaliseSrsRow(row as Record<string, unknown>)
+          }),
+      )
   }
 }
 
@@ -199,7 +222,7 @@ export function daysBetween(a: string, b: string): number {
 export const DEFAULT_PROFILE: Profile = {
   id: 'me',
   createdAt: 0,
-  targetCert: 'SAA-C03',
+  targetCert: DEFAULT_CERT_ID,
   examDate: null,
   weeklyHours: 6,
   xp: 0,

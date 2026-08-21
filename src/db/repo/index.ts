@@ -1,6 +1,8 @@
 import { db, DEFAULT_PROFILE, today, type Attempt, type DailyStat, type LabRecord, type LessonRecord, type MistakeNote, type Profile, type ServiceMark, type SrsCard, type StepRecord } from '..'
 import { levelFromXp, touchStreak, XP } from '@/engines/gamify/rules'
 import type { CertId } from '@/content/schema'
+import { retirementTarget } from '@/content/cert-registry'
+import { normaliseSrsRow } from '../migrate'
 
 /**
  * All database access goes through here. Components never see Dexie, which
@@ -12,10 +14,21 @@ import type { CertId } from '@/content/schema'
 
 export async function getProfile(): Promise<Profile> {
   const existing = await db.profile.get('me')
-  if (existing) return existing
-  const fresh = { ...DEFAULT_PROFILE, createdAt: Date.now() }
-  await db.profile.put(fresh)
-  return fresh
+  if (!existing) {
+    const fresh = { ...DEFAULT_PROFILE, createdAt: Date.now() }
+    await db.profile.put(fresh)
+    return fresh
+  }
+  // Move a learner off a retired exam version, here rather than in a Dexie
+  // upgrade: retirement is a content edit, and shipping a schema version for
+  // each one would be a migration per year for a one-field change. Progress
+  // carries across because mastery is keyed on services and tasks, not on the
+  // paper's id.
+  const target = retirementTarget(existing.targetCert)
+  if (target === existing.targetCert) return existing
+  const moved = { ...existing, targetCert: target }
+  await db.profile.put(moved)
+  return moved
 }
 
 export async function updateProfile(patch: Partial<Profile>): Promise<Profile> {
@@ -322,7 +335,15 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
         db.steps.clear(),
       ])
       if (b.profile) await db.profile.put(b.profile)
-      if (b.srsCards?.length) await db.srsCards.bulkPut(b.srsCards)
+      // Backups taken before cards were tagged by family carry `certs`
+      // instead. Normalising on the way in matters: without it, restoring an
+      // old export would write pre-refactor rows into an upgraded table and
+      // the drill queue would quietly come back empty.
+      if (b.srsCards?.length) {
+        await db.srsCards.bulkPut(
+          b.srsCards.map((c) => normaliseSrsRow({ ...c } as unknown as Record<string, unknown>) as unknown as SrsCard),
+        )
+      }
       if (b.attempts?.length) await db.attempts.bulkPut(b.attempts.map((a) => omitId(a) as Attempt))
       if (b.lessons?.length) await db.lessons.bulkPut(b.lessons)
       if (b.exams?.length) await db.exams.bulkPut(b.exams as never[])

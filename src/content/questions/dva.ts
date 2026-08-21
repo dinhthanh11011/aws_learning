@@ -9,7 +9,7 @@ export const dvaQuestions: Question[] = [
   /* ── Domain 1: Development with AWS Services (32%) ────────────────────── */
   {
     id: 'dva-d1-001',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -27,7 +27,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-002',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -45,7 +45,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-003',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -63,7 +63,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-004',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 3,
@@ -81,7 +81,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-005',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -99,7 +99,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-006',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -117,7 +117,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-007',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -135,7 +135,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-008',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -153,7 +153,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-009',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -171,7 +171,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-010',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -189,7 +189,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-011',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -207,7 +207,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-012',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 3,
@@ -226,7 +226,7 @@ export const dvaQuestions: Question[] = [
 
   {
     id: 'dva-d1-013',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 3,
@@ -244,7 +244,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-014',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 3,
@@ -262,7 +262,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-015',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -280,7 +280,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-016',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -298,7 +298,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-017',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 3,
@@ -316,7 +316,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-018',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -334,7 +334,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-019',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -352,7 +352,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-020',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -370,7 +370,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-021',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -388,7 +388,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-022',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 3,
@@ -406,7 +406,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-023',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 3,
@@ -424,7 +424,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-024',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -442,7 +442,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-025',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 3,
@@ -460,7 +460,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-026',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -478,7 +478,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-027',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -496,7 +496,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-028',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.2',
     type: 'single',
     difficulty: 2,
@@ -514,7 +514,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-029',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 3,
@@ -532,7 +532,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-030',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 3,
@@ -550,7 +550,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-031',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -568,7 +568,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-032',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -586,7 +586,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-033',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -604,7 +604,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-034',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -622,7 +622,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-035',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -640,7 +640,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-036',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -658,7 +658,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-037',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 3,
@@ -676,7 +676,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-038',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 3,
@@ -694,7 +694,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-039',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -712,7 +712,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-040',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -730,7 +730,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-041',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.1',
     type: 'single',
     difficulty: 2,
@@ -748,7 +748,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d1-042',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-1.3',
     type: 'single',
     difficulty: 2,
@@ -767,7 +767,7 @@ export const dvaQuestions: Question[] = [
   /* ── Domain 2: Security (26%) ─────────────────────────────────────────── */
   {
     id: 'dva-d2-001',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -785,7 +785,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-002',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -803,7 +803,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-003',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 2,
@@ -821,7 +821,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-004',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -839,7 +839,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-005',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -857,7 +857,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-006',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -876,7 +876,7 @@ export const dvaQuestions: Question[] = [
 
   {
     id: 'dva-d2-007',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -894,7 +894,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-008',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -912,7 +912,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-009',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'multi',
     difficulty: 3,
@@ -931,7 +931,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-010',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -949,7 +949,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-011',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 3,
@@ -967,7 +967,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-012',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -985,7 +985,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-013',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 2,
@@ -1003,7 +1003,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-014',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 1,
@@ -1021,7 +1021,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-015',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -1039,7 +1039,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-016',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 3,
@@ -1057,7 +1057,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-017',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1075,7 +1075,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-018',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -1093,7 +1093,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-019',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1111,7 +1111,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-020',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1129,7 +1129,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-021',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1147,7 +1147,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-022',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1165,7 +1165,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-023',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -1183,7 +1183,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-024',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 3,
@@ -1201,7 +1201,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-025',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.1',
     type: 'single',
     difficulty: 2,
@@ -1219,7 +1219,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-026',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 3,
@@ -1237,7 +1237,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-027',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 3,
@@ -1255,7 +1255,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-028',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -1273,7 +1273,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-029',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -1291,7 +1291,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-030',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.2',
     type: 'single',
     difficulty: 2,
@@ -1309,7 +1309,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-031',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 3,
@@ -1327,7 +1327,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-032',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 3,
@@ -1345,7 +1345,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-033',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 2,
@@ -1363,7 +1363,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d2-034',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-2.3',
     type: 'single',
     difficulty: 3,
@@ -1382,7 +1382,7 @@ export const dvaQuestions: Question[] = [
   /* ── Domain 3: Deployment (24%) ───────────────────────────────────────── */
   {
     id: 'dva-d3-001',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 2,
@@ -1400,7 +1400,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-002',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 2,
@@ -1418,7 +1418,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-003',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.2',
     type: 'single',
     difficulty: 1,
@@ -1436,7 +1436,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-004',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1454,7 +1454,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-005',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1472,7 +1472,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-006',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 2,
@@ -1491,7 +1491,7 @@ export const dvaQuestions: Question[] = [
 
   {
     id: 'dva-d3-007',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.3',
     type: 'single',
     difficulty: 2,
@@ -1509,7 +1509,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-008',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1527,7 +1527,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-009',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1545,7 +1545,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-010',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1563,7 +1563,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-011',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'multi',
     difficulty: 2,
@@ -1582,7 +1582,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-012',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.2',
     type: 'single',
     difficulty: 1,
@@ -1600,7 +1600,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-013',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1618,7 +1618,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-014',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1636,7 +1636,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-015',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.3',
     type: 'single',
     difficulty: 2,
@@ -1654,7 +1654,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-016',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1672,7 +1672,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-017',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1690,7 +1690,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-018',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 3,
@@ -1708,7 +1708,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-019',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.2',
     type: 'single',
     difficulty: 2,
@@ -1726,7 +1726,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-020',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1744,7 +1744,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-021',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.2',
     type: 'single',
     difficulty: 2,
@@ -1762,7 +1762,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-022',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1780,7 +1780,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-023',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.3',
     type: 'single',
     difficulty: 2,
@@ -1798,7 +1798,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-024',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.3',
     type: 'single',
     difficulty: 2,
@@ -1816,7 +1816,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-025',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 2,
@@ -1834,7 +1834,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-026',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1852,7 +1852,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-027',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1870,7 +1870,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-028',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1888,7 +1888,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-029',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1906,7 +1906,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-030',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.4',
     type: 'single',
     difficulty: 3,
@@ -1924,7 +1924,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-031',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.1',
     type: 'single',
     difficulty: 2,
@@ -1942,7 +1942,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d3-032',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-3.3',
     type: 'single',
     difficulty: 2,
@@ -1961,7 +1961,7 @@ export const dvaQuestions: Question[] = [
   /* ── Domain 4: Troubleshooting & Optimization (18%) ───────────────────── */
   {
     id: 'dva-d4-001',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 2,
@@ -1979,7 +1979,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-002',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -1997,7 +1997,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-003',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2015,7 +2015,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-004',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2033,7 +2033,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-005',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2051,7 +2051,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-006',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2069,7 +2069,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-007',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2087,7 +2087,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-008',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 2,
@@ -2105,7 +2105,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-009',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 2,
@@ -2123,7 +2123,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-010',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2141,7 +2141,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-011',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2159,7 +2159,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-012',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 3,
@@ -2177,7 +2177,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-013',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 2,
@@ -2195,7 +2195,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-014',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2213,7 +2213,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-015',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 3,
@@ -2231,7 +2231,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-016',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2249,7 +2249,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-017',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 2,
@@ -2267,7 +2267,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-018',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 3,
@@ -2285,7 +2285,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-019',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.2',
     type: 'single',
     difficulty: 2,
@@ -2303,7 +2303,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-020',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.1',
     type: 'single',
     difficulty: 3,
@@ -2321,7 +2321,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-021',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2339,7 +2339,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-022',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 3,
@@ -2357,7 +2357,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-023',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,
@@ -2375,7 +2375,7 @@ export const dvaQuestions: Question[] = [
   },
   {
     id: 'dva-d4-024',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     taskId: 'dva-4.3',
     type: 'single',
     difficulty: 2,

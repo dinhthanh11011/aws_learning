@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { certById, examCoverage, questionById, questionsFor } from '@/content'
+import { certById, examCoverage, questionById, questionsFor, taskAliasFor } from '@/content'
 import { sample } from '@/engines/exam/sampler'
 import { isCorrect, marksAtStake, score } from '@/engines/exam/score'
 import { XP } from '@/engines/gamify/rules'
@@ -18,7 +18,8 @@ import { cn } from '@/lib/cn'
 type Stage = 'idle' | 'running' | 'submitted'
 
 /**
- * The full 65-question, 130-minute simulator. It writes its state to IndexedDB
+ * The full timed simulator, sized from the cert's own questionCount and
+ * minutes. It writes its state to IndexedDB
  * on every answer so a reload — or a closed laptop — resumes exactly where you
  * were, which is the difference between a usable simulator and a toy.
  */
@@ -132,6 +133,12 @@ export function ExamRunner() {
       pool: questionsFor(certId),
       count: cert.questionCount,
       exclude,
+      // `questionsFor` has already applied scope, so the pool needs no further
+      // filtering — but the alias must be supplied, or a question written
+      // against a superseded task statement lands in no domain and silently
+      // drops out of the paper.
+      inScope: () => true,
+      alias: taskAliasFor(certId),
     })
     submitted.current = false
     const fresh: ExamSession = {
@@ -229,7 +236,9 @@ export function ExamRunner() {
             <ul className="flex flex-col divide-y divide-border">
               {history.map((e) => (
                 <li key={e.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
-                  <Badge tone={e.passed ? 'ok' : 'bad'}>{e.passed ? 'Pass' : 'Below 720'}</Badge>
+                  <Badge tone={e.passed ? 'ok' : 'bad'}>
+                    {e.passed ? 'Pass' : `Below ${cert.passScore}`}
+                  </Badge>
                   <span className="nums text-[14px] font-semibold">{e.scaled}</span>
                   <span className="text-[12px] text-fg-subtle">
                     {new Date(e.startedAt).toLocaleDateString()} · {e.questionIds.length} questions

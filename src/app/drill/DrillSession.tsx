@@ -40,19 +40,23 @@ export function DrillSession() {
     if (seeded) return
     const defs = cardsFor(profile.targetCert)
     void ensureCards(
-      defs.map((d) => newCard(d.id, d.certs, d.serviceSlugs, d.taskId)),
+      defs.map((d) => newCard(d.id, d.families, d.serviceSlugs, d.taskId)),
     ).then(() => setSeeded(true))
   }, [seeded, profile.targetCert])
 
-  const summary = useMemo(
-    () => buildQueue(stored ?? [], { certId: profile.targetCert }),
-    [stored, profile.targetCert],
+  // Scope is decided by the content layer, not by the stored row: only
+  // `cardsFor` can see a `versionScope` override.
+  const allow = useMemo(
+    () => new Set(cardsFor(profile.targetCert).map((c) => c.id)),
+    [profile.targetCert],
   )
+
+  const summary = useMemo(() => buildQueue(stored ?? [], { allow }), [stored, allow])
 
   const upcoming = useMemo(() => forecast(stored ?? [], 14), [stored])
 
   const start = () => {
-    const q = buildQueue(stored ?? [], { certId: profile.targetCert })
+    const q = buildQueue(stored ?? [], { allow })
     setQueue(q.cards)
     setI(0)
     setFlipped(false)

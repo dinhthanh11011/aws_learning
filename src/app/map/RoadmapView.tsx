@@ -46,7 +46,7 @@ const COLLAPSED = 'none'
  */
 export function RoadmapView() {
   const profile = useProfile()
-  const masteryInput = useMasteryInput()
+  const masteryInput = useMasteryInput(profile.targetCert)
   const doneSteps = useDoneSteps()
   const reduce = useReducedMotion()
   const phases = useMemo(() => phasesFor(profile.targetCert), [profile.targetCert])

@@ -10,6 +10,9 @@ import type { Cert } from '../schema'
  */
 export const dvaC02: Cert = {
   id: 'DVA-C02',
+  family: 'dva',
+  versionCode: 'C02',
+  status: 'current',
   title: 'AWS Certified Developer – Associate',
   shortTitle: 'Developer',
   role: 'You write, ship, secure and debug the code that runs on AWS.',
@@ -17,6 +20,7 @@ export const dvaC02: Cert = {
   questionCount: 65,
   scoredCount: 50,
   passScore: 720,
+  passAccuracy: 0.72,
   scaleMin: 100,
   scaleMax: 1000,
   guideUrl:

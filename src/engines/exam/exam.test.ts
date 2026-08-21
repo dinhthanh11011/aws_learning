@@ -16,7 +16,7 @@ function pool(perTask = 12): Question[] {
       for (let i = 0; i < perTask; i++) {
         out.push({
           id: `${t.id}-q${i}`,
-          certs: ['SAA-C03'],
+          families: ['saa'],
           taskId: t.id,
           type: 'single',
           stem: `Question ${i} for ${t.id}`,

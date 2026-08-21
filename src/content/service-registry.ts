@@ -1,5 +1,6 @@
 import type { CategoryId, CertId, Service, Tier } from './schema'
 import { CATEGORY_IDS } from './schema'
+import { inScope } from './cert-registry'
 import { computeServices } from './services/compute'
 import { containerServices } from './services/containers'
 import { serverlessServices } from './services/serverless'
@@ -50,7 +51,7 @@ export function serviceLabel(s: Service): string {
 }
 
 export function servicesFor(certId: CertId): Service[] {
-  return services.filter((s) => s.certs.includes(certId))
+  return services.filter((s) => inScope(s, certId))
 }
 
 export function servicesByCategory(certId?: CertId): Map<CategoryId, Service[]> {

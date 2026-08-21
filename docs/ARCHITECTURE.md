@@ -40,13 +40,14 @@ export is the only backup that exists.
 | File | Holds |
 |---|---|
 | `schema.ts` | zod schemas + types + `CATEGORIES`, `TIER_META`, `CARD_KIND_META` |
-| `certs/saa-c03.ts`, `certs/dva-c02.ts` | Domain and task-statement trees. **Titles and every Knowledge/Skills bullet are verbatim from the official AWS exam guides.** `blurb` and `serviceSlugs` are ours |
+| `certs/*.ts` | One file per exam **version**: its envelope (minutes, counts, pass mark) and its domain and task-statement trees. **Titles and every Knowledge/Skills bullet are verbatim from the official AWS exam guides.** `blurb` and `serviceSlugs` are ours. A new version is a new file here — see invariant 16 |
+| `cert-registry.ts` | The version list, family resolution, `DEFAULT_CERT_ID`, and the single `inScope()` predicate every `xFor(certId)` helper delegates to. Same naming rule as `service-registry.ts` |
 | `services/*.ts` | 141 service cards by category |
 | `service-registry.ts` | Aggregates the service files. Must **not** live at `services/index.ts` — see invariant 3 |
 | `concepts/*.ts` | 37 primitives by group — the things the exam assumes and no service card defines |
 | `concept-registry.ts` | Aggregates the concept files. Same naming rule as `service-registry.ts` |
 | `questions/*.ts` | Exam-format questions; every option has a `why` |
-| `cards.ts` | **Derives** ~1,709 SRS cards from services + concepts + triggers + idle costs |
+| `cards.ts` | **Derives** every SRS card from services + concepts + triggers + idle costs; `content:check` prints the count |
 | `triggers.ts` | 47 keyword→answer mappings, each with its distractor |
 | `decision-trees.ts` | 5 which-service-should-I-use trees |
 | `big-picture.ts` | The 5-layer system view, 25 nodes, 7 traceable flows |
@@ -140,7 +141,8 @@ Warnings do not fail the build; problems do.
 
 ## Engines — `src/engines/`
 
-Pure TypeScript, no React, no I/O. The only tested layer (104 tests). Every
+Pure TypeScript, no React, no I/O. The most heavily tested layer — run
+`npm test` for the count. Every
 engine that needs the clock takes it as a parameter so tests are deterministic.
 
 ### `policy/` — IAM evaluation

@@ -1,7 +1,14 @@
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import { CATEGORIES, decisionTrees, serviceBySlug, serviceLabel, type DecisionTree } from '@/content'
+import {
+  CATEGORIES,
+  decisionTrees,
+  scopedFor,
+  serviceBySlug,
+  serviceLabel,
+  type DecisionTree,
+} from '@/content'
 import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -10,7 +17,7 @@ import { serviceLinkProps } from '@/components/service/ServiceRef'
 
 export function DecisionTreeView() {
   const profile = useProfile()
-  const trees = decisionTrees.filter((t) => t.certs.includes(profile.targetCert))
+  const trees = scopedFor(decisionTrees, profile.targetCert)
   const [activeId, setActiveId] = useState(trees[0]?.id ?? '')
   const tree = trees.find((t) => t.id === activeId) ?? trees[0]
 

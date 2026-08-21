@@ -8,7 +8,7 @@ export const serverlessServices: Service[] = [
     name: 'AWS Lambda',
     abbr: 'λ',
     category: 'serverless',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Run a function in response to an event; pay only while it runs.',
     whatItIs:
@@ -97,7 +97,7 @@ export const serverlessServices: Service[] = [
     slug: 'fargate',
     name: 'AWS Fargate',
     category: 'serverless',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Serverless capacity for containers — no instances to patch or scale.',
     whatItIs:
@@ -144,7 +144,7 @@ export const serverlessServices: Service[] = [
     slug: 'appsync',
     name: 'AWS AppSync',
     category: 'serverless',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Managed GraphQL API with real-time subscriptions.',
     whatItIs:

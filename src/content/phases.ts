@@ -49,7 +49,7 @@ export const phases: Phase[] = [
     weekFrom: 1,
     weekTo: 2,
     hours: 12,
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     exitCriteria: [
       'You can subnet a /16 into /24s and say how many usable addresses each has, without a calculator',
       'You can trace a DNS query from browser to origin and name what each step returns',
@@ -264,7 +264,7 @@ export const phases: Phase[] = [
     weekFrom: 3,
     weekTo: 12,
     hours: 60,
-    certs: ['SAA-C03'],
+    families: ['saa'],
     exitCriteria: [
       'You can reproduce every decision rule (which database, which storage, which compute) from memory',
       'You have built IAM, VPC, EC2, S3, RDS and an ALB at least once each',
@@ -752,7 +752,7 @@ export const phases: Phase[] = [
     weekFrom: 13,
     weekTo: 16,
     hours: 28,
-    certs: ['SAA-C03'],
+    families: ['saa'],
     exitCriteria: [
       "You have built and torn down every lab, and passed each one's break-it challenge",
       'You can predict the exact failure symptom from a missing route, a missing permission, or a too-short visibility timeout',
@@ -899,7 +899,7 @@ export const phases: Phase[] = [
     weekFrom: 17,
     weekTo: 21,
     hours: 30,
-    certs: ['SAA-C03'],
+    families: ['saa'],
     exitCriteria: [
       'You score 80%+ on a full exam you have never seen before',
       'Your mistake log shows no service appearing three or more times',
@@ -918,7 +918,7 @@ export const phases: Phase[] = [
         serviceSlugs: [],
         reading: [
           {
-            label: 'SAA-C03 exam guide and format',
+            label: 'SAA exam guide and format',
             url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/',
             minutes: 15,
           },
@@ -1046,7 +1046,7 @@ export const phases: Phase[] = [
     weekFrom: 22,
     weekTo: 29,
     hours: 48,
-    certs: ['DVA-C02'],
+    families: ['dva'],
     exitCriteria: [
       'You can design DynamoDB keys and indexes for a stated access pattern, and say why a scan would be wrong',
       'You can name every Lambda configuration knob and what it changes',
@@ -1080,7 +1080,7 @@ export const phases: Phase[] = [
         serviceSlugs: ['lambda', 'api-gateway', 'dynamodb', 'cognito', 'sam'],
         reading: [
           {
-            label: 'DVA-C02 exam guide and format',
+            label: 'DVA exam guide and format',
             url: 'https://aws.amazon.com/certification/certified-developer-associate/',
             minutes: 20,
           },

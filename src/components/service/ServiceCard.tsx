@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { CATEGORIES, serviceLabel, TIER_META, type Service } from '@/content'
 import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
+import { FamilyBadges } from '@/components/service/FamilyBadges'
 import { cn } from '@/lib/cn'
 import { serviceLinkProps } from '@/components/service/ServiceRef'
 
@@ -47,9 +48,7 @@ export function ServiceTile({
         <Badge tone={service.tier === 1 ? 'accent' : service.tier === 2 ? 'info' : 'neutral'}>
           {TIER_META[service.tier].label}
         </Badge>
-        {service.certs.map((c) => (
-          <Badge key={c}>{c === 'SAA-C03' ? 'SAA' : 'DVA'}</Badge>
-        ))}
+        <FamilyBadges item={service} />
         {service.examTraps.length ? (
           <Badge tone="warn" title={`${service.examTraps.length} exam traps documented`}>
             ⚠ {service.examTraps.length}

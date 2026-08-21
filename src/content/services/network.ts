@@ -8,7 +8,7 @@ export const networkServices: Service[] = [
     name: 'Amazon VPC',
     abbr: 'VPC',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Your own private network inside a Region — subnets, routes, gateways.',
     whatItIs:
@@ -77,7 +77,7 @@ export const networkServices: Service[] = [
     name: 'Security Groups',
     abbr: 'SG',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Stateful, allow-only firewall attached to an elastic network interface.',
     whatItIs:
@@ -129,7 +129,7 @@ export const networkServices: Service[] = [
     name: 'Network ACLs',
     abbr: 'NACL',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Stateless, ordered allow/deny rules at the subnet boundary.',
     whatItIs:
@@ -182,7 +182,7 @@ export const networkServices: Service[] = [
     name: 'NAT Gateway',
     abbr: 'NATGW',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner:
       'Lets private subnets reach the internet outbound, while staying unreachable inbound.',
@@ -233,7 +233,7 @@ export const networkServices: Service[] = [
     slug: 'privatelink',
     name: 'AWS PrivateLink & VPC Endpoints',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Reach AWS or partner services privately, without an internet gateway or NAT.',
     whatItIs:
@@ -290,7 +290,7 @@ export const networkServices: Service[] = [
     slug: 'vpc-peering',
     name: 'VPC Peering',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Private one-to-one routing between two VPCs, any account, any Region.',
     whatItIs:
@@ -339,7 +339,7 @@ export const networkServices: Service[] = [
     name: 'AWS Transit Gateway',
     abbr: 'TGW',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'A regional routing hub connecting many VPCs, VPNs and Direct Connect links.',
     whatItIs:
@@ -390,7 +390,7 @@ export const networkServices: Service[] = [
     name: 'AWS Direct Connect',
     abbr: 'DX',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'A private physical circuit from your data centre into AWS.',
     whatItIs:
@@ -450,7 +450,7 @@ export const networkServices: Service[] = [
     slug: 'site-to-site-vpn',
     name: 'AWS Site-to-Site VPN',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Encrypted IPsec tunnels from your network to AWS, over the internet.',
     whatItIs:
@@ -498,7 +498,7 @@ export const networkServices: Service[] = [
     slug: 'client-vpn',
     name: 'AWS Client VPN',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Managed OpenVPN endpoint for individual users to reach your VPC.',
     whatItIs:
@@ -537,7 +537,7 @@ export const networkServices: Service[] = [
     name: 'Elastic Load Balancing',
     abbr: 'ELB',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Four load balancers; picking the right one is a guaranteed exam question.',
     whatItIs:
@@ -611,7 +611,7 @@ export const networkServices: Service[] = [
     name: 'Amazon CloudFront',
     abbr: 'CF',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Global CDN — caches at hundreds of edge locations close to your users.',
     whatItIs:
@@ -686,7 +686,7 @@ export const networkServices: Service[] = [
     name: 'AWS Global Accelerator',
     abbr: 'AGA',
     category: 'network',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Two static anycast IPs that route users over the AWS backbone to the best Region.',
     whatItIs:
@@ -737,7 +737,7 @@ export const networkServices: Service[] = [
     name: 'Amazon Route 53',
     abbr: 'R53',
     category: 'network',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'DNS with health checks and seven routing policies — the global traffic director.',
     whatItIs:

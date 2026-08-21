@@ -4,7 +4,7 @@ import type { SrsCard } from '@/db'
 
 const NOW = new Date('2026-08-20T09:00:00Z')
 const card = (id: string, over: Partial<SrsCard> = {}): SrsCard => ({
-  ...newCard(id, ['SAA-C03'], ['s3'], undefined, NOW),
+  ...newCard(id, ['saa'], ['s3'], undefined, NOW),
   ...over,
 })
 
@@ -105,13 +105,21 @@ describe('buildQueue', () => {
     expect(firstNewAt).toBeLessThan(q.cards.length - 1)
   })
 
-  it('filters by certification', () => {
+  // The queue takes an allow-set of card ids rather than a cert, because only
+  // the content layer can see a `versionScope` override — see QueueOptions.
+  it('restricts the queue to the allowed card ids', () => {
     const cards: SrsCard[] = [
-      { ...card('saa'), certs: ['SAA-C03'] },
-      { ...card('dva'), certs: ['DVA-C02'] },
+      { ...card('saa'), families: ['saa'] },
+      { ...card('dva'), families: ['dva'] },
     ]
-    const q = buildQueue(cards, { certId: 'DVA-C02', now: NOW })
+    const q = buildQueue(cards, { allow: new Set(['dva']), now: NOW })
     expect(q.cards.map((c) => c.cardId)).toEqual(['dva'])
+  })
+
+  it('keeps every card when no allow-set is given', () => {
+    const cards: SrsCard[] = [{ ...card('saa') }, { ...card('dva') }]
+    const q = buildQueue(cards, { now: NOW })
+    expect(q.cards.map((c) => c.cardId).sort()).toEqual(['dva', 'saa'])
   })
 
   it('counts cards due later today separately from those due now', () => {

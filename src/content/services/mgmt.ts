@@ -8,7 +8,7 @@ export const mgmtServices: Service[] = [
     name: 'Amazon CloudWatch',
     abbr: 'CW',
     category: 'mgmt',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Metrics, logs, alarms and dashboards for everything running in AWS.',
     whatItIs:
@@ -86,7 +86,7 @@ export const mgmtServices: Service[] = [
     slug: 'cloudtrail',
     name: 'AWS CloudTrail',
     category: 'mgmt',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Audit log of every API call — who did what, when, from where.',
     whatItIs:
@@ -144,7 +144,7 @@ export const mgmtServices: Service[] = [
     slug: 'config',
     name: 'AWS Config',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Records resource configuration over time and evaluates it against rules.',
     whatItIs:
@@ -192,7 +192,7 @@ export const mgmtServices: Service[] = [
     name: 'AWS CloudFormation',
     abbr: 'CFN',
     category: 'mgmt',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Declarative infrastructure as code — templates in, stacks out.',
     whatItIs:
@@ -269,7 +269,7 @@ export const mgmtServices: Service[] = [
     name: 'AWS Cloud Development Kit',
     abbr: 'CDK',
     category: 'mgmt',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner:
       'Define infrastructure in TypeScript, Python, Java, C# or Go — it compiles to CloudFormation.',
@@ -321,7 +321,7 @@ export const mgmtServices: Service[] = [
     name: 'AWS Systems Manager',
     abbr: 'SSM',
     category: 'mgmt',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Operate your fleet: patching, shell access without SSH, and Parameter Store.',
     whatItIs:
@@ -385,7 +385,7 @@ export const mgmtServices: Service[] = [
     slug: 'appconfig',
     name: 'AWS AppConfig',
     category: 'mgmt',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner:
       'Deploy configuration changes and feature flags safely, with validation and rollback.',
@@ -433,7 +433,7 @@ export const mgmtServices: Service[] = [
     slug: 'compute-optimizer',
     name: 'AWS Compute Optimizer',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Machine-learning right-sizing recommendations from your actual utilisation.',
     whatItIs:
@@ -475,7 +475,7 @@ export const mgmtServices: Service[] = [
     slug: 'trusted-advisor',
     name: 'AWS Trusted Advisor',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner:
       'Automated best-practice checks across cost, performance, security, resilience and quotas.',
@@ -524,7 +524,7 @@ export const mgmtServices: Service[] = [
     slug: 'well-architected-tool',
     name: 'AWS Well-Architected Tool',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Guided review of a workload against the six Well-Architected pillars.',
     whatItIs:
@@ -556,7 +556,7 @@ export const mgmtServices: Service[] = [
     slug: 'service-catalog',
     name: 'AWS Service Catalog',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Curated, pre-approved infrastructure products users can self-service deploy.',
     whatItIs:
@@ -601,7 +601,7 @@ export const mgmtServices: Service[] = [
     slug: 'health-dashboard',
     name: 'AWS Health Dashboard',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Personalised alerts about AWS events affecting your specific resources.',
     whatItIs:
@@ -634,7 +634,7 @@ export const mgmtServices: Service[] = [
     slug: 'license-manager',
     name: 'AWS License Manager',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Track and enforce software licence usage, including BYOL on dedicated hosts.',
     whatItIs:
@@ -665,7 +665,7 @@ export const mgmtServices: Service[] = [
     slug: 'managed-grafana',
     name: 'Amazon Managed Grafana',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Managed Grafana for operational dashboards across many data sources.',
     whatItIs:
@@ -698,7 +698,7 @@ export const mgmtServices: Service[] = [
     slug: 'managed-prometheus',
     name: 'Amazon Managed Service for Prometheus',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Managed Prometheus-compatible metric store for container workloads.',
     whatItIs:
@@ -724,7 +724,7 @@ export const mgmtServices: Service[] = [
     slug: 'cli',
     name: 'AWS CLI',
     category: 'mgmt',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Command-line access to every AWS API, with profiles and named credentials.',
     whatItIs:
@@ -777,7 +777,7 @@ export const mgmtServices: Service[] = [
     slug: 'console',
     name: 'AWS Management Console',
     category: 'mgmt',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'The browser interface — and the thing you should stop using for repeatable work.',
     whatItIs:

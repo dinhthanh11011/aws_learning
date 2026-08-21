@@ -16,7 +16,7 @@ export const networkingConcepts: Concept[] = [
     term: 'Region',
     aka: ['AWS Region'],
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'A named geographic area containing several isolated Availability Zones.',
     whatItIs:
       'A Region is a separate physical area of the world — eu-west-1 in Ireland, ap-southeast-1 in Singapore — made up of multiple Availability Zones. Regions are isolated from one another by design: nothing replicates between them unless you configure it to. Most services are Regional, meaning a resource you create exists in one Region and is invisible from the others.',
@@ -66,7 +66,7 @@ export const networkingConcepts: Concept[] = [
     abbr: 'AZ',
     aka: ['AZ'],
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'One or more discrete data centres inside a Region, with independent power and cooling.',
     whatItIs:
@@ -118,7 +118,7 @@ export const networkingConcepts: Concept[] = [
     term: 'Edge location',
     aka: ['Point of presence', 'PoP'],
     group: 'networking',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'A small site close to users that caches content and terminates connections.',
     whatItIs:
       'Edge locations are a much larger and more widely spread set of sites than Regions. They run CloudFront caches, Route 53 DNS, Global Accelerator entry points, AWS WAF and Shield. You never deploy your own workload to one; you put a managed service in front of your workload and the edge fronts it.',
@@ -157,7 +157,7 @@ export const networkingConcepts: Concept[] = [
     abbr: 'CIDR',
     aka: ['CIDR notation', 'prefix length', 'netmask'],
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'A range of IP addresses written as an address and a prefix length, such as 10.0.0.0/16.',
     whatItIs:
@@ -205,7 +205,7 @@ export const networkingConcepts: Concept[] = [
     slug: 'subnet',
     term: 'Subnet',
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'A slice of a VPC CIDR block that lives in exactly one Availability Zone.',
     whatItIs:
       'A subnet is a sub-range of the VPC address space, bound to a single AZ, into which you place resources. A VPC with 10.0.0.0/16 might hold 10.0.1.0/24 in one AZ and 10.0.2.0/24 in another. Every network interface you create sits in a subnet, and that subnet decides both which AZ the resource is in and which route table governs its traffic.',
@@ -251,7 +251,7 @@ export const networkingConcepts: Concept[] = [
     slug: 'route-table',
     term: 'Route table',
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'The set of destination-to-target rules that decides where a subnet sends traffic.',
     whatItIs:
       'A route table is a list of entries, each pairing a destination CIDR with a target: an internet gateway, a NAT gateway, a peering connection, a Transit Gateway, a gateway endpoint, a network interface. Every subnet is associated with exactly one route table; a table can serve many subnets, and the VPC has a main table that any unassociated subnet inherits.',
@@ -293,7 +293,7 @@ export const networkingConcepts: Concept[] = [
     term: 'Internet gateway',
     abbr: 'IGW',
     group: 'networking',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'The VPC attachment that allows two-way traffic between public IPs and the internet.',
     whatItIs:
       'An internet gateway is a horizontally scaled, redundant VPC component with no bandwidth constraint and no charge of its own. It does two things: it provides a target for internet-bound routes, and it performs the one-to-one address translation between an instance private IP and its public or Elastic IP. One internet gateway attaches to one VPC.',
@@ -329,7 +329,7 @@ export const networkingConcepts: Concept[] = [
     abbr: 'NAT',
     aka: ['NAT gateway', 'NAT instance'],
     group: 'networking',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner:
       'Lets privately addressed resources reach the internet outbound without being reachable inbound.',
     whatItIs:
@@ -372,7 +372,7 @@ export const networkingConcepts: Concept[] = [
     slug: 'private-vs-public-ip',
     term: 'Private, public and Elastic IP',
     group: 'networking',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'Three kinds of address with different lifetimes and different reachability.',
     whatItIs:
       'A private IPv4 address comes from the subnet CIDR, is assigned for the life of the network interface and is only routable inside the VPC and anything connected to it. A public IPv4 address is drawn from an AWS pool, assigned at launch if the subnet says so, and released when the instance stops — so it changes. An Elastic IP is a public address you allocate to your account and keep until you release it.',
@@ -412,7 +412,7 @@ export const networkingConcepts: Concept[] = [
     slug: 'stateful-filtering',
     term: 'Stateful versus stateless filtering',
     group: 'networking',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'Whether a firewall remembers the connection it already allowed, or judges every packet alone.',
     whatItIs:

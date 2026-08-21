@@ -31,13 +31,14 @@ export interface ScoreResult {
 }
 
 /**
- * Maps accuracy to the 100–1000 scale with a hinge at the pass mark, so 72%
- * lands on 720 rather than somewhere arbitrary. Historically a raw score around
- * 70–75% corresponds to a pass, which is what this anchors on.
+ * Maps raw accuracy onto the cert's scaled range with a hinge at the pass mark,
+ * so the cert's `passAccuracy` lands exactly on its `passScore` rather than
+ * somewhere arbitrary. The anchor is per-cert data rather than a constant here,
+ * because a new exam version can move its pass mark.
  */
 export function toScaled(accuracy: number, cert: Cert): number {
   const { passScore, scaleMin, scaleMax } = cert
-  const hinge = 0.72
+  const hinge = cert.passAccuracy
   const clamped = Math.max(0, Math.min(1, accuracy))
   const scaled =
     clamped <= hinge

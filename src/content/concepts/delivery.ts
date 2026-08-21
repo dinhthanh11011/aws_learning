@@ -11,7 +11,7 @@ export const deliveryConcepts: Concept[] = [
     slug: 'cold-start',
     term: 'Cold start',
     group: 'delivery',
-    certs: ['DVA-C02', 'SAA-C03'],
+    families: ['saa', 'dva'],
     oneLiner: 'The extra latency of the first invocation on a new execution environment.',
     whatItIs:
       'When Lambda has no warm environment available it creates one: download the code, start the runtime, run the initialisation code outside your handler, then invoke. That setup is the cold start, and only the first request pays it. Subsequent requests reuse the environment until it is reclaimed. Larger deployment packages, VPC attachment with new network interfaces, and heavy initialisation all lengthen it.',
@@ -63,7 +63,7 @@ export const deliveryConcepts: Concept[] = [
     term: 'Sticky sessions and session state',
     aka: ['session affinity', 'stateless application'],
     group: 'delivery',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Pinning a user to one backend, and why the exam almost always wants the opposite.',
     whatItIs:
       "Sticky sessions make a load balancer send a given client back to the same target, usually with a cookie, so that state held in that target's memory stays available. It works, and it costs you: uneven load, lost sessions when a target is replaced, and a scale-in event that logs people out. The alternative is to keep no state in the instance and put it in a shared store instead — ElastiCache, DynamoDB, or a signed token held by the client.",
@@ -110,7 +110,7 @@ export const deliveryConcepts: Concept[] = [
     slug: 'cache-ttl-and-invalidation',
     term: 'TTL and cache invalidation',
     group: 'delivery',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'How long a cached copy is considered fresh, and how you get rid of it sooner.',
     whatItIs:
       'A cache serves a stored copy instead of recomputing or refetching. Time to live is how long that copy is treated as fresh; once it expires the cache revalidates or fetches again. Invalidation is forcing the copy out before its TTL. The same idea appears at every layer — CloudFront objects, DNS records, ElastiCache entries, browser caches — and each layer has its own TTL that adds to the total staleness a user can see.',
@@ -162,7 +162,7 @@ export const deliveryConcepts: Concept[] = [
     term: 'Deployment strategies',
     aka: ['blue/green', 'canary', 'rolling', 'linear', 'all-at-once'],
     group: 'delivery',
-    certs: ['DVA-C02', 'SAA-C03'],
+    families: ['saa', 'dva'],
     oneLiner: 'Named patterns for releasing a change, ordered by how much risk each one takes.',
     whatItIs:
       'All-at-once replaces everything and accepts downtime. Rolling replaces instances in batches, so old and new versions run together. Blue/green stands up a complete second environment and shifts traffic to it, keeping the old one ready for an instant rollback. Canary sends a small percentage to the new version first, then the rest. Linear shifts in equal increments on a timer.',

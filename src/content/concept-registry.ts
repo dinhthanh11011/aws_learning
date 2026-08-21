@@ -1,5 +1,6 @@
 import type { CertId, Concept, ConceptGroup } from './schema'
 import { CONCEPT_GROUPS } from './schema'
+import { inScope } from './cert-registry'
 import { networkingConcepts } from './concepts/networking'
 import { resilienceConcepts } from './concepts/resilience'
 import { dataConcepts } from './concepts/data'
@@ -40,7 +41,7 @@ export function conceptLabel(c: Concept): string {
 }
 
 export function conceptsFor(certId: CertId): Concept[] {
-  return concepts.filter((c) => c.certs.includes(certId))
+  return concepts.filter((c) => inScope(c, certId))
 }
 
 export function conceptsByGroup(certId?: CertId): Map<ConceptGroup, Concept[]> {

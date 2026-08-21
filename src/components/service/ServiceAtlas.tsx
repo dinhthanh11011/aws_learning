@@ -14,6 +14,7 @@ import {
   type Service,
 } from '@/content'
 import { Badge } from '@/components/ui/Badge'
+import { FamilyBadges } from '@/components/service/FamilyBadges'
 import { ServiceTile } from '@/components/service/ServiceCard'
 import { cn } from '@/lib/cn'
 
@@ -429,9 +430,7 @@ export function ServiceMeta({ service: s, className }: { service: Service; class
       >
         {TIER_META[s.tier].label}
       </Badge>
-      {s.certs.map((c) => (
-        <Badge key={c}>{c}</Badge>
-      ))}
+      <FamilyBadges item={s} />
       <a
         href={s.docsUrl}
         target="_blank"

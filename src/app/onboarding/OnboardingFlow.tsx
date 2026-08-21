@@ -1,7 +1,7 @@
 'use client'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { certById, CERT_IDS, contentStats } from '@/content'
+import { contentStats, currentCerts } from '@/content'
 import { generate } from '@/engines/plan/generate'
 import { updateProfile } from '@/db/repo'
 import { useProfile } from '@/hooks/useProfile'
@@ -57,8 +57,8 @@ export function OnboardingFlow() {
           understand why anything is in a private subnet.
         </p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-          {CERT_IDS.map((id) => {
-            const c = certById.get(id)!
+          {currentCerts.map((c) => {
+            const id = c.id
             const stats = contentStats(id)
             const active = cert === id
             return (
@@ -75,7 +75,7 @@ export function OnboardingFlow() {
               >
                 <span className="flex items-center gap-2">
                   <span className="text-[14px] font-semibold">{c.id}</span>
-                  {id === 'SAA-C03' ? <Badge tone="accent">Start here</Badge> : null}
+                  {c.recommendedFirst ? <Badge tone="accent">Start here</Badge> : null}
                 </span>
                 <span className="mt-0.5 block text-[12.5px] text-fg-muted">{c.shortTitle}</span>
                 <span className="mt-2 block text-[12px] leading-snug text-fg-subtle">{c.role}</span>

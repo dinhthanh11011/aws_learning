@@ -7,7 +7,7 @@ export const devToolServices: Service[] = [
     slug: 'xray',
     name: 'AWS X-Ray',
     category: 'devtools',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Distributed tracing — follow one request across every service it touches.',
     whatItIs:
@@ -68,7 +68,7 @@ export const devToolServices: Service[] = [
     name: 'AWS SAM',
     abbr: 'SAM',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 1,
     oneLiner: 'Serverless shorthand for CloudFormation, plus a CLI that runs Lambda locally.',
     whatItIs:
@@ -127,7 +127,7 @@ export const devToolServices: Service[] = [
     slug: 'codepipeline',
     name: 'AWS CodePipeline',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner: 'Orchestrates the CI/CD pipeline: source → build → test → deploy.',
     whatItIs:
@@ -179,7 +179,7 @@ export const devToolServices: Service[] = [
     slug: 'codebuild',
     name: 'AWS CodeBuild',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner: 'Managed build service driven by a buildspec.yml file.',
     whatItIs:
@@ -227,7 +227,7 @@ export const devToolServices: Service[] = [
     slug: 'codedeploy',
     name: 'AWS CodeDeploy',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner: 'Releases application versions to EC2, Lambda or ECS with a chosen strategy.',
     whatItIs:
@@ -276,7 +276,7 @@ export const devToolServices: Service[] = [
     slug: 'codeartifact',
     name: 'AWS CodeArtifact',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 3,
     oneLiner: 'Private package repository for npm, PyPI, Maven, NuGet and more.',
     whatItIs:
@@ -304,7 +304,7 @@ export const devToolServices: Service[] = [
     slug: 'cloudshell',
     name: 'AWS CloudShell',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 3,
     oneLiner: 'Browser shell with the CLI installed and your credentials already loaded.',
     whatItIs:
@@ -336,7 +336,7 @@ export const devToolServices: Service[] = [
     slug: 'sdk',
     name: 'AWS SDKs',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 1,
     oneLiner:
       'Language libraries for calling AWS APIs, with retries and credential resolution built in.',
@@ -387,7 +387,7 @@ export const devToolServices: Service[] = [
     slug: 'q-developer',
     name: 'Amazon Q Developer',
     category: 'devtools',
-    certs: ['DVA-C02'],
+    families: ['dva'],
     tier: 2,
     oneLiner: 'AI coding assistant for generating, reviewing, testing and modernising code.',
     whatItIs:

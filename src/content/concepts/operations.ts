@@ -10,7 +10,7 @@ export const operationsConcepts: Concept[] = [
     slug: 'shared-responsibility',
     term: 'Shared responsibility model',
     group: 'operations',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'AWS secures the cloud; you secure what you put in it — and the line moves by service.',
     whatItIs:
@@ -57,7 +57,7 @@ export const operationsConcepts: Concept[] = [
     slug: 'well-architected-pillars',
     term: 'The Well-Architected pillars',
     group: 'operations',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner:
       'The six dimensions AWS judges a design on, and the tie-breaker between two working answers.',
     whatItIs:
@@ -102,7 +102,7 @@ export const operationsConcepts: Concept[] = [
     term: 'Service quotas',
     aka: ['service limits', 'soft limit', 'hard limit'],
     group: 'operations',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Per-account, per-Region ceilings — some you can raise, some you cannot.',
     whatItIs:
       'Almost every AWS service caps what one account can create or consume in one Region. Adjustable quotas can be raised on request through Service Quotas or a support case. Hard limits cannot be raised at all, and a design that needs more has to change shape. Quotas are also a containment mechanism: they stop one runaway workload consuming everything.',
@@ -151,7 +151,7 @@ export const operationsConcepts: Concept[] = [
     term: 'Scaling up versus scaling out',
     aka: ['vertical scaling', 'horizontal scaling'],
     group: 'operations',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'A bigger instance, versus more instances — and why the exam nearly always wants more.',
     whatItIs:
@@ -203,7 +203,7 @@ export const operationsConcepts: Concept[] = [
     slug: 'tagging',
     term: 'Tagging',
     group: 'operations',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'Key-value labels on resources — the basis of cost allocation and of attribute-based access.',
     whatItIs:

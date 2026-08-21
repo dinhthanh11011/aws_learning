@@ -11,7 +11,7 @@ export const dataConcepts: Concept[] = [
     slug: 'eventual-vs-strong-consistency',
     term: 'Eventual versus strong consistency',
     group: 'data',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Whether a read is guaranteed to see the write that just succeeded.',
     whatItIs:
       'A strongly consistent read always reflects every write that completed before it. An eventually consistent read may return a slightly stale copy, because the write has not yet reached the replica that answered you — it will, usually within milliseconds. Eventual consistency is the default in distributed stores because it is cheaper and faster: the read can be served by whichever replica is nearest rather than the one that owns the write.',
@@ -64,7 +64,7 @@ export const dataConcepts: Concept[] = [
     slug: 'durability-vs-availability',
     term: 'Durability versus availability',
     group: 'data',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'Whether your data still exists, versus whether you can reach it right now.',
     whatItIs:
       'Durability is the probability that stored data survives — that it is not lost. Availability is the probability that you can read or write it at a given moment. They are quoted as separate figures because they fail separately: an S3 storage class can keep every byte safe while being briefly unreachable, and a single very available disk can lose everything at once.',
@@ -113,7 +113,7 @@ export const dataConcepts: Concept[] = [
     slug: 'idempotency',
     term: 'Idempotency',
     group: 'data',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Doing the same operation twice has the same effect as doing it once.',
     whatItIs:
       'An idempotent operation can be safely retried. Setting a value to 42 is idempotent; adding 42 to it is not. This matters because almost every AWS messaging and eventing service guarantees at-least-once delivery, which means duplicates are not an error condition to be prevented but a normal event your handler has to absorb. The usual implementation is a deduplication key: record the message or request id, and skip work you have already done.',
@@ -164,7 +164,7 @@ export const dataConcepts: Concept[] = [
     term: 'Partition key and hot partitions',
     aka: ['hash key', 'shard key', 'hot key'],
     group: 'data',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner:
       'The attribute that decides which physical partition a row lands on — and how evenly.',
     whatItIs:
@@ -207,7 +207,7 @@ export const dataConcepts: Concept[] = [
     slug: 'encryption-at-rest-vs-in-transit',
     term: 'Encryption at rest versus in transit',
     group: 'data',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     oneLiner: 'Protecting stored bytes, versus protecting bytes moving over a network.',
     whatItIs:
       'Encryption at rest protects data on disk, so that a stolen volume or an exposed bucket yields ciphertext. On AWS it is almost always envelope encryption with KMS: a data key encrypts the data, and KMS encrypts the data key. Encryption in transit protects data on the wire, which in practice means TLS. They are independent — you can have either, both, or neither — and compliance requirements usually name both.',
@@ -255,7 +255,7 @@ export const dataConcepts: Concept[] = [
     slug: 'backup-vs-replication',
     term: 'Backup versus replication',
     group: 'data',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     oneLiner: 'A copy you can go back to, versus a copy that keeps up with the original.',
     whatItIs:
       'A backup is a point-in-time copy kept separately, restored deliberately, and retained on a schedule. Replication continuously mirrors changes to another copy so it stays current. They protect against different things: replication protects against losing the original, and backup protects against destroying the contents — because replication faithfully copies the deletion too.',

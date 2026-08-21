@@ -30,7 +30,12 @@ import {
   QuestionSchema,
   questions,
   examCoverage,
+  CERT_FAMILY_IDS,
   CERT_IDS,
+  currentCerts,
+  type Scoped,
+  resolveTaskId,
+  inScope,
 } from '../src/content'
 
 const problems: string[] = []
@@ -284,6 +289,134 @@ for (const cert of certs) {
   if (indexes.some((v, i) => v !== i + 1)) fail(`cert ${cert.id}`, 'domain indexes are not 1..n')
 }
 
+/* ── 4b. Cert identity, lifecycle and scope ──────────────────────────────── */
+
+/*
+ * Every id in the CERT_IDS tuple must have a definition in the registry.
+ * Several components do `certById.get(profile.targetCert)!`, and this is what
+ * makes that assertion sound rather than optimistic: the type says the value is
+ * one of CERT_IDS, so as long as CERT_IDS and the registry agree, the lookup
+ * cannot miss.
+ */
+for (const id of CERT_IDS) {
+  if (!certs.some((c) => c.id === id)) {
+    fail('certs', `CERT_IDS lists "${id}" but no cert file defines it`)
+  }
+}
+for (const cert of certs) {
+  if (!(CERT_IDS as readonly string[]).includes(cert.id)) {
+    fail(`cert ${cert.id}`, 'is defined but missing from the CERT_IDS tuple')
+  }
+}
+
+for (const cert of certs) {
+  const expectedId = `${cert.family.toUpperCase()}-${cert.versionCode}`
+  if (cert.id !== expectedId) {
+    fail(`cert ${cert.id}`, `family and versionCode imply id "${expectedId}"`)
+  }
+  if (cert.supersededBy) {
+    const next = certs.find((c) => c.id === cert.supersededBy)
+    if (!next) fail(`cert ${cert.id}`, `supersededBy names unknown cert "${cert.supersededBy}"`)
+    else if (next.family !== cert.family) {
+      fail(`cert ${cert.id}`, `supersededBy points at ${next.id}, a different exam family`)
+    } else if (next.id === cert.id) fail(`cert ${cert.id}`, 'supersededBy points at itself')
+    if (cert.status !== 'retired') {
+      warn(`cert ${cert.id}`, 'has supersededBy but is not marked retired')
+    }
+  }
+  if (cert.status === 'retired' && !cert.supersededBy) {
+    // Otherwise a learner on this version has nowhere to be moved to.
+    fail(`cert ${cert.id}`, 'is retired but names no supersededBy')
+  }
+}
+
+// A retirement chain must terminate, or getProfile() would loop forever.
+for (const cert of certs) {
+  const seen = new Set<string>([cert.id])
+  let at = cert.supersededBy
+  while (at) {
+    if (seen.has(at)) {
+      fail(`cert ${cert.id}`, `supersededBy chain cycles back to "${at}"`)
+      break
+    }
+    seen.add(at)
+    at = certs.find((c) => c.id === at)?.supersededBy
+  }
+}
+
+for (const family of CERT_FAMILY_IDS) {
+  const live = currentCerts.filter((c) => c.family === family)
+  if (live.length > 1) {
+    fail(`family ${family}`, `has ${live.length} current versions: ${live.map((c) => c.id).join(', ')}`)
+  }
+  if (!live.length) warn(`family ${family}`, 'has no current exam version')
+}
+
+const firsts = certs.filter((c) => c.recommendedFirst)
+if (firsts.length > 1) {
+  fail('certs', `${firsts.length} certs set recommendedFirst: ${firsts.map((c) => c.id).join(', ')}`)
+}
+
+/*
+ * Every question must land on a live task statement of some current paper.
+ * Without this rule a version bump that renumbered its domains would silently
+ * empty the exam sampler — the questions would still validate, still count in
+ * the stats, and simply never be sampled.
+ */
+for (const q of questions) {
+  const lands = currentCerts.some((cert) => inScope(q, cert.id) && resolveTaskId(q.taskId, cert.id))
+  if (!lands) {
+    fail(
+      `question ${q.id}`,
+      `taskId "${q.taskId}" resolves to no task on any current paper it is tagged for — ` +
+        'add a `supersedes` entry on the task that absorbed it',
+    )
+  }
+}
+
+/*
+ * The versionScope audit. Printed on every run, green or not: an override is
+ * debt, and the only way it stays small is by staying visible.
+ */
+const scoped: { where: string; note: string; detail: string }[] = []
+const collectScope = (where: string, item: Scoped) => {
+  const v = item.versionScope
+  if (!v) return
+  scoped.push({
+    where,
+    note: v.note,
+    detail: v.onlyIn ? `only ${v.onlyIn.join(', ')}` : `not ${v.notIn!.join(', ')}`,
+  })
+  const named = v.onlyIn ?? v.notIn!
+  for (const id of named) {
+    const cert = certs.find((c) => c.id === id)
+    if (!cert) fail(where, `versionScope names unknown cert "${id}"`)
+    else if (!item.families.includes(cert.family)) {
+      fail(where, `versionScope names ${id} but the item is not tagged for the ${cert.family} family`)
+    } else if (cert.status === 'retired') {
+      warn(where, `versionScope names retired ${id} — the override can be deleted`)
+    }
+  }
+}
+for (const s of services) collectScope(`service ${s.slug}`, s)
+for (const c of concepts) collectScope(`concept ${c.slug}`, c)
+for (const q of questions) collectScope(`question ${q.id}`, q)
+for (const t of triggers) collectScope(`trigger ${t.id}`, t)
+for (const p of phases) collectScope(`phase ${p.id}`, p)
+
+// Content excluded from every current paper is drilled by nobody.
+for (const item of [
+  ...services.map((s) => [`service ${s.slug}`, s] as const),
+  ...concepts.map((c) => [`concept ${c.slug}`, c] as const),
+  ...questions.map((q) => [`question ${q.id}`, q] as const),
+]) {
+  const [where, data] = item
+  if (!data.versionScope) continue
+  if (!currentCerts.some((cert) => inScope(data, cert.id))) {
+    fail(where, 'versionScope excludes it from every current paper — it is dead content')
+  }
+}
+
 /* ── 5. Coverage warnings (not failures) ─────────────────────────────────── */
 
 const referenced = new Set(tasks.flatMap((t) => t.serviceSlugs))
@@ -376,7 +509,8 @@ if (orphanFacts.length) {
   }
 }
 
-for (const certId of CERT_IDS) {
+for (const cert of currentCerts) {
+  const certId = cert.id
   const cov = examCoverage(certId)
   for (const d of cov.perDomain) {
     if (d.have < d.need) {
@@ -411,6 +545,17 @@ console.log(
   )} h guided of ${phases.reduce((n, p) => n + p.hours, 0)} h)`,
 )
 console.log('  ─────────────────────────────────────────')
+
+if (scoped.length) {
+  console.log(`\n  ${scoped.length} versionScope override(s) — each one is debt:`)
+  for (const v of scoped) console.log(`    · ${v.where} (${v.detail}) — ${v.note}`)
+  if (scoped.length > 15) {
+    console.log(
+      '    Over 15 overrides: the family model has stopped fitting reality.\n' +
+        '    Read invariant 16 in AGENTS.md before adding another.',
+    )
+  }
+}
 
 if (warnings.length) {
   console.log(`\n  ${warnings.length} warning(s):`)

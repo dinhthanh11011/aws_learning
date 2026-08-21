@@ -8,7 +8,7 @@ export const containerServices: Service[] = [
     name: 'Amazon ECS',
     abbr: 'ECS',
     category: 'containers',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: "AWS's own container orchestrator — simpler than Kubernetes, deeply integrated.",
     whatItIs:
@@ -71,7 +71,7 @@ export const containerServices: Service[] = [
     name: 'Amazon EKS',
     abbr: 'EKS',
     category: 'containers',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Managed upstream Kubernetes control plane.',
     whatItIs:
@@ -122,7 +122,7 @@ export const containerServices: Service[] = [
     name: 'Amazon ECR',
     abbr: 'ECR',
     category: 'containers',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Private (and public) container registry with IAM-based access.',
     whatItIs:
@@ -164,7 +164,7 @@ export const containerServices: Service[] = [
     slug: 'ecs-anywhere',
     name: 'Amazon ECS Anywhere',
     category: 'containers',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Run ECS tasks on your own on-premises hardware.',
     whatItIs:
@@ -190,7 +190,7 @@ export const containerServices: Service[] = [
     slug: 'eks-anywhere',
     name: 'Amazon EKS Anywhere',
     category: 'containers',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Run and manage your own Kubernetes clusters on premises, AWS-supported.',
     whatItIs:
@@ -216,7 +216,7 @@ export const containerServices: Service[] = [
     slug: 'eks-distro',
     name: 'Amazon EKS Distro',
     category: 'containers',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'The open-source Kubernetes distribution EKS itself is built from.',
     whatItIs:

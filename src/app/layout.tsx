@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { AppShell } from '@/components/shell/AppShell'
+import { currentCerts } from '@/content'
 
 export const metadata: Metadata = {
-  title: 'AWS Trainer — SAA-C03 & DVA-C02',
+  title: `AWS Trainer — ${currentCerts.map((c) => c.id).join(' & ')}`,
   description:
     'Learn AWS by seeing the whole picture, recalling it under pressure, and building it until it breaks. Solutions Architect and Developer Associate.',
 }

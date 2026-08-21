@@ -8,7 +8,7 @@ export const analyticsServices: Service[] = [
     name: 'Amazon Kinesis Data Streams',
     abbr: 'KDS',
     category: 'analytics',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Ordered, replayable real-time stream that many consumers can read independently.',
     whatItIs:
@@ -75,7 +75,7 @@ export const analyticsServices: Service[] = [
     name: 'Amazon Data Firehose',
     abbr: 'Firehose',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Zero-code streaming delivery into S3, Redshift, OpenSearch or Splunk.',
     whatItIs:
@@ -134,7 +134,7 @@ export const analyticsServices: Service[] = [
     name: 'Amazon MSK',
     abbr: 'MSK',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed Apache Kafka — for when the requirement says "Kafka".',
     whatItIs:
@@ -177,7 +177,7 @@ export const analyticsServices: Service[] = [
     slug: 'athena',
     name: 'Amazon Athena',
     category: 'analytics',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Serverless SQL directly over data sitting in S3 — pay per terabyte scanned.',
     whatItIs:
@@ -236,7 +236,7 @@ export const analyticsServices: Service[] = [
     slug: 'glue',
     name: 'AWS Glue',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Serverless ETL plus the Data Catalog every other analytics service reads.',
     whatItIs:
@@ -300,7 +300,7 @@ export const analyticsServices: Service[] = [
     name: 'Amazon EMR',
     abbr: 'EMR',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed Hadoop, Spark, Hive, Presto and friends on a cluster you control.',
     whatItIs:
@@ -359,7 +359,7 @@ export const analyticsServices: Service[] = [
     slug: 'lake-formation',
     name: 'AWS Lake Formation',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Builds a governed data lake with table-, column- and row-level permissions.',
     whatItIs:
@@ -398,7 +398,7 @@ export const analyticsServices: Service[] = [
     slug: 'opensearch',
     name: 'Amazon OpenSearch Service',
     category: 'analytics',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Managed search and log analytics with dashboards.',
     whatItIs:
@@ -446,7 +446,7 @@ export const analyticsServices: Service[] = [
     slug: 'quick-suite',
     name: 'Amazon Quick Suite (QuickSight)',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Serverless business intelligence dashboards, priced per user.',
     whatItIs:
@@ -499,7 +499,7 @@ export const analyticsServices: Service[] = [
     slug: 'data-exchange',
     name: 'AWS Data Exchange',
     category: 'analytics',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Marketplace for finding, subscribing to and publishing third-party datasets.',
     whatItIs:

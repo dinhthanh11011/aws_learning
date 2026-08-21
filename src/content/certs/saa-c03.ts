@@ -10,6 +10,10 @@ import type { Cert } from '../schema'
  */
 export const saaC03: Cert = {
   id: 'SAA-C03',
+  family: 'saa',
+  versionCode: 'C03',
+  status: 'current',
+  recommendedFirst: true,
   title: 'AWS Certified Solutions Architect – Associate',
   shortTitle: 'Solutions Architect',
   role: 'You are handed requirements and must choose the architecture.',
@@ -17,6 +21,7 @@ export const saaC03: Cert = {
   questionCount: 65,
   scoredCount: 50,
   passScore: 720,
+  passAccuracy: 0.72,
   scaleMin: 100,
   scaleMax: 1000,
   guideUrl:

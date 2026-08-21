@@ -8,7 +8,7 @@ import {
   type Grade as FsrsGrade,
 } from 'ts-fsrs'
 import type { SrsCard } from '@/db'
-import type { CertId } from '@/content/schema'
+import type { CertFamily } from '@/content/schema'
 
 /**
  * Spaced repetition over FSRS-6 (via ts-fsrs). We do not invent scheduling —
@@ -44,7 +44,7 @@ const scheduler = fsrs(generatorParameters({ enable_fuzz: true, request_retentio
 
 export function newCard(
   cardId: string,
-  certs: CertId[],
+  families: CertFamily[],
   serviceSlugs: string[],
   taskId?: string,
   now = new Date(),
@@ -52,7 +52,7 @@ export function newCard(
   const card = createEmptyCard(now)
   return {
     cardId,
-    certs,
+    families,
     serviceSlugs,
     taskId,
     fsrs: card,
@@ -129,7 +129,13 @@ export interface QueueOptions {
   newLimit?: number
   /** Cap on total cards per session. */
   totalLimit?: number
-  certId?: CertId
+  /**
+   * Card ids eligible for this session. The caller builds it from
+   * `cardsFor(certId)`, because scope depends on `versionScope` overrides that
+   * the stored row does not carry — so the one place that knows is the content
+   * registry, not this engine and not the database.
+   */
+  allow?: ReadonlySet<string>
   now?: Date
 }
 
@@ -152,7 +158,7 @@ export function buildQueue(all: SrsCard[], opts: QueueOptions = {}): Queue {
   const endOfDay = new Date(now)
   endOfDay.setHours(23, 59, 59, 999)
 
-  const pool = opts.certId ? all.filter((c) => c.certs.includes(opts.certId!)) : all
+  const pool = opts.allow ? all.filter((c) => opts.allow!.has(c.cardId)) : all
   const newLimit = opts.newLimit ?? 15
   const totalLimit = opts.totalLimit ?? 40
 

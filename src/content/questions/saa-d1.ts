@@ -8,7 +8,7 @@ import type { Question } from '../schema'
 export const saaD1Questions: Question[] = [
   {
     id: 'saa-d1-001',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -26,7 +26,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-002',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -44,7 +44,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-003',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -62,7 +62,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-004',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'multi',
     difficulty: 2,
@@ -81,7 +81,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-005',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -99,7 +99,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-006',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -117,7 +117,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-007',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -135,7 +135,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-008',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -153,7 +153,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-009',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 1,
@@ -171,7 +171,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-010',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -189,7 +189,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-011',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -207,7 +207,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-012',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 1,
@@ -225,7 +225,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-013',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 3,
@@ -243,7 +243,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-014',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -261,7 +261,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-015',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -279,7 +279,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-016',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'multi',
     difficulty: 2,
@@ -298,7 +298,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-017',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -316,7 +316,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-018',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -334,7 +334,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-019',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 3,
@@ -352,7 +352,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-020',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 1,
@@ -370,7 +370,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-021',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 3,
@@ -388,7 +388,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-022',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 3,
@@ -406,7 +406,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-023',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -424,7 +424,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-024',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -442,7 +442,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-025',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -460,7 +460,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-026',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -478,7 +478,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-027',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 3,
@@ -496,7 +496,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-028',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -514,7 +514,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-029',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 3,
@@ -532,7 +532,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-030',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -550,7 +550,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-031',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,
@@ -568,7 +568,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-032',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -586,7 +586,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-033',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -604,7 +604,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-034',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 3,
@@ -622,7 +622,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-035',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -640,7 +640,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-036',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 2,
@@ -658,7 +658,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-037',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.3',
     type: 'single',
     difficulty: 3,
@@ -676,7 +676,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-038',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.2',
     type: 'single',
     difficulty: 2,
@@ -694,7 +694,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-039',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'multi',
     difficulty: 1,
@@ -713,7 +713,7 @@ export const saaD1Questions: Question[] = [
   },
   {
     id: 'saa-d1-040',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     taskId: 'saa-1.1',
     type: 'single',
     difficulty: 2,

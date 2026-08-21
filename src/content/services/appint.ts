@@ -8,7 +8,7 @@ export const appIntegrationServices: Service[] = [
     name: 'Amazon SQS',
     abbr: 'SQS',
     category: 'appint',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Managed message queue — the standard answer to "decouple these two components".',
     whatItIs:
@@ -88,7 +88,7 @@ export const appIntegrationServices: Service[] = [
     name: 'Amazon SNS',
     abbr: 'SNS',
     category: 'appint',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Pub/sub topics that push one message to many subscribers at once.',
     whatItIs:
@@ -149,7 +149,7 @@ export const appIntegrationServices: Service[] = [
     name: 'Amazon EventBridge',
     abbr: 'EB',
     category: 'appint',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Serverless event bus that routes events to targets by content-matching rules.',
     whatItIs:
@@ -204,7 +204,7 @@ export const appIntegrationServices: Service[] = [
     name: 'AWS Step Functions',
     abbr: 'SFN',
     category: 'appint',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner:
       'Visual state machines that orchestrate steps with built-in retries and error handling.',
@@ -276,7 +276,7 @@ export const appIntegrationServices: Service[] = [
     slug: 'mq',
     name: 'Amazon MQ',
     category: 'appint',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed ActiveMQ or RabbitMQ for applications that need standard protocols.',
     whatItIs:
@@ -318,7 +318,7 @@ export const appIntegrationServices: Service[] = [
     slug: 'appflow',
     name: 'Amazon AppFlow',
     category: 'appint',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'No-code data flows between SaaS applications and AWS.',
     whatItIs:

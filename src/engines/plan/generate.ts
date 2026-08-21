@@ -1,4 +1,5 @@
 import { phases } from '@/content/phases'
+import { inScope } from '@/content/cert-registry'
 import type { Phase } from '@/content/schema'
 import type { CertId } from '@/content/schema'
 
@@ -70,7 +71,7 @@ export function generate(opts: {
 }): StudyPlan {
   const { certId, weeklyHours } = opts
   const from = opts.from ?? new Date()
-  const relevant = phases.filter((p) => p.certs.includes(certId))
+  const relevant = phases.filter((p) => inScope(p, certId))
   const totalHours = relevant.reduce((n, p) => n + p.hours, 0)
 
   const naturalWeeks = Math.ceil(totalHours / Math.max(1, weeklyHours))

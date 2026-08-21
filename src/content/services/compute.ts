@@ -8,7 +8,7 @@ export const computeServices: Service[] = [
     name: 'Amazon EC2',
     abbr: 'EC2',
     category: 'compute',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 1,
     oneLiner: 'Virtual machines you rent by the second and administer yourself.',
     whatItIs:
@@ -96,7 +96,7 @@ export const computeServices: Service[] = [
     name: 'Amazon EC2 Auto Scaling',
     abbr: 'ASG',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Keeps a fleet of EC2 instances at the right size, and replaces the dead ones.',
     whatItIs:
@@ -160,7 +160,7 @@ export const computeServices: Service[] = [
     slug: 'auto-scaling',
     name: 'AWS Auto Scaling',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'One console for scaling plans across several services at once.',
     whatItIs:
@@ -190,7 +190,7 @@ export const computeServices: Service[] = [
     name: 'EC2 Spot Instances',
     abbr: 'Spot',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 1,
     oneLiner: 'Spare capacity at up to 90% off, reclaimable with two minutes notice.',
     whatItIs:
@@ -234,7 +234,7 @@ export const computeServices: Service[] = [
     slug: 'batch',
     name: 'AWS Batch',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 2,
     oneLiner: 'Managed job queue that provisions compute to drain it, then shuts it down.',
     whatItIs:
@@ -281,7 +281,7 @@ export const computeServices: Service[] = [
     name: 'AWS Elastic Beanstalk',
     abbr: 'EB',
     category: 'compute',
-    certs: ['SAA-C03', 'DVA-C02'],
+    families: ['saa', 'dva'],
     tier: 2,
     oneLiner: 'Hand it your application bundle; it builds the EC2, ASG and ELB around it.',
     whatItIs:
@@ -336,7 +336,7 @@ export const computeServices: Service[] = [
     slug: 'outposts',
     name: 'AWS Outposts',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'AWS-managed racks installed in your own data centre.',
     whatItIs:
@@ -372,7 +372,7 @@ export const computeServices: Service[] = [
     slug: 'wavelength',
     name: 'AWS Wavelength',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'AWS compute embedded in telecom providers 5G networks.',
     whatItIs:
@@ -406,7 +406,7 @@ export const computeServices: Service[] = [
     slug: 'vmware-cloud',
     name: 'VMware Cloud on AWS',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'Run your existing VMware vSphere estate on AWS bare-metal hosts.',
     whatItIs:
@@ -436,7 +436,7 @@ export const computeServices: Service[] = [
     name: 'AWS Serverless Application Repository',
     abbr: 'SAR',
     category: 'compute',
-    certs: ['SAA-C03'],
+    families: ['saa'],
     tier: 3,
     oneLiner: 'A catalogue of publishable, deployable SAM applications.',
     whatItIs:

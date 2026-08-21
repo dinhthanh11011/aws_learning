@@ -9,9 +9,73 @@ import { z } from 'zod'
    screen at 11pm the night before your exam.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Cert families and cert versions ─────────────────────────────────────
+   A *family* is the exam ("Solutions Architect – Associate"); a *version* is
+   the paper currently set for it (SAA-C03, then SAA-C04). Content tags the
+   family, never the version, because a fact about S3 does not change when AWS
+   revises the guide. That is what makes a version bump one new file in
+   ./certs/ rather than a retag of every service, concept and question.
+
+   When a genuine difference exists — a service dropped from a new version's
+   scope — the item carries a `versionScope` override with a stated reason, and
+   content:check prints every one of them on every run so the list cannot grow
+   unseen. See invariant 16 in AGENTS.md.
+   ──────────────────────────────────────────────────────────────────────── */
+
+export const CERT_FAMILY_IDS = ['saa', 'dva'] as const
+export const CertFamilySchema = z.enum(CERT_FAMILY_IDS)
+export type CertFamily = (typeof CERT_FAMILY_IDS)[number]
+
+export const CERT_FAMILIES: Record<
+  CertFamily,
+  { id: CertFamily; short: string; label: string }
+> = {
+  saa: { id: 'saa', short: 'SAA', label: 'Solutions Architect – Associate' },
+  dva: { id: 'dva', short: 'DVA', label: 'Developer – Associate' },
+}
+
+/**
+ * Exam versions. Nothing in the corpus references these — only ./certs/*, the
+ * cert registry, and the two persisted history columns that record which paper
+ * a learner actually sat. Adding a version is one entry here plus one file.
+ */
 export const CERT_IDS = ['SAA-C03', 'DVA-C02'] as const
 export const CertIdSchema = z.enum(CERT_IDS)
 export type CertId = (typeof CERT_IDS)[number]
+
+export const CERT_STATUSES = ['upcoming', 'current', 'retired'] as const
+export const CertStatusSchema = z.enum(CERT_STATUSES)
+export type CertStatus = (typeof CERT_STATUSES)[number]
+
+/**
+ * The escape hatch for content that really is version-specific. `note` is
+ * required because an override is debt, and debt with no stated reason never
+ * gets paid off — content:check audits these rather than letting them
+ * accumulate quietly.
+ */
+export const VersionScopeSchema = z
+  .object({
+    /** In scope for *only* these versions. */
+    onlyIn: z.array(CertIdSchema).min(1).optional(),
+    /** In scope for the whole family except these versions. */
+    notIn: z.array(CertIdSchema).min(1).optional(),
+    /** What in the published exam guide makes this version-specific. */
+    note: z.string().min(1),
+  })
+  .refine((s) => Boolean(s.onlyIn) !== Boolean(s.notIn), {
+    message: 'versionScope sets exactly one of onlyIn / notIn',
+  })
+export type VersionScope = z.infer<typeof VersionScopeSchema>
+
+/**
+ * The shape every cert-scoped content kind shares. `inScope()` in the cert
+ * registry takes this rather than a union of nine content types, so adding a
+ * tenth kind needs no change there.
+ */
+export interface Scoped {
+  families: CertFamily[]
+  versionScope?: VersionScope
+}
 
 /* ── Service categories ──────────────────────────────────────────────────── */
 
@@ -189,7 +253,8 @@ export const ServiceSchema = z.object({
   /** Short form used on dense canvases: "S3", "DDB", "ALB". */
   abbr: z.string().optional(),
   category: CategoryIdSchema,
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   tier: TierSchema,
   /** One sentence. Shown on the canvas and in search results. */
   oneLiner: z.string().min(1),
@@ -292,7 +357,8 @@ export const ConceptSchema = z.object({
    */
   aka: z.array(z.string().min(1)).optional(),
   group: ConceptGroupSchema,
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   oneLiner: z.string().min(1),
   whatItIs: z.string().min(1),
   /**
@@ -318,8 +384,8 @@ export type Concept = z.infer<typeof ConceptSchema>
 /* ── Exam structure: cert → domain → task statement ──────────────────────── */
 
 export const TaskSchema = z.object({
-  /** e.g. "saa-1.1" */
-  id: z.string().regex(/^[a-z]+-\d+\.\d+$/),
+  /** e.g. "saa-1.1", or "saa-c04-1.2" once a family has more than one version. */
+  id: z.string().regex(/^[a-z]+(-c\d{2})?-\d+\.\d+$/),
   domainId: z.string().min(1),
   /** e.g. "1.1" */
   code: z.string().regex(/^\d+\.\d+$/),
@@ -328,6 +394,15 @@ export const TaskSchema = z.object({
   knowledge: z.array(z.string().min(1)),
   skills: z.array(z.string().min(1)),
   serviceSlugs: z.array(z.string()).default([]),
+  /**
+   * Task ids from earlier versions of this family that this task absorbs.
+   *
+   * A new exam version renumbers its domains, which would orphan every
+   * question tagged with an old task id. Declaring the merge here — on the new
+   * task, written by whoever is already reading both guides side by side —
+   * keeps all existing questions valid with no edits to them.
+   */
+  supersedes: z.array(z.string()).optional(),
 })
 export type Task = z.infer<typeof TaskSchema>
 
@@ -347,6 +422,14 @@ export type Domain = z.infer<typeof DomainSchema>
 
 export const CertSchema = z.object({
   id: CertIdSchema,
+  family: CertFamilySchema,
+  /** "C03". content:check asserts id === `${family.toUpperCase()}-${versionCode}`. */
+  versionCode: z.string().regex(/^C\d{2}$/),
+  status: CertStatusSchema,
+  /** Set when this version is retired, so a learner's profile can be moved on. */
+  supersededBy: CertIdSchema.optional(),
+  /** Shown as "Start here" in onboarding. At most one cert may set it. */
+  recommendedFirst: z.boolean().optional(),
   title: z.string().min(1),
   shortTitle: z.string().min(1),
   role: z.string().min(1),
@@ -354,6 +437,16 @@ export const CertSchema = z.object({
   questionCount: z.number().int().positive(),
   scoredCount: z.number().int().positive(),
   passScore: z.number().int().positive(),
+  /**
+   * Raw accuracy that we treat as landing exactly on `passScore`.
+   *
+   * Deliberately *not* `passScore / scaleMax`: those two numbers agreeing at
+   * 0.72 today is a coincidence of units. `passScore` is a point on AWS's
+   * scaled axis; this is a point on the raw-accuracy axis, and AWS does not
+   * publish the mapping between them. It is our estimate from the reported
+   * 70–75% band, which is why every score in the app is labelled an estimate.
+   */
+  passAccuracy: z.number().min(0.5).max(0.95),
   scaleMin: z.number().int(),
   scaleMax: z.number().int(),
   guideUrl: z.string().url(),
@@ -367,7 +460,8 @@ export type Cert = z.infer<typeof CertSchema>
 export const QuestionSchema = z
   .object({
     id: z.string().min(1),
-    certs: z.array(CertIdSchema).min(1),
+    families: z.array(CertFamilySchema).min(1),
+    versionScope: VersionScopeSchema.optional(),
     /** Must resolve to a real Task id; checked by content:check. */
     taskId: z.string().min(1),
     type: z.enum(['single', 'multi']),
@@ -432,7 +526,8 @@ export const CardSchema = z.object({
   back: z.string().min(1),
   /** Extra line shown after flipping — the "why it matters". */
   extra: z.string().optional(),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   taskId: z.string().optional(),
   serviceSlugs: z.array(z.string()).default([]),
 })
@@ -579,7 +674,8 @@ export type Check = z.infer<typeof CheckSchema>
 
 export const LessonSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   taskId: z.string().min(1),
   title: z.string().min(1),
   /** The hook: why this lesson earns your next 8 minutes. */
@@ -620,7 +716,8 @@ export const DecisionTreeSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: z.string().min(1),
   question: z.string().min(1),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   category: CategoryIdSchema,
   rootId: z.string().min(1),
   nodes: z.array(DecisionNodeSchema).min(2),
@@ -640,7 +737,8 @@ export const LabSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: z.string().min(1),
   tagline: z.string().min(1),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   taskIds: z.array(z.string()).min(1),
   minutes: z.number().int().positive(),
   category: CategoryIdSchema,
@@ -710,7 +808,8 @@ export const PhaseSchema = z.object({
   weekFrom: z.number().int().positive(),
   weekTo: z.number().int().positive(),
   hours: z.number().int().positive(),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   /** What must be true to leave this phase. */
   exitCriteria: z.array(z.string().min(1)).min(1),
   lessonIds: z.array(z.string()).default([]),
@@ -738,7 +837,8 @@ export const TriggerSchema = z.object({
   slugs: z.array(z.string()).min(1),
   /** Plausible answers this phrase is designed to make you pick wrongly. */
   notThis: z.array(z.object({ slug: z.string(), why: z.string().min(1) })).default([]),
-  certs: z.array(CertIdSchema).min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
   domainIds: z.array(z.string()).default([]),
 })
 export type Trigger = z.infer<typeof TriggerSchema>

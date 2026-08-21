@@ -4,6 +4,7 @@ import {
   CATEGORIES,
   CATEGORY_IDS,
   CERT_IDS,
+  inScope,
   services,
   TIER_META,
   type CategoryId,
@@ -34,7 +35,7 @@ export function ServicesBrowser() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     const out = services.filter((s) => {
-      if (cert !== 'all' && !s.certs.includes(cert)) return false
+      if (cert !== 'all' && !inScope(s, cert)) return false
       if (tier !== 'all' && s.tier !== tier) return false
       if (category !== 'all' && s.category !== category) return false
       if (!q) return true

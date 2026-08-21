@@ -6,7 +6,15 @@ import { useMemo } from 'react'
 import { db, today } from '@/db'
 import { useProfile } from '@/hooks/useProfile'
 import { useMasteryInput } from '@/hooks/useMastery'
-import { certById, domainsFor, phases, servicesFor, triggersFor } from '@/content'
+import {
+  cardsFor,
+  certById,
+  domainsFor,
+  familyOf,
+  phasesFor,
+  servicesFor,
+  triggersFor,
+} from '@/content'
 import { readiness } from '@/engines/progress/mastery'
 import { dailyMission, generate, weeksUntil } from '@/engines/plan/generate'
 import { buildQueue } from '@/engines/srs/scheduler'
@@ -25,7 +33,7 @@ import { cn } from '@/lib/cn'
  */
 export function HomeDashboard({ nowMs }: { nowMs: number }) {
   const profile = useProfile()
-  const masteryInput = useMasteryInput()
+  const masteryInput = useMasteryInput(profile.targetCert)
   const cert = certById.get(profile.targetCert)!
   const domains = domainsFor(profile.targetCert)
   const certServices = useMemo(() => servicesFor(profile.targetCert), [profile.targetCert])
@@ -39,15 +47,23 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
     [],
   )
 
-  const queue = useMemo(
-    () => buildQueue(cards ?? [], { certId: profile.targetCert }),
-    [cards, profile.targetCert],
+  // Scope is decided by the content layer, not by the stored row: only
+  // `cardsFor` can see a `versionScope` override.
+  const allow = useMemo(
+    () => new Set(cardsFor(profile.targetCert).map((c) => c.id)),
+    [profile.targetCert],
   )
+
+  const queue = useMemo(() => buildQueue(cards ?? [], { allow }), [cards, allow])
 
   const ready = useMemo(
     () =>
       masteryInput
-        ? readiness(domains, certServices, masteryInput, profile.targetCert)
+        ? readiness(domains, certServices, masteryInput, profile.targetCert, {
+            // A paper sat for an earlier version of the same exam is still
+            // evidence you can work under time pressure.
+            sameExam: (id) => familyOf(id) === familyOf(profile.targetCert),
+          })
         : null,
     [masteryInput, domains, certServices, profile.targetCert],
   )
@@ -71,7 +87,7 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
         newCards: queue.newCount,
         openMistakes: openMistakes ?? 0,
         weakestDomainTitle: weakest?.title ?? null,
-        currentPhase: phases.find((p) => p.certs.includes(profile.targetCert)),
+        currentPhase: phasesFor(profile.targetCert)[0],
         certId: profile.targetCert,
         answeredToday: todayStat?.answered ?? 0,
         reviewedToday: todayStat?.reviews ?? 0,
@@ -252,7 +268,7 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
           value={examCount ?? 0}
           hint={
             lastExam?.scaled
-              ? `Last: ${lastExam.scaled}/1000 ${lastExam.passed ? '— pass' : '— below 720'}`
+              ? `Last: ${lastExam.scaled}/${cert.scaleMax} ${lastExam.passed ? '— pass' : `— below ${cert.passScore}`}`
               : 'The only honest readiness signal'
           }
           href="/exam"

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { phases } from '@/content/phases'
-import { phasesFor } from '@/content'
+import { currentCertFor, phasesFor } from '@/content'
 import type { Phase } from '@/content/schema'
 import { guidedProgress, nextStep, phaseStepProgress } from './steps'
 
-const saa = phasesFor('SAA-C03')
+const saa = phasesFor(currentCertFor('saa')!.id)
 
 describe('nextStep', () => {
   it('starts at the very first step when nothing is done', () => {

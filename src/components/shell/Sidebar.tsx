@@ -79,7 +79,7 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
         counter: 'due',
       },
       { href: '/labs', label: 'Labs', icon: 'wrench', hint: 'Build it, then break it' },
-      { href: '/exam', label: 'Exam Simulator', icon: 'paper', hint: '65 questions, 130 minutes' },
+      { href: '/exam', label: 'Exam Simulator', icon: 'paper', hint: 'A full timed paper' },
     ],
   },
   {

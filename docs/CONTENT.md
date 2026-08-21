@@ -44,7 +44,7 @@ The fields that carry the teaching load, in order of value:
   name: 'Amazon Thing',               // AWS product name, verbatim
   abbr: 'THG',                        // optional; used on dense canvases
   category: 'storage',
-  certs: ['SAA-C03'],
+  families: ['saa'],                  // the exam family, never a version id
   tier: 1,                            // see the tier system in ARCHITECTURE.md
   oneLiner: '…',
   whatItIs: '…',                      // a paragraph; explain the mechanism
@@ -98,7 +98,7 @@ The fields that carry the teaching load, in order of value:
   abbr: 'RPO',                        // optional; used on chips and number cards
   aka: ['RPO', 'acceptable data loss'],   // optional; search matches these too
   group: 'resilience',                // networking | resilience | data | identity | delivery | operations
-  certs: ['SAA-C03', 'DVA-C02'],
+  families: ['saa', 'dva'],           // the exam family, never a version id
   oneLiner: '…',                      // reversed, it becomes the `define` card
   whatItIs: '…',                      // a paragraph; explain the mechanism
   keyIdea: '…',                       // the rule that decides questions
@@ -124,7 +124,7 @@ explain the specific misconception it targets. "This is wrong" is not a `why`.
 ```ts
 {
   id: 'saa-d1-021',                   // <cert>-<domain>-<n>, unique
-  certs: ['SAA-C03'],
+  families: ['saa'],                  // the exam family, never a version id
   taskId: 'saa-1.2',                  // must resolve to a real task statement
   type: 'single',                     // 'multi' needs 5+ options and 2+ correct
   difficulty: 2,                      // 1 easier, 2 medium, 3 hard
@@ -181,6 +181,34 @@ it in `/exam` — invariant 9 says the learner should be told.
 `content:check` prints exactly this and warns on shortfalls; `/exam` tells the
 learner rather than repeating questions.
 
+## Which exams a piece of content is on
+
+Tag the **family** (`saa`, `dva`), never a version id like `SAA-C03`:
+
+```ts
+families: ['saa', 'dva'],
+```
+
+A fact about S3 does not change when SAA-C03 becomes SAA-C04, so tagging the
+version would mean re-editing all 141 services, 37 concepts and 274 questions
+for an exam revision that taught nothing new. `src/content/certs/*` declares
+which family each version belongs to, and `inScope()` in `cert-registry.ts` does
+the resolution — so a new version is one new file plus two registry lines.
+
+When a version genuinely differs — a service dropped from the new guide's scope
+— add a `versionScope` override with a reason:
+
+```ts
+families: ['saa'],
+versionScope: { notIn: ['SAA-C03'], note: 'Added to the C04 guide, absent from C03.' },
+```
+
+`note` is required and `content:check` prints every override on every run, so
+the list stays visible and small. Use it only when the published guide provably
+differs, never for "not checked yet" — that is what the family tag already
+means. ESLint blocks a version literal anywhere outside `src/content/certs/`,
+`cert-registry.ts`, `schema.ts` and `src/db/migrate.ts`.
+
 ## A trigger phrase
 
 The `notThis` array is the point. A phrase without its distractor is a flashcard;
@@ -193,7 +221,7 @@ with it, it is exam technique.
   means: 'What it is actually asking for.',
   slugs: ['lambda', 'fargate'],
   notThis: [{ slug: 'ec2', why: 'Why this plausible answer is what the phrase rules out.' }],
-  certs: ['SAA-C03'],
+  families: ['saa'],                  // the exam family, never a version id
   domainIds: ['saa-d2'],
 }
 ```

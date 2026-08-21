@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { dailyMission, generate, weeksUntil } from './generate'
 import { phases } from '@/content/phases'
+import { currentCertFor } from '@/content'
 
 const from = new Date('2026-08-20T09:00:00')
+// The current SAA paper, not a pinned version id: a version bump must not
+// break these tests, since making that bump cheap is the point.
+const SAA = currentCertFor('saa')!.id
 
 describe('weeksUntil', () => {
   it('counts whole weeks and never goes negative', () => {
@@ -13,34 +17,34 @@ describe('weeksUntil', () => {
 
 describe('generate', () => {
   it('covers every phase for the chosen cert', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 6, from })
-    const saaPhases = phases.filter((p) => p.certs.includes('SAA-C03')).map((p) => p.id)
+    const plan = generate({ certId: SAA, weeklyHours: 6, from })
+    const saaPhases = phases.filter((p) => p.families.includes('saa')).map((p) => p.id)
     const covered = new Set(plan.weeks.map((w) => w.phaseId))
     for (const id of saaPhases) expect(covered.has(id)).toBe(true)
   })
 
   it('numbers weeks consecutively from 1 with weekly Monday dates', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 6, from })
+    const plan = generate({ certId: SAA, weeklyHours: 6, from })
     plan.weeks.forEach((w, i) => expect(w.week).toBe(i + 1))
     const days = plan.weeks.map((w) => new Date(`${w.startsOn}T00:00:00`).getDay())
     expect(new Set(days)).toEqual(new Set([1]))
   })
 
   it('takes longer at fewer hours per week', () => {
-    const slow = generate({ certId: 'SAA-C03', weeklyHours: 3, from })
-    const fast = generate({ certId: 'SAA-C03', weeklyHours: 12, from })
+    const slow = generate({ certId: SAA, weeklyHours: 3, from })
+    const fast = generate({ certId: SAA, weeklyHours: 12, from })
     expect(slow.weeks.length).toBeGreaterThan(fast.weeks.length)
   })
 
   it('always ends with a taper when there is room', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 6, examDate: '2027-03-01', from })
+    const plan = generate({ certId: SAA, weeklyHours: 6, examDate: '2027-03-01', from })
     expect(plan.weeks.at(-1)?.taper).toBe(true)
     expect(plan.weeks.at(-1)?.phaseTitle).toMatch(/taper/i)
   })
 
   it('protects the build phase when time is short', () => {
-    const roomy = generate({ certId: 'SAA-C03', weeklyHours: 6, examDate: '2027-04-01', from })
-    const tight = generate({ certId: 'SAA-C03', weeklyHours: 6, examDate: '2026-11-01', from })
+    const roomy = generate({ certId: SAA, weeklyHours: 6, examDate: '2027-04-01', from })
+    const tight = generate({ certId: SAA, weeklyHours: 6, examDate: '2026-11-01', from })
     const buildWeeks = (p: typeof roomy) => p.weeks.filter((w) => w.phaseId === 'phase-2').length
     const otherWeeks = (p: typeof roomy) =>
       p.weeks.filter((w) => w.phaseId !== 'phase-2' && !w.taper).length
@@ -53,20 +57,20 @@ describe('generate', () => {
   })
 
   it('says plainly when a date is not achievable', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 2, examDate: '2026-09-20', from })
+    const plan = generate({ certId: SAA, weeklyHours: 2, examDate: '2026-09-20', from })
     expect(plan.feasible).toBe(false)
     expect(plan.compression).toBe('unrealistic')
     expect(plan.verdict).toMatch(/not realistic/i)
   })
 
   it('is comfortable when there is plenty of time', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 10, examDate: '2027-06-01', from })
+    const plan = generate({ certId: SAA, weeklyHours: 10, examDate: '2027-06-01', from })
     expect(plan.compression).toBe('none')
     expect(plan.slackWeeks).toBeGreaterThan(0)
   })
 
   it('nudges toward booking a date when none is set', () => {
-    const plan = generate({ certId: 'SAA-C03', weeklyHours: 6, from })
+    const plan = generate({ certId: SAA, weeklyHours: 6, from })
     expect(plan.examDate).toBeNull()
     expect(plan.verdict).toMatch(/no exam booked/i)
   })
@@ -79,7 +83,7 @@ describe('dailyMission', () => {
     openMistakes: 0,
     weakestDomainTitle: 'Design Secure Architectures',
     currentPhase: phases[1],
-    certId: 'SAA-C03' as const,
+    certId: SAA,
     answeredToday: 0,
     reviewedToday: 0,
   }
