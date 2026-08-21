@@ -128,6 +128,8 @@ export const resilienceConcepts: Concept[] = [
       'AWS names four DR strategies and the exam expects you to map a stated RTO and RPO onto one of them. Backup and restore keeps copies and nothing else. Pilot light keeps the data replicated and the compute switched off. Warm standby keeps a scaled-down but live copy serving nothing. Multi-site active-active runs full capacity in both places, both taking traffic.',
     keyIdea:
       'The four strategies differ in one variable: how much is already running while everything is fine. That is what you are buying, and it is why cost rises in the same order as recovery speed.',
+    whyItExists:
+      '"We need disaster recovery" is not a design, and left unspecified it becomes either nightly backups nobody has restored or a full second copy of production that doubles the bill for an event that may never come. Naming four points on the curve exists to turn the argument into arithmetic: state the RTO and RPO, and the strategy — and the cost — follows. The ladder is really about how much has to be already running before the failure.',
     onTheExam: [
       'Read the numbers first, then pick: hours to backup and restore, tens of minutes to pilot light, minutes to warm standby, near zero to active-active.',
       '"Cheapest that meets the requirement" means the leftmost strategy that still fits, never the most resilient one.',
@@ -166,6 +168,8 @@ export const resilienceConcepts: Concept[] = [
       'A highly available design detects a failure and recovers from it fast — with a brief interruption. A fault-tolerant design absorbs the failure with no interruption at all, because the redundancy was already carrying load. Multi-AZ RDS is highly available: there is a failover, and it takes a minute or two. An Auto Scaling group behind a load balancer across three AZs is closer to fault tolerant: losing one AZ drops no requests.',
     keyIdea:
       'High availability tolerates a short outage; fault tolerance tolerates none. The exam signals which it wants with words like "minimal downtime" against "no interruption to users".',
+    whyItExists:
+      '"No downtime" and "recovers quickly" get spoken as if they were the same promise, and they have very different prices — one lets you fail over, the other requires the redundancy to already be carrying traffic. The distinction exists because a design bought on the cheaper promise gets judged on the dearer one, usually during an incident. Multi-AZ RDS is the standing example: it is genuinely highly available, and it does drop connections for a minute or two.',
     onTheExam: [
       '"No downtime" or "no impact to users" is asking for fault tolerance — active redundancy, not a standby.',
       '"Minimise downtime" accepts a failover, so Multi-AZ and similar answers are in scope.',
@@ -208,6 +212,8 @@ export const resilienceConcepts: Concept[] = [
       'Multi-AZ spreads a workload across Availability Zones inside one Region: cheap, low-latency, mostly a configuration flag, and it survives losing a data centre. Multi-Region duplicates the workload in another Region: expensive, latency-bound, needs explicit replication and a failover mechanism, and it survives losing the Region or meets a data-residency or global-latency requirement.',
     keyIdea:
       'Multi-AZ is the default answer for availability, and multi-Region is only correct when the stem names a Region-level failure, a legal requirement, or users on another continent. Reaching for multi-Region unprompted is the most expensive wrong answer on the paper.',
+    whyItExists:
+      "Redundancy is not one thing, because failures come at different scales: a rack, a data centre, a Region, a country's regulator. Spreading across AZs is cheap and nearly free of latency because the zones are tens of kilometres apart; spreading across Regions costs real money and real milliseconds, and forces you to think about replication and failover explicitly. The pair exists so a design pays for the scale of failure it actually has to survive — which is why the exam's tell is what breaks in the scenario.",
     onTheExam: [
       '"Survive an AZ outage", "highly available", "no single data centre" — Multi-AZ.',
       '"Survive a Region outage", "continue if us-east-1 is unavailable" — multi-Region.',
@@ -253,6 +259,8 @@ export const resilienceConcepts: Concept[] = [
       'Failover is the mechanism that redirects work when something breaks: a load balancer stops sending requests to an unhealthy target, RDS promotes its standby, Route 53 answers with the secondary record, Auto Scaling replaces a terminated instance. Every failover has a detection time and a switch time, and the sum of the two is most of your RTO.',
     keyIdea:
       'Failover time is detection plus switching, and detection is usually the larger half. Health check interval, failure threshold and DNS TTL are the three dials the exam expects you to know are part of the total.',
+    whyItExists:
+      'Redundancy on its own only guarantees that a healthy copy exists somewhere; something still has to notice the failure and move the traffic, and until that happens the spare is a cost with no benefit. Failover names that mechanism so it can be examined — who detects, how fast, who decides, what clients cache — because detection plus switching is where most of a real RTO goes, not the restart itself.',
     onTheExam: [
       'A question where "failover works but takes too long" is about health check frequency, the unhealthy threshold, or the DNS TTL — not about adding more capacity.',
       'Route 53 failover routing needs a health check on the primary record; without one it will not fail over at all.',
@@ -297,6 +305,8 @@ export const resilienceConcepts: Concept[] = [
       'Blast radius is the scope of damage from a single failure, mistake or compromise. AWS gives you boundaries to contain it at several scales: the Availability Zone for physical failure, the account for permissions and quotas, the Region for regional events, the cell or shard for a noisy tenant. Choosing a boundary is choosing what a single bad event can take down.',
     keyIdea:
       'Every boundary you add costs coordination and buys containment. The exam usually wants the account boundary for isolation between environments or teams, and the AZ boundary for physical failure.',
+    whyItExists:
+      "Everything fails, so the useful question is not whether but how much goes with it — and that answer is decided long before the incident, by how the estate was carved up. The idea exists to make containment a deliberate design choice rather than an accident: put everything in one account and one AZ and a single mistake reaches all of it. AWS's boundaries — AZ, account, Region, cell — are the units you get to choose between.",
     onTheExam: [
       '"Isolate production from development" is separate accounts under Organizations, not separate VPCs.',
       '"One customer\'s traffic must not affect the others" is sharding, throttling or separate cells.',

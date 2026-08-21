@@ -13,6 +13,8 @@ export const serverlessServices: Service[] = [
     oneLiner: 'Run a function in response to an event; pay only while it runs.',
     whatItIs:
       'You upload code (a .zip up to 250 MB unzipped, or a container image up to 10 GB) and declare a handler. An event source invokes it, AWS provisions an execution environment, runs your handler, and freezes or discards the environment afterwards. You configure memory, and CPU scales proportionally with it — which is why increasing memory often makes a function both faster *and* cheaper.',
+    whyItExists:
+      'For code that runs for 200 ms whenever something happens, the smallest thing you could buy was an instance running every second of the month, so you paid for idle and patched an operating system in order to host an event handler. Lambda exists to make the invocation the billable unit: nothing running means nothing to pay for and nothing to patch, in exchange for giving up the host.',
     whenToUse: [
       'Event-driven work: S3 uploads, DynamoDB streams, SQS messages, EventBridge rules, API Gateway requests',
       'Spiky or unpredictable traffic where idle capacity would be wasted',
@@ -102,6 +104,8 @@ export const serverlessServices: Service[] = [
     oneLiner: 'Serverless capacity for containers — no instances to patch or scale.',
     whatItIs:
       'A launch type for ECS and a node option for EKS. You declare the CPU and memory a task needs; AWS finds and manages the underlying capacity. There is no host to log into, patch or right-size. Each task gets its own ENI in your VPC and its own kernel-level isolation.',
+    whyItExists:
+      'Even with an orchestrator, somebody still owned the machines underneath it: patching the AMI, right-sizing the group, and paying for the gap between what the tasks asked for and what the hosts actually had. The container promise — this is my unit of deployment — leaked straight back into servers. Fargate exists so the task is the only thing you size, patch and pay for.',
     whenToUse: [
       'Containerised workloads where you do not want to manage instances',
       'Variable or bursty container load where paying for idle EC2 hurts',
@@ -149,6 +153,8 @@ export const serverlessServices: Service[] = [
     oneLiner: 'Managed GraphQL API with real-time subscriptions.',
     whatItIs:
       'A managed GraphQL endpoint. You define a schema, attach resolvers to data sources (DynamoDB, Lambda, RDS via Data API, OpenSearch, HTTP), and AppSync handles the query execution, authorisation and WebSocket subscriptions for real-time updates.',
+    whyItExists:
+      'A mobile screen needing five related objects either made five REST round trips over a slow network, or waited on the backend team to hand-build an endpoint shaped like that one screen. Live updates meant running your own WebSocket fleet and tracking who was subscribed to what. AppSync exists so the client asks for the shape it needs and the subscription plumbing is not yours to operate.',
     whenToUse: [
       'A mobile or web client that wants exactly the fields it asks for, in one round trip',
       'Real-time features — live dashboards, chat, collaborative editing — via GraphQL subscriptions',

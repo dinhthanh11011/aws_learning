@@ -114,6 +114,8 @@ export const storageServices: Service[] = [
     oneLiner: 'Archive tiers: minutes to hours to retrieve, and very cheap to keep.',
     whatItIs:
       'Three archival storage classes inside S3. Glacier Instant Retrieval keeps millisecond access at a much lower storage price. Glacier Flexible Retrieval trades access time for cost. Glacier Deep Archive is the cheapest storage AWS offers, at the price of a 12–48 hour wait. The trade is always the same: storage cost down, retrieval time and retrieval cost up.',
+    whyItExists:
+      'Data you must keep for seven years and will almost certainly never read was still charged at the price of data you read every day, so compliance retention quietly became one of the largest lines on the bill. The alternative was a tape library in a cupboard, with an annual restore test nobody ran. The Glacier classes exist to sell the trade explicitly: pay much less to store, and accept that getting it back costs time and money.',
     whenToUse: [
       'Long-term retention where retrieval is rare: compliance archives, old backups, raw logs',
       'Deep Archive for the seven-year regulatory tail you hope never to read',
@@ -223,6 +225,8 @@ export const storageServices: Service[] = [
     oneLiner: 'Physically attached NVMe/SSD — fastest, and wiped when the instance stops.',
     whatItIs:
       'Block storage on disks physically inside the host. Nothing is on the network, so latency and IOPS beat EBS by a wide margin. The data does not survive a stop, a hibernate, a terminate, or a host failure.',
+    whyItExists:
+      'EBS reaches the disk over the network, and for a cache, a scratch directory or a shuffle spill that network round trip is the whole cost — while the durability you are paying for is worthless on data you would happily regenerate. Instance store exists to sell the local disk that is already in the host, with the honest catch that stopping the instance takes the data with it.',
     whenToUse: [
       'Scratch space, temporary files, caches, spill-to-disk for a query engine',
       'Replicated distributed stores (Cassandra, Kafka) where the cluster already holds another copy',
@@ -266,6 +270,8 @@ export const storageServices: Service[] = [
     oneLiner: 'Elastic NFS filesystem that many Linux instances mount at once, across AZs.',
     whatItIs:
       'A managed NFSv4 filesystem. It grows and shrinks automatically with no capacity to provision, and thousands of clients — EC2, ECS, EKS, Lambda — can mount it concurrently. You reach it through mount targets, one per AZ, each with its own security group.',
+    whyItExists:
+      "Several instances needing the same files had two bad options: one NFS server on an EC2 instance, which was a single point of failure everybody depended on, or copies on each instance's EBS volume, which drift apart the moment anything is written. Sizing the volume in advance made it worse — too small breaks at 3am, too large is paid for monthly. EFS exists so a shared filesystem has no server to lose and no size to guess.",
     whenToUse: [
       'Shared content across a fleet: web assets, uploads, a CMS content directory',
       'Lift-and-shift of an application expecting a POSIX filesystem it can write to from several servers',
@@ -334,6 +340,8 @@ export const storageServices: Service[] = [
     oneLiner: 'Four managed third-party filesystems: Windows, Lustre, NetApp ONTAP, OpenZFS.',
     whatItIs:
       'A family, and the exam tests you on picking the right member. FSx for Windows File Server gives SMB with Active Directory integration. FSx for Lustre gives HPC-grade parallel throughput with an S3 link. FSx for NetApp ONTAP gives multi-protocol access plus ONTAP features like snapshots and dedup. FSx for OpenZFS gives ZFS semantics with low-latency NFS.',
+    whyItExists:
+      'Applications that expect SMB with Active Directory, or Lustre\'s parallel throughput, or ONTAP\'s snapshots, cannot simply be moved onto S3 — the protocol *is* the requirement, and rewriting the application was never on the table. So teams ran those filesystems themselves on EC2, and inherited licensing, patching and failover for a storage product that was never their business. FSx exists so the answer to "it needs SMB" is not "then it stays on premises".',
     whenToUse: [
       'Windows File Server: SMB shares, AD-joined, Windows ACLs, DFS namespaces',
       'Lustre: machine learning training, genomics, seismic and other HPC reading from S3 at hundreds of GB/s',
@@ -385,6 +393,8 @@ export const storageServices: Service[] = [
       'On-premises appliance that presents AWS storage as local NFS, SMB, iSCSI or a tape library.',
     whatItIs:
       'A virtual (or hardware) appliance in your data centre that speaks a familiar local protocol on one side and S3 or EBS on the other, with a local cache for hot data. It is the standard answer to "keep our existing on-premises application unchanged but put the data in AWS".',
+    whyItExists:
+      'An application that reads and writes an on-premises share cannot be pointed at S3 without a rewrite, and the local disks it sits on still fill up, still need a backup, and still cap you at what fits in the building. Copying data to AWS nightly with a script left two truths about the same files. Storage Gateway exists so the application keeps speaking NFS, SMB, iSCSI or tape while the durable copy actually lives in AWS.',
     whenToUse: [
       'S3 File Gateway: on-premises apps write to an NFS/SMB share, objects land in S3',
       'FSx File Gateway: low-latency on-premises access to an FSx for Windows filesystem',
@@ -439,6 +449,8 @@ export const storageServices: Service[] = [
       'One place to define backup plans, retention and cross-Region copies for many services.',
     whatItIs:
       'A policy engine for backups. You define a backup plan — schedule, retention, lifecycle to cold storage, cross-Region and cross-account copy — and apply it by tag or resource to EBS, RDS, Aurora, DynamoDB, EFS, FSx, S3, EC2, Storage Gateway volumes and more. Vault Lock gives you immutable, WORM-protected backups.',
+    whyItExists:
+      'Backups were per-service and therefore per-team: an EBS snapshot script here, an RDS retention setting there, a DynamoDB export in a Lambda, each with its own schedule and nobody able to answer "is everything covered" without an audit. Retention and cross-Region copies then had to be re-implemented in each of them. AWS Backup exists so the policy lives in one place and coverage is a question with an answer.',
     whenToUse: [
       'Centralised, auditable backup policy across services and accounts',
       'Compliance requirements for retention that must be provable',

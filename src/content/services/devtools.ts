@@ -12,6 +12,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'Distributed tracing — follow one request across every service it touches.',
     whatItIs:
       'Your instrumented application emits *segments*; downstream calls emit *subsegments*; X-Ray stitches them into a trace and draws a service map showing latency and errors per hop. Where CloudWatch tells you a service is slow, X-Ray tells you which call inside it is slow.',
+    whyItExists:
+      "Once a request crosses five services, latency has nowhere to hide: each service's own metrics look acceptable, the user still waits two seconds, and finding the slow hop meant correlating log timestamps across five log groups by hand. X-Ray exists to carry a trace id through the call chain so the request itself is the unit you look at, and the slow or failing hop is visible rather than inferred.",
     whenToUse: [
       'Finding the slow hop in a microservice or serverless chain',
       'Debugging why a Lambda function times out — is it the database, the third-party API, or the code?',
@@ -73,6 +75,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'Serverless shorthand for CloudFormation, plus a CLI that runs Lambda locally.',
     whatItIs:
       'The Serverless Application Model is a CloudFormation transform: `AWS::Serverless::Function`, `::Api`, `::HttpApi`, `::StateMachine`, `::SimpleTable` expand into dozens of raw resources. The SAM CLI is the other half — `sam local invoke` and `sam local start-api` run your functions in Docker on your machine, and `sam deploy --guided` packages and ships them.',
+    whyItExists:
+      'Describing one Lambda function properly in CloudFormation takes a function, a role, a log group, a permission and several API Gateway resources — hundreds of lines of boilerplate whose shape is identical every time. And you could not run any of it without deploying. SAM exists to compress that into a few resource types, and its CLI exists so a function can be invoked on your machine before it ever reaches AWS.',
     whenToUse: [
       'Any serverless application defined as infrastructure as code',
       'Local testing and debugging of Lambda functions before deploying',
@@ -132,6 +136,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'Orchestrates the CI/CD pipeline: source → build → test → deploy.',
     whatItIs:
       'A continuous delivery service made of stages, each containing actions. Actions can be source (Git, S3, ECR), build (CodeBuild, Jenkins), test, approval (a human gate), deploy (CodeDeploy, CloudFormation, ECS, Elastic Beanstalk, S3) or invoke (Lambda, Step Functions). Artifacts pass between stages through an S3 bucket.',
+    whyItExists:
+      "Automation existed in pieces — a build job here, a deploy script there, a human copying an artefact between them — so the actual path from commit to production lived in a wiki page and in one engineer's head. Nobody could see where a change was. CodePipeline exists to make that path an artefact itself: defined stages, artefacts passed between them, and approvals as a modelled step rather than a message.",
     whenToUse: [
       'Automating build and deploy on every commit',
       'A manual approval gate before production',
@@ -184,6 +190,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'Managed build service driven by a buildspec.yml file.',
     whatItIs:
       'Compiles source, runs tests and produces artifacts in ephemeral containers, with no build servers to maintain. Everything it does is described in `buildspec.yml`: install, pre_build, build, post_build phases, artifacts and cache configuration.',
+    whyItExists:
+      'Build servers were the classic pet: a long-lived machine with a hand-installed toolchain, where "works on the build box" hid a dependency nobody had recorded, and the queue on Friday afternoon was a bottleneck the team paid for all week. CodeBuild exists so a build is an ephemeral container described in a file — the environment is declared, disposable, and parallel by default.',
     whenToUse: [
       'Compiling and testing on every commit with no CI servers to run',
       'Building container images and pushing to ECR',
@@ -232,6 +240,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'Releases application versions to EC2, Lambda or ECS with a chosen strategy.',
     whatItIs:
       'Handles the *release* step, driven by `appspec.yml`. On EC2 it runs lifecycle hooks (BeforeInstall, AfterInstall, ApplicationStart, ValidateService) via an agent. On Lambda and ECS it shifts traffic gradually — canary or linear — and rolls back automatically if a CloudWatch alarm fires.',
+    whyItExists:
+      "Getting a new version onto a fleet was a script that copied files and restarted services, with the hard parts left out: taking an instance out of the load balancer first, checking whether the new version actually works, and getting back to the old one when it does not. Rollback was a redeploy of yesterday's artefact under pressure. CodeDeploy exists to make the release a controlled shift with hooks and an automatic reversal when an alarm fires.",
     whenToUse: [
       'Blue/green or canary releases with automatic rollback',
       'In-place rolling updates across an EC2 fleet',
@@ -342,6 +352,8 @@ export const devToolServices: Service[] = [
       'Language libraries for calling AWS APIs, with retries and credential resolution built in.',
     whatItIs:
       'Official libraries for JavaScript/TypeScript, Python (boto3), Java, .NET, Go, Rust, PHP, Ruby, Kotlin, Swift and C++. They handle request signing (SigV4), credential resolution from the environment, pagination, and — importantly for the exam — automatic retries with exponential backoff and jitter on throttling and transient errors.',
+    whyItExists:
+      'The AWS API is HTTPS, and calling it directly means implementing SigV4 signing, pagination, and — the part that matters most — retries with exponential backoff and jitter, because throttling and transient errors are normal at scale. Hand-rolled clients got the signing right and the retries wrong, then hammered a throttled service in lockstep. The SDKs exist so that behaviour is the default rather than an exercise.',
     whenToUse: [
       'Any application code that talks to AWS',
       'Anywhere you would otherwise hand-sign HTTP requests',
@@ -392,6 +404,8 @@ export const devToolServices: Service[] = [
     oneLiner: 'AI coding assistant for generating, reviewing, testing and modernising code.',
     whatItIs:
       'An AI assistant in the IDE, CLI and console. It completes and generates code, explains and reviews it, generates unit tests, scans for security issues, and can perform guided upgrades. DVA-C02 now lists AI-assisted development among its emerging topics, so it appears in unscored pretest questions.',
+    whyItExists:
+      "The slow parts of development are rarely typing: they are reading unfamiliar code, writing the tests nobody enjoys, checking a library's docs, and language or framework upgrades that stall for quarters because they touch everything. Q Developer exists to take those where it can, inside the IDE and CLI rather than as a separate tool — and it is on the exam because AWS now treats AI-assisted development as part of the developer's job.",
     whenToUse: [
       'Generating code, tests and documentation from a specification',
       'Reviewing code for defects and security findings',

@@ -15,6 +15,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Migrates and continuously replicates databases with minimal downtime.',
     whatItIs:
       'A replication instance reads from a source database and writes to a target, either as a one-off full load or as full load plus ongoing change data capture, which is what keeps downtime to a cutover window. *Homogeneous* migrations (Oracle → Oracle) need only DMS. *Heterogeneous* migrations (Oracle → Aurora PostgreSQL) also need the Schema Conversion Tool to translate schemas, procedures and views.',
+    whyItExists:
+      'A database migration used to mean a long outage: stop writes, dump, copy, load, verify, resume — impossible to fit into a weekend at any real size, so migrations were deferred for years. Heterogeneous moves added the separate problem of translating schemas and stored procedures by hand. DMS exists to replicate changes continuously while the source stays live, so downtime shrinks to a cutover.',
     whenToUse: [
       'Migrating a database to AWS with near-zero downtime',
       'Engine changes, paired with SCT for schema conversion',
@@ -68,6 +70,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Fast, scheduled, validated transfer of files and objects into or within AWS.',
     whatItIs:
       'An agent-based (on premises) or agentless (AWS-to-AWS) transfer service that moves data between NFS, SMB, HDFS, self-managed object stores and AWS storage — S3, EFS, FSx — with encryption, integrity validation, scheduling and incremental transfer built in. It saturates the network link far better than a hand-rolled script.',
+    whyItExists:
+      'Moving terabytes with rsync or a custom script means half-copied files, no reliable integrity check, restarts from the beginning, and a link nowhere near saturated because one stream cannot fill it. Verifying afterwards was another homemade script. DataSync exists to be the transfer that parallelises, validates, resumes and runs on a schedule — the online counterpart to shipping a Snowball.',
     whenToUse: [
       'One-off or recurring migration of file shares into S3, EFS or FSx',
       'Scheduled synchronisation between on premises and AWS',
@@ -115,6 +119,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Physical devices shipped to you for offline data transfer and edge compute.',
     whatItIs:
       'Ruggedised appliances AWS ships to your site. You copy data onto them and ship them back, where the contents are loaded into S3. Snowball Edge comes in Storage Optimized and Compute Optimized variants and can also run EC2 instances and Lambda functions at the edge; Snowmobile is a shipping container for exabyte-scale moves.',
+    whyItExists:
+      'Physics beats bandwidth: 500 TB over a 1 Gbps link takes months of perfect uptime, and the line is usually needed for the business at the same time. So the data stayed put and the migration never started. The Snow Family exists because posting the disks is genuinely faster — and the compute variants exist for sites where the connection is intermittent or absent entirely.',
     whenToUse: [
       'Datasets so large that transferring over the network would take weeks or months',
       'Sites with poor, expensive or no connectivity',
@@ -163,6 +169,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Managed SFTP, FTPS, FTP and AS2 endpoints backed by S3 or EFS.',
     whatItIs:
       'Fully managed file-transfer protocol endpoints. Partners keep using their existing SFTP client and credentials; the files land directly in S3 or EFS. It exists so you can decommission an SFTP server without asking every partner to change how they work.',
+    whyItExists:
+      'Partners exchange files over SFTP and will not change for you, so somebody ran an SFTP server: a public port, host keys, user accounts, patching, and a disk that had to be drained into S3 by a cron job. Transfer Family exists so the protocol endpoint is managed and the files land in S3 or EFS directly — the partner keeps their client and credentials, and the server stops being yours.',
     whenToUse: [
       'External partners upload via SFTP and cannot change their process',
       'Replacing a self-managed SFTP server',
@@ -245,6 +253,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Visualise and forecast spend, and get commitment recommendations.',
     whatItIs:
       'An interactive view of historical and forecast cost and usage, sliced by service, account, Region, tag, instance type or purchase option. It also produces Reserved Instance and Savings Plans purchase recommendations based on your actual usage, and Rightsizing recommendations for EC2.',
+    whyItExists:
+      'The bill arrived as a monthly total, and "why is it higher than last month" meant downloading a CSV of millions of line items and pivoting it in a spreadsheet — a week after anything could have been done about it. Cost Explorer exists so spend is sliceable by account, service, Region and tag while the month is still running, and so commitment recommendations come from measured usage rather than a guess.',
     whenToUse: [
       'Finding out where the money is going',
       "Forecasting next month's bill",
@@ -374,6 +384,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Commit to steady usage for up to ~72% off — the main compute cost lever.',
     whatItIs:
       'Two ways to pre-commit. *Savings Plans* commit to a dollar-per-hour spend for one or three years: Compute Savings Plans are the most flexible (any instance family, Region, OS, and they cover Fargate and Lambda), EC2 Instance Savings Plans are cheaper but locked to a family and Region, and SageMaker Savings Plans cover SageMaker. *Reserved Instances* commit to specific instance attributes, and Convertible RIs can be exchanged. RIs can also be sold on the Marketplace; Savings Plans cannot.',
+    whyItExists:
+      'On-demand prices a server as if you might switch it off this afternoon, which is honest for a spiky workload and expensive for the baseline that has run every day for three years. AWS would rather have the commitment than the flexibility premium. Savings Plans and Reserved Instances exist to trade a one or three year promise for a lower rate — a billing construct, not a resource, which is why they never change what is running.',
     whenToUse: [
       'Predictable, steady-state workloads running most of the time',
       'Baseline capacity, with Spot or On-Demand handling the peaks above it',

@@ -13,6 +13,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Ordered, replayable real-time stream that many consumers can read independently.',
     whatItIs:
       'A stream of records split into shards. Records are ordered within a shard, kept for a retention period (24 hours by default, up to 365 days), and read by multiple independent consumers each tracking its own position. That replayability and multi-consumer independence is what separates it from a queue — and what makes it the answer whenever "real-time" and "multiple analytics consumers" appear together.',
+    whyItExists:
+      'When several teams need the same events, a queue is the wrong shape — reading a message removes it, so the second consumer never sees it, and a bug means the data is simply gone. Copying the feed per consumer multiplies both cost and the ways it can drift. Kinesis Data Streams exists to make the stream a retained, ordered log that each consumer reads at its own position and can re-read after a fix.',
     whenToUse: [
       'Clickstreams, IoT telemetry, application logs, metrics — high-volume ordered ingestion',
       'Several different consumers processing the same data for different purposes',
@@ -80,6 +82,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Zero-code streaming delivery into S3, Redshift, OpenSearch or Splunk.',
     whatItIs:
       'A fully managed delivery stream. It buffers incoming records by size or time, optionally transforms them with a Lambda function, optionally converts JSON to Parquet or ORC, compresses, and writes to the destination. There is no shard management, no consumer code, and no replay — it is a pipe, not a log.',
+    whyItExists:
+      "Getting a stream of records into S3 or a warehouse used to mean writing and operating the consumer: batching so you don't create millions of tiny files, converting formats, compressing, retrying, and a fleet to run it on. That code is the same everywhere and interesting nowhere. Firehose exists to be that consumer as configuration — which is also why it cannot replay: it is a pipe, not a log.",
     whenToUse: [
       'Landing streaming data in S3 for a data lake with no code to maintain',
       'Loading a stream into Redshift, OpenSearch or a third-party endpoint',
@@ -139,6 +143,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Managed Apache Kafka — for when the requirement says "Kafka".',
     whatItIs:
       'Fully managed Apache Kafka clusters, with AWS handling broker provisioning, patching and replication across AZs. MSK Serverless removes capacity planning entirely. It exists on the exam for the same reason Amazon MQ does: existing tooling and API compatibility.',
+    whyItExists:
+      'Kafka is often already the requirement — the producers, the consumers, the exactly-once semantics and the operational habits all exist — and rewriting them for another messaging service buys nothing. But running brokers means partition rebalancing, disk sizing, patching and AZ-aware replication. MSK exists so "we need Kafka" does not have to mean "we need a Kafka team".',
     whenToUse: [
       'An existing Kafka application, Kafka Connect connectors, or Kafka Streams code',
       'Requirements naming Kafka explicitly',
@@ -182,6 +188,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Serverless SQL directly over data sitting in S3 — pay per terabyte scanned.',
     whatItIs:
       'A Presto/Trino-based query engine that reads S3 objects in place using table definitions from the Glue Data Catalog. Nothing is loaded, nothing is provisioned, and you are billed per terabyte scanned — which makes the file format and partitioning your main cost lever, not the query itself.',
+    whyItExists:
+      "Answering one ad-hoc question about last year's logs meant standing up a cluster or loading the data into a warehouse first — hours of work and a running bill, to run a query once. So the question usually went unasked, and the logs sat in S3 as write-only storage. Athena exists so a bucket is queryable on its own: no cluster, no load step, and nothing left running after the answer.",
     whenToUse: [
       'Ad-hoc or occasional SQL over logs, exports and data-lake files in S3',
       'Querying CloudTrail logs, VPC Flow Logs, ALB access logs, Cost and Usage Reports',
@@ -241,6 +249,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Serverless ETL plus the Data Catalog every other analytics service reads.',
     whatItIs:
       'Two things worth separating. The *Data Catalog* is a metadata store — table definitions, schemas, partitions — that Athena, Redshift Spectrum, EMR and Lake Formation all use. *Glue ETL* is serverless Apache Spark: jobs that read, transform and write data, with crawlers that infer schemas automatically and a visual editor for building the transformations.',
+    whyItExists:
+      'Every analytics engine needed to be told the same things — where the tables are, what the columns mean, how the data is partitioned — so each one held its own copy of that truth, and they disagreed. The transform jobs in between ran on clusters somebody kept alive for work that happens nightly. Glue exists to make schema a shared catalogue and ETL something you run without owning Spark.',
     whenToUse: [
       'Serverless ETL with no cluster to manage',
       'Cataloguing a data lake so Athena and Redshift Spectrum can query it',
@@ -305,6 +315,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Managed Hadoop, Spark, Hive, Presto and friends on a cluster you control.',
     whatItIs:
       'Managed big-data clusters. AWS provisions and configures the frameworks; you keep control of instance types, cluster sizing, bootstrap actions and framework tuning. Node roles matter: the primary node coordinates, core nodes hold HDFS data, and task nodes are compute-only — which is why task nodes are the ones you run on Spot.',
+    whyItExists:
+      'Running Spark or Hadoop yourself meant assembling a distribution, matching versions across a cluster, and keeping the whole thing configured — before anyone could analyse anything, and again on every upgrade. EMR exists to hand over that assembly while leaving the knobs exposed, because these workloads are tuned deliberately: it is the answer when a question names a framework, or when someone wants Spot capacity and existing Hadoop code left alone.',
     whenToUse: [
       'Existing Spark, Hadoop, Hive, HBase or Presto workloads',
       'Very large batch processing where cluster tuning pays off',
@@ -364,6 +376,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Builds a governed data lake with table-, column- and row-level permissions.',
     whatItIs:
       'A governance layer over S3 and the Glue Data Catalog. It centralises fine-grained permissions — down to columns, rows and cells — and enforces them consistently across Athena, Redshift Spectrum, EMR and QuickSight, so you stop expressing analytics permissions as S3 bucket policies.',
+    whyItExists:
+      'Fine-grained access to a data lake had to be expressed as S3 bucket policies and prefix layouts, so "this team may see the table but not the salary column" became a folder structure — and each engine that touched the lake enforced its own version of it. Lake Formation exists to state the grant once, in table, column and row terms, and have Athena, Redshift Spectrum and EMR all honour the same answer.',
     whenToUse: [
       'Column-, row- or cell-level access control over data-lake tables',
       'Central permissions across several analytics engines',
@@ -403,6 +417,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Managed search and log analytics with dashboards.',
     whatItIs:
       'Managed OpenSearch (the Elasticsearch fork) plus OpenSearch Dashboards. Its two exam roles are full-text search over application data, and centralised log analytics where you need to search and visualise logs interactively rather than just query them.',
+    whyItExists:
+      'Logs in S3 answer questions you already knew to ask; an incident is the opposite, because you are searching for a string you have never seen before and want the answer now, not in forty seconds. Relational LIKE queries and grep over object storage both fall apart at that scale. OpenSearch exists to keep an inverted index and dashboards over it, so interactive search and visualisation is the point rather than a batch query.',
     whenToUse: [
       'Full-text search: fuzzy matching, relevance ranking, autocomplete, faceting',
       'Log and trace analytics with interactive dashboards',
@@ -451,6 +467,8 @@ export const analyticsServices: Service[] = [
     oneLiner: 'Serverless business intelligence dashboards, priced per user.',
     whatItIs:
       'A managed BI service that connects to Redshift, Athena, RDS, S3, Aurora and third-party sources, builds interactive dashboards, and embeds them in your own applications. SPICE is its in-memory engine, which caches data so dashboards stay fast without hammering the source. AWS has been consolidating QuickSight into the Quick Suite brand.',
+    whyItExists:
+      'Dashboards meant a BI server somebody maintained, seat licences bought in blocks for a year, and every refresh landing straight on the production database. Analysts who only look once a month cost the same as those who live in it. Quick Suite exists to price BI per user with an in-memory layer (SPICE) between the dashboard and the source, so the warehouse is not queried afresh by every viewer.',
     whenToUse: [
       'Dashboards and reports for business users with no infrastructure to run',
       'Embedding analytics in a customer-facing application',

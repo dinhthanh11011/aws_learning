@@ -93,6 +93,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Mints short-lived credentials — the mechanism behind every role assumption.',
     whatItIs:
       'The Security Token Service issues temporary access key, secret key and session token triples with an expiry. Every role assumption, every federated login, every instance profile credential comes from STS. Temporary credentials are the answer to almost any question containing the words "long-lived access keys".',
+    whyItExists:
+      'Access keys used to be long-lived, so a key pasted into a script, a laptop or a repository stayed valid until a human noticed and revoked it — and on an EC2 instance the credential had to be put there somehow in the first place. STS exists so credentials expire on their own: a role is something you assume for an hour, which is what makes "use a role, not access keys" the right answer to almost every access question.',
     whenToUse: [
       'Cross-account access: AssumeRole into the target account',
       'Federation: AssumeRoleWithSAML for enterprise identity providers, AssumeRoleWithWebIdentity for OIDC/social/Cognito',
@@ -147,6 +149,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Workforce single sign-on across every account in the organisation.',
     whatItIs:
       'The successor to AWS SSO. It connects to an external identity provider (Okta, Entra ID, Google Workspace) or hosts its own directory, then maps groups to *permission sets* — reusable IAM policy bundles — assigned to accounts. One login, one place to revoke, no per-account IAM users.',
+    whyItExists:
+      "Human access used to be an IAM user per person per account, so a fifteen-account estate meant fifteen credentials to create, fifteen to remember, and fifteen to remember to delete on someone's last day — which is precisely the thing that gets missed. Identity Center exists so people log in through the identity provider that already governs employment, and access is a permission set assignment revoked in one place.",
     whenToUse: [
       'Human access to many AWS accounts',
       'Federating an existing corporate identity provider',
@@ -254,6 +258,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Prescriptive, automated multi-account landing zone with guardrails.',
     whatItIs:
       'A managed setup that creates a well-architected multi-account baseline: an organisation, a log-archive account, an audit account, IAM Identity Center, centralised CloudTrail and Config, plus preventive (SCP) and detective (Config rule) controls. Account Factory provisions new accounts to that standard on request.',
+    whyItExists:
+      'Everyone arrived at the same multi-account baseline eventually — an organisation, a log archive, an audit account, centralised CloudTrail, SSO, some guardrails — but each got there over months of blog posts and hand-built scripts, and the tenth account rarely matched the first. Control Tower exists so that baseline is a prescribed setup rather than a project, and new accounts are minted to the standard instead of drifting from it.',
     whenToUse: [
       'Standing up a new multi-account environment quickly and correctly',
       'Enforcing and continuously monitoring guardrails across accounts',
@@ -310,6 +316,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Share specific resources across accounts without duplicating them.',
     whatItIs:
       'Lets one account share resources — VPC subnets, Transit Gateways, Route 53 Resolver rules, License Manager configurations, Aurora clusters and more — with other accounts or the whole organisation. Shared subnets are the notable one: several accounts can launch resources into the same VPC while networking stays centrally owned.',
+    whyItExists:
+      'Sharing meant duplicating: each account got its own VPC, its own Transit Gateway attachment, its own resolver rules, and the network team lost any single view of the estate. The alternative was one giant shared account, which throws away the isolation that separate accounts were for. RAM exists so a resource can be owned in one account and used from others — shared subnets being the case the exam cares about.',
     whenToUse: [
       'Centralised networking: one network account owns the VPC, application accounts launch into shared subnets',
       'Sharing a Transit Gateway across the organisation',
@@ -353,6 +361,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Managed Active Directory, or a connector to the one you already run.',
     whatItIs:
       'Three options with distinct answers. AWS Managed Microsoft AD is a real, managed Active Directory in your VPC, trustable with an on-premises domain. AD Connector is a proxy that redirects requests to your existing on-premises AD without storing anything in AWS. Simple AD is a small, cheap Samba-based directory with limited features.',
+    whyItExists:
+      'Windows workloads, file shares and enterprise logins all assume Active Directory, and moving them to AWS otherwise meant either a VPN back to a domain controller in the office — with authentication depending on the tunnel — or running and patching domain controllers on EC2. Directory Service exists to offer both answers as managed options, which is why the exam is asking whether users must stay in the on-premises directory or can live in AWS.',
     whenToUse: [
       'Managed Microsoft AD: Windows workloads, FSx for Windows, RDS SQL Server Windows authentication, or an AWS-resident directory',
       'AD Connector: reuse the on-premises directory as the single source of truth with no directory in AWS',
@@ -399,6 +409,8 @@ export const securityServices: Service[] = [
     oneLiner: "Sign-up, sign-in and AWS credentials for your application's end users.",
     whatItIs:
       'Two components that are constantly confused, and the exam knows it. A *user pool* is a user directory: it handles registration, login, MFA, password policies, social and SAML federation, and issues JWT tokens (ID, access, refresh). An *identity pool* takes a token — from a user pool, Google, Facebook, SAML, or nothing at all for guests — and exchanges it via STS for temporary AWS credentials so the client can call AWS services directly.',
+    whyItExists:
+      'Every application rebuilt the same login: a users table, password hashing somebody hoped was current, email verification, password reset, then MFA and "sign in with Google" bolted on later. It is security-critical code with no competitive value, and each copy was a fresh chance to leak a credential database. Cognito exists to be that directory as a service — and, through identity pools, to turn an end-user login into temporary AWS credentials so a browser never holds a long-lived key.',
     whenToUse: [
       'User pool: authenticating customers of a web or mobile app, with hosted UI or your own',
       'Identity pool: letting an authenticated (or guest) client upload directly to S3 or query DynamoDB with scoped credentials',
@@ -461,6 +473,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Managed encryption keys, integrated into almost every AWS service.',
     whatItIs:
       'A key-management service holding KMS keys whose material never leaves the service unencrypted. Because a KMS key can only encrypt up to 4 KB directly, real data is protected with *envelope encryption*: KMS generates a data key, you encrypt the data with it locally, and store the KMS-encrypted copy of that data key alongside the ciphertext. Key policies — resource policies on the key — are what actually control use, and they are the most commonly missed half of a cross-account setup.',
+    whyItExists:
+      "Encryption was never the hard part; keeping the key was. It ended up in a config file, a repository, or an operator's head — and rotating it meant re-encrypting everything, so nobody rotated it. Auditing who had used it was impossible, because using a key leaves no trace. KMS exists to hold key material that never comes out in the clear, make every use an IAM-authorised and logged API call, and make envelope encryption the normal way to protect data larger than 4 KB.",
     whenToUse: [
       'Encryption at rest for S3, EBS, RDS, DynamoDB, EFS, Secrets Manager, SNS, SQS — essentially everywhere',
       'Auditable key usage: every KMS call is logged in CloudTrail',
@@ -539,6 +553,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Dedicated single-tenant hardware security modules that only you can access.',
     whatItIs:
       'A cluster of FIPS 140-3 Level 3 validated hardware security modules in your VPC. You control the users and keys; AWS cannot access the key material and cannot recover it if you lose your credentials. Accessed through standard PKCS#11, JCE and CNG libraries rather than the AWS API.',
+    whyItExists:
+      'KMS is multi-tenant and AWS operates it, which is fine until a regulator or a contract requires that key material sit in single-tenant, FIPS 140-3 Level 3 hardware that the provider demonstrably cannot reach — or until an application only speaks PKCS#11. Racking your own HSMs answered that and left you owning the hardware. CloudHSM exists for those requirements, with the consequence that losing your credentials loses the keys, because AWS genuinely cannot recover them.',
     whenToUse: [
       'A regulatory requirement for single-tenant, FIPS 140-3 Level 3 hardware',
       'You must be the only party with any access to the key material',
@@ -585,6 +601,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Free public TLS certificates that renew themselves, for AWS-integrated services.',
     whatItIs:
       'Provisions, stores and renews TLS certificates. Public certificates issued by ACM are free and auto-renew when validated by DNS. They can be attached to CloudFront, ALB, NLB, API Gateway and a few others — but the private key never leaves ACM, so you cannot install one on an EC2 instance yourself.',
+    whyItExists:
+      "TLS certificates were bought, installed by hand, and forgotten until they expired — usually on a weekend, usually taking a public site down, always for a task that had been on somebody's calendar for a year. Renewal touched every load balancer and instance that held a copy of the key. ACM exists to make issuance and renewal automatic, at the price that the private key never leaves it — which is exactly why you cannot put an ACM certificate on an EC2 instance yourself.",
     whenToUse: [
       'HTTPS on CloudFront, ALB, NLB or API Gateway',
       'Removing manual certificate renewal from your operations',
@@ -636,6 +654,8 @@ export const securityServices: Service[] = [
       'Stores secrets, encrypts them with KMS, and rotates database credentials automatically.',
     whatItIs:
       'A secret store with a rotation engine. Secrets are KMS-encrypted, retrieved via an IAM-authorised API call, and can be rotated on a schedule by a Lambda function — with built-in rotation support for RDS, Aurora, Redshift and DocumentDB credentials. Cross-account access works through a resource policy on the secret.',
+    whyItExists:
+      'Database passwords lived in environment variables, config files and CI settings, which means they were copied, committed and never rotated — because rotating one required finding every copy and coordinating a deploy. Secrets Manager exists to make the credential something you fetch at run time under IAM, so rotation is a scheduled change in one place instead of a hunt.',
     whenToUse: [
       'Database credentials, API keys and third-party tokens your application needs at runtime',
       'Any requirement for *automatic* credential rotation',
@@ -684,6 +704,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Layer 7 web application firewall — SQL injection, XSS, bad bots, rate limits.',
     whatItIs:
       'Inspects HTTP requests before they reach your application and allows, blocks, counts or CAPTCHAs them. Rules match on IP, country, headers, body, URI, size and regex, plus managed rule groups from AWS and vendors. It attaches to CloudFront, ALB, API Gateway, AppSync, Cognito user pools and App Runner — but never to an NLB, because there is no HTTP layer to inspect there.',
+    whyItExists:
+      'Injection, cross-site scripting and credential stuffing arrive as perfectly valid HTTP, so a firewall that only sees IPs and ports waves them straight through, and the only defence was the application code itself — patched at the speed of your release cycle. WAF exists to put a rule layer in front that can block a pattern today, and to rate-limit a client that is technically behaving but doing it ten thousand times a minute.',
     whenToUse: [
       'Blocking SQL injection, cross-site scripting and other OWASP Top 10 patterns',
       'Rate-based rules to throttle a single IP flooding an endpoint',
@@ -748,6 +770,8 @@ export const securityServices: Service[] = [
       'DDoS protection — Standard is free and automatic, Advanced adds response teams and cost protection.',
     whatItIs:
       'Shield Standard protects every AWS customer against common Layer 3 and 4 volumetric attacks at no charge, with nothing to configure. Shield Advanced is a paid subscription adding higher-layer detection, 24/7 access to the Shield Response Team, attack diagnostics, WAF at no extra cost, and — the commercially important part — reimbursement of scaling charges caused by an attack.',
+    whyItExists:
+      "A volumetric attack used to be absorbed by whoever's pipe it hit, and the cloud added a new twist: auto-scaling means an attack succeeds by working, taking your availability out through the bill instead of the servers. Shield Standard exists so basic Layer 3/4 defence is on for everyone by default; Advanced exists for the response team and for reimbursing the scaling charges an attack caused.",
     whenToUse: [
       'Standard: already on, nothing to do',
       'Advanced: business-critical public endpoints where an attack is a material risk',
@@ -800,6 +824,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Continuous threat detection from logs — no agents, one click to enable.',
     whatItIs:
       'A managed detection service that analyses CloudTrail management and data events, VPC Flow Logs, DNS logs, and optionally EKS audit logs, S3 data events, RDS login activity, Lambda network activity and EBS volumes for malware. It applies machine learning and threat intelligence to produce findings — cryptomining, credential exfiltration, communication with known-bad hosts, unusual API calls from unusual places.',
+    whyItExists:
+      'The evidence of a compromise was already in CloudTrail, Flow Logs and DNS logs; nobody was reading them, because spotting an unusual API call from an unusual country in millions of events is not a job a person does. Building the detection yourself meant a log pipeline, threat feeds and rules to maintain. GuardDuty exists so detection is a switch rather than a project, and it reads the logs from the service side — which is why there is no agent to deploy.',
     whenToUse: [
       'Continuous, low-effort threat detection across accounts',
       'Detecting compromised instances or credentials',
@@ -854,6 +880,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Automated vulnerability scanning for EC2, container images and Lambda.',
     whatItIs:
       'Continuously scans EC2 instances (via the SSM agent), ECR container images and Lambda functions for known CVEs and unintended network exposure, and scores findings for prioritisation. Scanning is triggered by change, not by a schedule you maintain.',
+    whyItExists:
+      'Vulnerability scanning was a scheduled event: a scanner ran on Sunday, produced a spreadsheet, and by Wednesday the fleet had changed and the spreadsheet was fiction. Anything launched and terminated between scans was never looked at. Inspector exists to make the trigger the change itself, so a new instance or a freshly pushed image is assessed when it appears rather than when the calendar says so.',
     whenToUse: [
       'Continuous CVE scanning of instances, images and functions',
       'Detecting unintended network paths to an instance',
@@ -893,6 +921,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Finds and classifies sensitive data — PII, credentials, financial data — in S3.',
     whatItIs:
       'Uses machine learning and pattern matching to discover sensitive data in S3 buckets, and reports on bucket security posture — public access, unencrypted buckets, buckets shared outside the account. You can add custom data identifiers with your own regex for organisation-specific formats.',
+    whyItExists:
+      'Nobody could answer "do we have customer PII in S3", because the buckets were created by dozens of teams over years and the only way to check was to read the objects. So the honest answer at audit time was a guess, and the first real inventory arrived with a breach notification. Macie exists to make that a scan you can run and repeat, and to flag the buckets whose exposure makes the answer urgent.',
     whenToUse: [
       'Discovering where PII, PHI or payment data has ended up in S3',
       'GDPR, HIPAA and PCI data-inventory requirements',
@@ -959,6 +989,8 @@ export const securityServices: Service[] = [
       'One dashboard aggregating findings from every security service, with compliance scores.',
     whatItIs:
       'Aggregates and normalises findings from GuardDuty, Inspector, Macie, Firewall Manager, IAM Access Analyzer and partner tools into a single format, then runs automated compliance checks against standards like CIS AWS Foundations, PCI DSS and AWS Foundational Security Best Practices.',
+    whyItExists:
+      'Turning on GuardDuty, Inspector, Macie and Access Analyzer gave you four consoles, four finding formats and four sets of severities — so nobody could say what the top ten problems in the account actually were, and compliance evidence was assembled by hand before each audit. Security Hub exists to normalise all of it into one stream and score it against published standards continuously.',
     whenToUse: [
       'A single pane of glass across accounts and security services',
       'Continuous compliance scoring against a recognised standard',
@@ -1002,6 +1034,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Managed stateful network firewall and IPS for an entire VPC.',
     whatItIs:
       'A managed firewall deployed into dedicated subnets, with traffic routed through it. It does stateful inspection, Suricata-compatible IPS rules, domain-name filtering and protocol detection — the things security groups and NACLs cannot do.',
+    whyItExists:
+      'Security groups and NACLs decide whether a flow may exist; they cannot look inside it, so "block traffic to this domain" or "stop this known exploit payload" had no answer without routing everything through a firewall appliance you built and scaled on EC2 yourself. Network Firewall exists to be that inspection point as a managed, AZ-redundant service that takes Suricata rules — the layer above what a security group can express.',
     whenToUse: [
       'Egress filtering by domain name — "instances may only reach these hostnames"',
       'Intrusion detection and prevention inside the VPC',

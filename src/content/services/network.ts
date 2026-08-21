@@ -246,6 +246,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Reach AWS or partner services privately, without an internet gateway or NAT.',
     whatItIs:
       'Two shapes, and knowing which is which is the exam point. A *gateway* endpoint is a route-table entry for S3 and DynamoDB only — free, and it never leaves the AWS network. An *interface* endpoint is an ENI with a private IP in your subnet, powered by PrivateLink, available for most AWS services and for third-party or your own services shared across accounts — charged hourly plus per GB.',
+    whyItExists:
+      "Calling S3 or another team's service from a private subnet meant routing through a NAT gateway and out to a public endpoint — traffic on the internet, per-GB NAT charges, and a security review asking why a private workload needs internet access at all. Peering the two VPCs instead exposed far more than the one service. PrivateLink and VPC endpoints exist so a private subnet can reach exactly one service and nothing else, without an internet path.",
     whenToUse: [
       'Private subnets calling S3 or DynamoDB — use a gateway endpoint and remove the NAT cost',
       'Private access to other AWS APIs (KMS, Secrets Manager, SSM, ECR, SQS…) — interface endpoints',
@@ -303,6 +305,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Private one-to-one routing between two VPCs, any account, any Region.',
     whatItIs:
       'A direct network connection between exactly two VPCs, using private IP addresses. It is not transitive: if A peers with B and B peers with C, A still cannot reach C. Every side must add route-table entries pointing at the peering connection.',
+    whyItExists:
+      'Two VPCs that need to talk otherwise route through the internet — public IPs, egress charges and an attack surface — for traffic that never needed to leave AWS. Peering exists as the cheapest possible answer to that one case: a private route between exactly two VPCs. Its limits are the reason Transit Gateway exists, so the exam is usually asking you to notice when two has become ten.',
     whenToUse: [
       'A small number of VPCs that need to talk directly',
       'Cross-account or cross-Region private connectivity between two specific networks',
@@ -352,6 +356,8 @@ export const networkServices: Service[] = [
     oneLiner: 'A regional routing hub connecting many VPCs, VPNs and Direct Connect links.',
     whatItIs:
       'A cloud router. Every VPC, VPN and Direct Connect gateway attaches once to the Transit Gateway, and routing between them is handled by route tables on the gateway itself. That turns an n² peering mesh into n attachments, and it supports transitive routing, which peering does not.',
+    whyItExists:
+      'Connecting VPCs with peering works until there are ten of them: peering is one-to-one and non-transitive, so full connectivity costs 45 connections and 45 sets of route-table entries, and adding one more VPC means touching every existing one. The VPN and Direct Connect attachments then had to be duplicated per VPC as well. Transit Gateway exists to make that a hub: each network attaches once, and routing is decided in a single place.',
     whenToUse: [
       'Dozens or hundreds of VPCs needing any-to-any or hub-and-spoke connectivity',
       'Sharing one Direct Connect or VPN connection across many VPCs',
@@ -403,6 +409,8 @@ export const networkServices: Service[] = [
     oneLiner: 'A private physical circuit from your data centre into AWS.',
     whatItIs:
       'A dedicated network connection, provisioned through an AWS Direct Connect location, that bypasses the public internet entirely. It gives consistent latency, higher and more predictable throughput, and lower per-GB data transfer rates than internet egress. It also takes weeks to provision, which is itself an exam fact.',
+    whyItExists:
+      'Hybrid traffic over the internet is fine on average and unacceptable at the tail: latency wanders, throughput depends on the day, and a bulk transfer pays internet egress rates. For a database replicating to AWS or a trading floor, "usually fine" is a failure. Direct Connect exists to sell a private circuit with predictable behaviour — at the cost of weeks of provisioning, which is exactly why the exam pairs it with a VPN for the interim.',
     whenToUse: [
       'Consistent, predictable latency for hybrid workloads',
       'Large sustained data transfer where the lower egress rate pays for the circuit',
@@ -463,6 +471,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Encrypted IPsec tunnels from your network to AWS, over the internet.',
     whatItIs:
       'Two IPsec tunnels between a customer gateway (your device) and either a virtual private gateway or a Transit Gateway. Encrypted, quick to establish, and dependent on internet quality for latency and throughput.',
+    whyItExists:
+      'Connecting an office to a VPC otherwise means exposing something publicly and defending it, or waiting weeks for a private circuit before any hybrid work can begin. Site-to-Site VPN exists because encryption over the internet you already have can be up in an hour: not as steady as a dedicated link, which is why it is the standard stopgap while Direct Connect is provisioned, and the standard backup once it is.',
     whenToUse: [
       'Hybrid connectivity needed quickly, or as a cheap backup for Direct Connect',
       'Encryption in transit is required by policy',
@@ -550,6 +560,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Four load balancers; picking the right one is a guaranteed exam question.',
     whatItIs:
       'ALB works at Layer 7 and can route on host, path, header, query string and HTTP method. NLB works at Layer 4, handles millions of requests per second at ultra-low latency, and can give you a static IP per AZ. GWLB inserts third-party security appliances into the traffic path. CLB is legacy. Every load balancer performs health checks and only sends traffic to healthy targets, which is what makes it a resilience component and not just a distributor.',
+    whyItExists:
+      'Handing clients the address of a specific server means the client learns about your servers: replacing one requires a DNS change, an unhealthy one keeps taking traffic until someone notices, and load is shared only by luck. Home-grown solutions were a reverse proxy on an instance, which was itself the single point of failure. Load balancers exist so the fleet can change shape and lose members without the client ever learning about it.',
     whenToUse: [
       'ALB: HTTP/HTTPS applications, containers, path- or host-based routing, Lambda targets, WAF integration, OIDC/Cognito authentication',
       'NLB: TCP/UDP/TLS, extreme throughput, static or Elastic IPs, preserving the client source IP, PrivateLink service front end',
@@ -624,6 +636,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Global CDN — caches at hundreds of edge locations close to your users.',
     whatItIs:
       'A content delivery network. Requests hit the nearest edge location; if the object is cached there it is served immediately, otherwise CloudFront fetches it from the origin (S3, ALB, API Gateway, or any HTTP server) over the AWS backbone. Beyond caching it terminates TLS at the edge, integrates WAF and Shield, and can run code at the edge with CloudFront Functions or Lambda@Edge.',
+    whyItExists:
+      "Serving a global audience from one Region means every request from Sydney crosses an ocean twice, and popular objects cross it again for every user who asks. The fix used to be renting servers on other continents and copying content to them yourself, then keeping those copies honest. CloudFront exists so distance becomes AWS's problem: the content moves to the user, and the origin only answers the first request.",
     whenToUse: [
       'Static assets, images, video and downloads served to a geographically spread audience',
       'Reducing origin load and S3 or EC2 data-transfer cost',
@@ -699,6 +713,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Two static anycast IPs that route users over the AWS backbone to the best Region.',
     whatItIs:
       'You get two static anycast IP addresses advertised from AWS edge locations worldwide. Traffic enters the AWS backbone at the nearest edge and travels privately to your endpoint — ALB, NLB, EC2 or an Elastic IP — in whichever Region is healthy and closest. Failover between Regions happens in seconds because nothing depends on DNS TTLs.',
+    whyItExists:
+      'Steering users to the nearest healthy Region was a DNS problem, and DNS is a bad failover mechanism: resolvers and clients cache records past their TTL, so a Region can be down for minutes while traffic keeps arriving. Clients that need a fixed IP to allowlist were stuck as well. Global Accelerator exists to move the decision from DNS into the network: the IPs never change, and the path does.',
     whenToUse: [
       'Non-HTTP protocols: gaming, VoIP, IoT, MQTT, custom TCP/UDP',
       'A static IP that clients or firewalls can allowlist, in front of a multi-Region deployment',

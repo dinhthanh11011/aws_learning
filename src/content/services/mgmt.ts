@@ -13,6 +13,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Metrics, logs, alarms and dashboards for everything running in AWS.',
     whatItIs:
       'Four products under one name. *Metrics* are numeric time series, published by AWS services automatically and by you as custom metrics. *Logs* are log streams grouped into log groups, searchable with Logs Insights. *Alarms* watch a metric and act — notify via SNS, scale an ASG, reboot an instance. *Dashboards, Synthetics canaries and RUM* cover the presentation and end-user-experience side.',
+    whyItExists:
+      'Monitoring meant running the monitoring: a metrics server, a log collector, disks that filled with logs, and a paging rule engine — infrastructure that had to be more reliable than the thing it watched, and that went blind exactly when instances were being replaced. CloudWatch exists so metrics and logs are produced by the services themselves and land somewhere that does not share their fate, and so an alarm can act rather than only notify.',
     whenToUse: [
       'Alarming on any metric, and driving Auto Scaling from it',
       'Centralised application logs from EC2, Lambda, ECS and on-premises servers',
@@ -151,6 +153,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Records resource configuration over time and evaluates it against rules.',
     whatItIs:
       'Continuously records the configuration of your resources, keeps a timeline of every change, and evaluates each configuration against rules — managed rules from AWS or custom rules backed by Lambda or Guard. Non-compliant resources can be remediated automatically via Systems Manager Automation documents.',
+    whyItExists:
+      '"Who opened this security group, and when was it last correct" had no answer, because AWS APIs tell you what a resource is now and CloudTrail tells you what calls were made — neither gives you the resource\'s history or its compliance over time. Audits were therefore a manual sweep, valid for a day. Config exists to record configuration continuously and evaluate it against rules, so both the timeline and the compliance question are queryable.',
     whenToUse: [
       'Compliance requirements: "no unencrypted volumes", "no public buckets", "all resources tagged"',
       'Answering "what did this security group look like last Tuesday?"',
@@ -199,6 +203,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Declarative infrastructure as code — templates in, stacks out.',
     whatItIs:
       'You describe resources in a JSON or YAML template; CloudFormation creates, updates and deletes them as a *stack*, in dependency order, rolling back on failure. Change sets preview what an update will do. StackSets deploy the same template across many accounts and Regions. Drift detection tells you when someone changed something by hand.',
+    whyItExists:
+      'Environments built by hand in the console are unrepeatable: staging differs from production in ways nobody wrote down, rebuilding after a failure is an archaeology exercise, and tearing down a stack means remembering all forty resources and their order. CloudFormation exists so the environment is a reviewable file — created, updated and deleted as one unit, in dependency order, with rollback when a step fails.',
     whenToUse: [
       'Repeatable environment provisioning — dev, staging, prod from one template',
       'Version-controlled, reviewable infrastructure changes',
@@ -277,6 +283,8 @@ export const mgmtServices: Service[] = [
       'Define infrastructure in TypeScript, Python, Java, C# or Go — it compiles to CloudFormation.',
     whatItIs:
       'A framework where infrastructure is real code: loops, conditionals, functions, unit tests, IDE completion. `cdk synth` produces a CloudFormation template and `cdk deploy` applies it. Constructs come in three levels — L1 mirrors CloudFormation exactly, L2 adds sensible defaults and helper methods, L3 packages whole patterns.',
+    whyItExists:
+      "CloudFormation templates are data, so anything resembling logic — twenty near-identical resources, a value that differs per environment, a pattern reused across teams — became copy-paste, YAML anchors, or a generator somebody wrote. There were no types, no completion and no unit tests. CDK exists so infrastructure is written in a real language and *compiles* to a template, keeping CloudFormation's deployment guarantees while losing its authoring model.",
     whenToUse: [
       'Developers who would rather write code than 2,000 lines of YAML',
       'Reusable infrastructure abstractions shared across teams as libraries',
@@ -328,6 +336,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Operate your fleet: patching, shell access without SSH, and Parameter Store.',
     whatItIs:
       'A collection of capabilities over instances running the SSM agent. *Session Manager* gives browser or CLI shell access with no open ports, no bastion and no SSH keys, fully logged. *Patch Manager* patches on a schedule with baselines. *Run Command* executes commands fleet-wide. *Parameter Store* holds configuration and secrets, including encrypted SecureString values. *Automation* runs runbooks, including Config remediations.',
+    whyItExists:
+      'Fleet operations meant SSH: a bastion host, inbound ports, keys distributed and rotated by hand, and patching driven by someone working through a list. Access was hard to log and easy to leave open. Systems Manager exists so the instance reaches out through an agent instead — shell sessions with no open ports and a full transcript, patching against a baseline, and commands run fleet-wide from an API.',
     whenToUse: [
       'Shell access to private instances with no inbound ports and a full audit trail',
       'Fleet-wide patching with compliance reporting',
@@ -393,6 +403,8 @@ export const mgmtServices: Service[] = [
       'Deploy configuration changes and feature flags safely, with validation and rollback.',
     whatItIs:
       'A Systems Manager capability for *configuration deployment*. Configuration is versioned, validated (JSON Schema or a Lambda validator), and rolled out gradually to your application with CloudWatch alarms watching — if an alarm fires, AppConfig rolls the configuration back automatically. It also provides feature flags.',
+    whyItExists:
+      'Configuration shipped inside the artefact, so changing a timeout or turning a feature off required a build and a full deploy — and a bad value went everywhere at once with no way back but another deploy. Storing it in a database instead removed the validation and the audit trail. AppConfig exists to treat configuration as its own deployment: validated before it goes out, rolled out gradually, and rolled back automatically when an alarm fires.',
     whenToUse: [
       'Feature flags to turn functionality on without redeploying code',
       'Environment-specific configuration deployed gradually and safely',
@@ -483,6 +495,8 @@ export const mgmtServices: Service[] = [
       'Automated best-practice checks across cost, performance, security, resilience and quotas.',
     whatItIs:
       'A checklist service. It inspects your account and flags issues across five pillars — cost optimisation, performance, security, fault tolerance and service quotas — such as idle load balancers, unassociated Elastic IPs, open security groups, missing MFA on root, and quotas you are approaching.',
+    whyItExists:
+      "The unassociated Elastic IP, the idle load balancer, the security group open to the world and the quota you are three days from hitting are all knowable from the API — and nobody was looking, because reviewing an account by hand is a day's work that is stale by the next morning. Trusted Advisor exists to run those checks continuously so the obvious problems surface without a review being scheduled.",
     whenToUse: [
       'A quick, broad review of an unfamiliar account',
       'Watching service quotas before you hit them',
@@ -731,6 +745,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Command-line access to every AWS API, with profiles and named credentials.',
     whatItIs:
       'A unified command-line tool over the AWS APIs. Credentials resolve in a fixed order — command-line options, environment variables, the credentials file, then the instance or container role — and that order is examinable.',
+    whyItExists:
+      'The console is fine for looking and hopeless for repeating: forty identical changes across accounts become forty chances to click the wrong thing, and there is nothing to review, diff or re-run. The alternative was signing HTTP requests by hand. The CLI exists so every API is scriptable from a shell — and its fixed credential resolution order is why the same command behaves differently on a laptop and on an instance.',
     whenToUse: [
       'Scripting and automation',
       'Operations that have no console equivalent (MFA Delete, some S3 batch operations)',

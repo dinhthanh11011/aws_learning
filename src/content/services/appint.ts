@@ -13,6 +13,8 @@ export const appIntegrationServices: Service[] = [
     oneLiner: 'Managed message queue — the standard answer to "decouple these two components".',
     whatItIs:
       'A durable queue. Producers send messages; consumers poll, process, and delete them. Nothing is pushed. Because the queue absorbs bursts and holds work when consumers are down, it converts a synchronous, fragile call into an asynchronous, retryable one. Standard queues give near-unlimited throughput with at-least-once delivery and best-effort ordering; FIFO queues give exactly-once processing and strict ordering at lower throughput.',
+    whyItExists:
+      'Calling another service directly ties your fate to its availability: if it is down or slow, your request fails or hangs, and a traffic spike passes straight through to whatever is least able to take it. Retrying in-process only holds the failure open longer. SQS exists so work can be handed over durably and picked up later — which is what makes "decouple" and "absorb bursts" the same answer.',
     whenToUse: [
       'Decoupling a producer from a slower or less-reliable consumer',
       'Absorbing traffic spikes so the backend scales on queue depth rather than crashing',
@@ -93,6 +95,8 @@ export const appIntegrationServices: Service[] = [
     oneLiner: 'Pub/sub topics that push one message to many subscribers at once.',
     whatItIs:
       'You publish to a topic; SNS pushes to every subscriber — SQS queues, Lambda functions, HTTP endpoints, email, SMS, mobile push, Kinesis Data Firehose. There is no retention: a subscriber that is down misses the message unless it is an SQS queue holding it. Message filtering lets each subscriber receive only the subset it cares about.',
+    whyItExists:
+      "When several systems need the same event, the producer ends up calling each of them in turn — so it knows every consumer, it is slow as the list grows, and one unreachable endpoint fails the whole publish. SNS exists to make that one call to a topic and let the fan-out be somebody else's problem; with no retention, though, a subscriber that is down misses the message, which is why the durable pattern is a topic in front of queues.",
     whenToUse: [
       'Fan-out: one event must trigger several independent downstream processes',
       'Notifications to humans — email, SMS, mobile push',
@@ -154,6 +158,8 @@ export const appIntegrationServices: Service[] = [
     oneLiner: 'Serverless event bus that routes events to targets by content-matching rules.',
     whatItIs:
       'An event bus. AWS services, your own applications and SaaS partners publish JSON events; rules match on any field in the event and route to up to five targets each — Lambda, Step Functions, SQS, SNS, ECS tasks, API destinations and more. It also carries EventBridge Scheduler (cron and one-off schedules) and Pipes (point-to-point integrations with filtering and enrichment).',
+    whyItExists:
+      'Making one thing happen after another meant the producer knowing every consumer: a list of endpoints in its code, redeployed whenever somebody new wanted the event. Adding a consumer became a change to a service that had no interest in it. EventBridge exists to invert that — publishers describe what happened, subscribers declare what they care about, and neither side has to be edited when the other changes.',
     whenToUse: [
       'Reacting to AWS service events: an EC2 state change, a GuardDuty finding, a CodePipeline stage failing',
       'Event-driven architecture where producers should not know their consumers',
@@ -210,6 +216,8 @@ export const appIntegrationServices: Service[] = [
       'Visual state machines that orchestrate steps with built-in retries and error handling.',
     whatItIs:
       'A workflow engine. You define states — task, choice, parallel, map, wait, pass, succeed, fail — in Amazon States Language, and Step Functions runs them, keeping the state, retrying failures with your backoff policy, catching errors, and giving you a visual execution history of exactly where things went wrong. Two flavours: Standard for long-running, auditable, exactly-once workflows, and Express for high-volume short-lived ones.',
+    whyItExists:
+      'Multi-step processes were expressed as functions calling functions: the state lived in whatever was running, retries and backoff were re-implemented per call, a failure halfway through left the process in an unknown condition, and diagnosis meant reconstructing the order from log timestamps. Step Functions exists to hold the state and the error policy outside the code, so the workflow is inspectable and a retry is configuration.',
     whenToUse: [
       'Multi-step business processes: order fulfilment, media pipelines, ETL sequencing',
       'Replacing Lambda functions that call other Lambda functions and hand-roll retry logic',
@@ -281,6 +289,8 @@ export const appIntegrationServices: Service[] = [
     oneLiner: 'Managed ActiveMQ or RabbitMQ for applications that need standard protocols.',
     whatItIs:
       'A managed broker speaking industry-standard protocols — JMS, AMQP 1.0, MQTT, STOMP, OpenWire, WebSocket. It exists for one reason on the exam: migrating an existing on-premises message broker without rewriting the application to the SQS or SNS APIs.',
+    whyItExists:
+      'An application built around JMS or AMQP, with a decade of queue semantics baked into it, cannot be moved to SQS without rewriting the messaging layer and re-testing every path through it — a large project that delivers no new feature. Amazon MQ exists so lifting an ActiveMQ or RabbitMQ workload into AWS is a broker migration rather than an application rewrite, which is why the exam uses "existing broker" or a named protocol as the tell.',
     whenToUse: [
       'Migrating an existing JMS, AMQP or MQTT application to AWS unchanged',
       'The application requires a standard messaging protocol, not a proprietary API',

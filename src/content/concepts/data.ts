@@ -17,6 +17,8 @@ export const dataConcepts: Concept[] = [
       'A strongly consistent read always reflects every write that completed before it. An eventually consistent read may return a slightly stale copy, because the write has not yet reached the replica that answered you — it will, usually within milliseconds. Eventual consistency is the default in distributed stores because it is cheaper and faster: the read can be served by whichever replica is nearest rather than the one that owns the write.',
     keyIdea:
       'Eventual consistency trades correctness-right-now for throughput and cost. You choose strong only where a stale read would actually cause harm, because it costs roughly twice as much and rules out some replicas.',
+    whyItExists:
+      'One machine can be authoritative and fast; several machines in different places cannot be both, because agreeing before answering means waiting for the slowest participant. Distributed stores therefore have to sell the choice rather than hide it. The distinction exists so you decide per read whether staleness is acceptable — and it is why the default is the cheap one, and why "must read its own write" changes the answer.',
     onTheExam: [
       '"The application read the value it just wrote and got the old one" is an eventually consistent read, and the fix is to request a strongly consistent one.',
       'A DynamoDB question that mentions read capacity cost is usually testing that a strongly consistent read consumes twice as much.',
@@ -70,6 +72,8 @@ export const dataConcepts: Concept[] = [
       'Durability is the probability that stored data survives — that it is not lost. Availability is the probability that you can read or write it at a given moment. They are quoted as separate figures because they fail separately: an S3 storage class can keep every byte safe while being briefly unreachable, and a single very available disk can lose everything at once.',
     keyIdea:
       'Durability is about the bytes surviving; availability is about the service answering. S3 One Zone-IA has the same eleven nines of durability as Standard within its AZ, and lower availability — losing the AZ loses the data.',
+    whyItExists:
+      'Rolled into one word — "reliable" — these hide the fact that they fail separately and are bought separately: replication across three AZs makes data hard to lose, and none of it helps if the front door is down, while a single very responsive disk can lose everything at once. Keeping them apart exists so a requirement can name the one it means, which is why AWS quotes S3\'s eleven nines and its availability figure as two different numbers.',
     onTheExam: [
       '"We can recreate this data if it is lost" points at One Zone-IA, because you are being told durability matters less.',
       '"Must not be lost under any circumstances" is a durability requirement, which usually means Standard, versioning, or a second copy in another Region.',
@@ -119,6 +123,8 @@ export const dataConcepts: Concept[] = [
       'An idempotent operation can be safely retried. Setting a value to 42 is idempotent; adding 42 to it is not. This matters because almost every AWS messaging and eventing service guarantees at-least-once delivery, which means duplicates are not an error condition to be prevented but a normal event your handler has to absorb. The usual implementation is a deduplication key: record the message or request id, and skip work you have already done.',
     keyIdea:
       "At-least-once delivery makes duplicates inevitable, so idempotency is the consumer's job, not the queue's. If the exam describes a charge being applied twice, the answer is a deduplication key in the handler.",
+    whyItExists:
+      'Distributed systems cannot tell a lost request from a lost reply, so any client that retries — and every client must retry — will sometimes send the same work twice. Exactly-once delivery would require agreement the network cannot provide, which is why AWS promises at-least-once instead. Idempotency exists to move the problem to where it can actually be solved: make the second delivery harmless, and duplicates stop being a bug.',
     onTheExam: [
       '"The customer was charged twice" or "the record was inserted twice" — the answer is idempotency in the consumer, usually a conditional write on a unique id.',
       'A standard SQS queue delivers at least once and does not preserve order; FIFO delivers exactly once within the deduplication window and does preserve it.',
@@ -171,6 +177,8 @@ export const dataConcepts: Concept[] = [
       'A distributed store splits data across partitions by hashing one attribute. In DynamoDB that is the partition key; in Kinesis it is the partition key that chooses a shard. Throughput is provisioned per partition, so an unevenly distributed key concentrates traffic on one partition and throttles it while the rest of the table sits idle. This is a hot partition, and the fix is always a key with higher cardinality.',
     keyIdea:
       'Throughput is per partition, not per table. A key with few distinct values — a status, a date, a country — throttles at a fraction of the capacity you are paying for, however much you provision.',
+    whyItExists:
+      "Getting past one machine means splitting the data, and splitting requires a rule for deciding where each item goes — a rule that has to be computable without asking anyone, so it is a hash of one attribute you choose. That choice is therefore also your load distribution: throughput belongs to partitions, not to the table. The concept exists because the exam's throttling scenarios are almost never about the limit and almost always about the key.",
     onTheExam: [
       '"Throttling despite low overall utilisation" is a hot partition, and the answer is a better partition key or write sharding.',
       'A date used as a partition key is the classic wrong design: every write on a given day goes to one partition.',
@@ -213,6 +221,8 @@ export const dataConcepts: Concept[] = [
       'Encryption at rest protects data on disk, so that a stolen volume or an exposed bucket yields ciphertext. On AWS it is almost always envelope encryption with KMS: a data key encrypts the data, and KMS encrypts the data key. Encryption in transit protects data on the wire, which in practice means TLS. They are independent — you can have either, both, or neither — and compliance requirements usually name both.',
     keyIdea:
       'At rest and in transit are separate controls with separate mechanisms. A requirement saying "encrypted end to end" means both, and an answer that only enables bucket encryption has done half the job.',
+    whyItExists:
+      'The two threats have nothing to do with each other — one is somebody reading the disk or the bucket, the other is somebody reading the wire — so one control cannot cover both, and TLS everywhere leaves a plaintext database while an encrypted volume still ships credentials in the clear. The distinction exists because auditors and exam questions name the specific exposure, and the answer is a different mechanism for each.',
     onTheExam: [
       '"Customer must control and rotate the keys" is a customer managed KMS key, not an AWS managed one.',
       '"The customer must supply and hold the keys, and AWS must not store them" is SSE-C, or CloudHSM if they need a dedicated hardware module.',
@@ -261,6 +271,8 @@ export const dataConcepts: Concept[] = [
       'A backup is a point-in-time copy kept separately, restored deliberately, and retained on a schedule. Replication continuously mirrors changes to another copy so it stays current. They protect against different things: replication protects against losing the original, and backup protects against destroying the contents — because replication faithfully copies the deletion too.',
     keyIdea:
       'Replication copies your mistakes; backup is how you undo them. A design with replication and no backup has no answer to accidental deletion or ransomware, and the exam tests exactly that gap.',
+    whyItExists:
+      'Replication is faithful, and that is exactly the problem: it copies the DROP TABLE and the ransomware as diligently as it copies anything else, usually within seconds. So a second live copy is not a backup, however current it is. The distinction exists because the two protect against opposite failures — losing the original versus corrupting it — and a design that has only replication has no answer to the second.',
     onTheExam: [
       '"Recover from accidental deletion" is backup, versioning or point-in-time recovery — never a read replica.',
       '"Keep a second copy current for failover" is replication.',

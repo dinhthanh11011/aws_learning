@@ -103,6 +103,8 @@ export const computeServices: Service[] = [
     oneLiner: 'Keeps a fleet of EC2 instances at the right size, and replaces the dead ones.',
     whatItIs:
       'An Auto Scaling group holds a launch template, a min/desired/max count, a list of subnets, and scaling policies. It launches and terminates instances to hold the desired count, replaces instances that fail a health check, and spreads them across the AZs you gave it. The resilience half matters as much as the elasticity half: an ASG with min=max=2 across two AZs is still doing useful work.',
+    whyItExists:
+      "Capacity used to be a standing order: you ran enough instances for the busiest hour of the year all year, and when one died somebody was paged at 3am to build another by hand. Both halves of that were manual, and the healing half was the dangerous one — a fleet quietly running on its last surviving instance looks fine on a dashboard until it isn't. An Auto Scaling group makes the desired count the thing you declare and AWS's job to defend.",
     whenToUse: [
       'Any EC2 workload that must survive an instance or AZ failure — the ASG is what makes it self-healing',
       'Load that varies over the day, week or in bursts',
@@ -197,6 +199,8 @@ export const computeServices: Service[] = [
     oneLiner: 'Spare capacity at up to 90% off, reclaimable with two minutes notice.',
     whatItIs:
       'Unused EC2 capacity sold at a steep discount. AWS can reclaim an instance at any time with a two-minute interruption notice delivered through instance metadata and EventBridge. That single constraint decides every Spot question: can this workload lose a node mid-flight and carry on?',
+    whyItExists:
+      'AWS has capacity nobody is using, and plenty of work does not care precisely when or where it runs — but on-demand pricing gave those two facts no way to meet, so the flexible batch job paid exactly what the customer-facing fleet paid. Spot exists to put a price on that flexibility, which is why every Spot question is really asking whether losing a node mid-flight actually costs you anything.',
     whenToUse: [
       'Batch, rendering, CI builds, big-data processing — anything that checkpoints or retries',
       'Stateless web tiers behind a load balancer, mixed with On-Demand for a guaranteed floor',
@@ -241,6 +245,8 @@ export const computeServices: Service[] = [
     oneLiner: 'Managed job queue that provisions compute to drain it, then shuts it down.',
     whatItIs:
       'You submit jobs — each a container image plus resource requirements — to a job queue. Batch sizes and launches a compute environment (EC2, Spot or Fargate) to run them, handles dependencies and retries, and scales back to zero when the queue empties. It is the "run 40,000 of these overnight" service.',
+    whyItExists:
+      'Bulk processing was a queue in a database table, a cron job to drain it, a cluster sized for the peak that sat idle the rest of the day, and retry logic somebody wrote by hand and that usually lost a job. Batch exists to invert that: the queue is the input, the fleet is a consequence of it, and when there is no work there is no fleet.',
     whenToUse: [
       'Large-scale batch or HPC work with queueing, priorities and job dependencies',
       "Jobs longer than Lambda's 15-minute limit that still need to scale to zero",
@@ -288,6 +294,8 @@ export const computeServices: Service[] = [
     oneLiner: 'Hand it your application bundle; it builds the EC2, ASG and ELB around it.',
     whatItIs:
       'A platform-as-a-service layer over EC2. You upload code for a supported platform (Java, .NET, Node, Python, Ruby, Go, PHP, Docker) and Beanstalk provisions the load balancer, Auto Scaling group, instances and CloudWatch alarms, then manages deployments and platform updates. The resources it creates are ordinary resources — you can still see and tune them.',
+    whyItExists:
+      'Putting a conventional web application on AWS used to mean learning load balancers, Auto Scaling groups, AMIs and health checks before your first deploy — weeks of infrastructure work to host something a single push had handled elsewhere. Beanstalk exists to hand over that stack already wired together, while leaving the resources it made visible and editable, so outgrowing the defaults is not a rewrite.',
     whenToUse: [
       'A developer wants a running, scalable web app without designing the infrastructure',
       'Standard three-tier web application on a supported runtime',

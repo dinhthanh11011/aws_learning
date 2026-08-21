@@ -13,6 +13,8 @@ export const containerServices: Service[] = [
     oneLiner: "AWS's own container orchestrator — simpler than Kubernetes, deeply integrated.",
     whatItIs:
       'You describe a task definition (which images, how much CPU and memory, which IAM role, which log driver) and ECS places tasks onto capacity. That capacity is either EC2 instances you own or Fargate, which you do not. A *service* keeps N tasks running behind a load balancer and replaces failures; a *task* is a one-off run.',
+    whyItExists:
+      'Running containers on your own hosts meant answering the scheduling questions yourself: which instance has room, what happens when one dies at 2am, how the load balancer learns the new port. Every company wrote that loop once, in shell, and each one broke in a novel way. ECS exists to be the placement-and-restart loop nobody should be writing again — without requiring you to adopt Kubernetes to get it.',
     whenToUse: [
       'Containerised workloads where you want AWS integration and no Kubernetes to operate',
       'Teams without Kubernetes experience — the learning curve is much shorter',
@@ -76,6 +78,8 @@ export const containerServices: Service[] = [
     oneLiner: 'Managed upstream Kubernetes control plane.',
     whatItIs:
       'AWS runs and patches the Kubernetes control plane across multiple AZs; you supply worker capacity as managed node groups, self-managed nodes, or Fargate profiles. The API is standard Kubernetes, so existing manifests, Helm charts and operators work.',
+    whyItExists:
+      'Kubernetes solved orchestration and then handed you a second job: etcd, API servers, version upgrades and certificate rotation, owned by the team that was supposed to be shipping features. Self-managed clusters were also frequently single-AZ, because a multi-AZ etcd quorum is genuinely hard to run. EKS exists so you keep the upstream API and everything built on it, and stop owning the part that pages you.',
     whenToUse: [
       'Existing Kubernetes investment — manifests, Helm, operators, team skills',
       'Multi-cloud or hybrid portability is a stated requirement',
@@ -127,6 +131,8 @@ export const containerServices: Service[] = [
     oneLiner: 'Private (and public) container registry with IAM-based access.',
     whatItIs:
       'A managed Docker/OCI registry. Repositories are IAM-controlled, images are encrypted at rest, and image scanning can find OS-package vulnerabilities. Lifecycle policies expire old images so the bill and the clutter stay bounded.',
+    whyItExists:
+      'Teams ran their own registry on an EC2 instance, or pushed to a public hub and pulled production images across the internet using a credential pasted into a CI config. The registry then became the thing that broke deployments, and image access lived outside IAM, so it could not be audited or revoked with everything else. ECR exists so that pulling an image is an ordinary IAM decision.',
     whenToUse: [
       'Storing images for ECS, EKS, Lambda container packaging or App Runner',
       'You want IAM — not a separate registry credential — controlling who can pull',

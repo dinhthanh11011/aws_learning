@@ -17,6 +17,8 @@ export const operationsConcepts: Concept[] = [
       'AWS is responsible for the security of the cloud: hardware, the hypervisor, the physical facilities, and the managed service software itself. You are responsible for security in the cloud: your data, your identity configuration, your network rules, your encryption choices, and — on EC2 — the guest operating system and everything above it. The line moves depending on how managed the service is.',
     keyIdea:
       'The more managed the service, the less falls to you — but data, identity and access configuration are yours in every single case, including on serverless.',
+    whyItExists:
+      'Handing over the data centre does not hand over the security, and both sides assuming otherwise is how buckets end up public and guest operating systems end up unpatched. The model exists to draw the line explicitly, and to make clear that the line *moves*: the same question — who patches this — has a different answer for EC2, RDS and Lambda, which is what most shared-responsibility exam items are actually testing.',
     onTheExam: [
       '"Who patches the operating system" — you on EC2, AWS on RDS, Fargate and Lambda.',
       '"Who patches the database engine" — AWS applies it, you choose the maintenance window and the version.',
@@ -64,6 +66,8 @@ export const operationsConcepts: Concept[] = [
       'The Well-Architected Framework names six pillars: operational excellence, security, reliability, performance efficiency, cost optimisation, and sustainability. The exam is written against them, which is why so many questions have two technically correct options and one qualifying word — "most cost-effective", "with the least operational overhead", "most secure" — that names the pillar being tested.',
     keyIdea:
       'Find the qualifying phrase before comparing the options. "Least operational overhead" and "most cost-effective" usually point at different answers, and the stem tells you which one it is grading.',
+    whyItExists:
+      'Most architecture arguments are not about what works, because several things work; they are about which quality you are optimising, and that is usually left unsaid until people are already disagreeing. Naming six pillars exists to make the trade-off explicit — and it is why exam questions are written with two correct answers and a qualifier like "most cost-effective" or "least operational overhead" that tells you which pillar wins.',
     onTheExam: [
       '"Least operational overhead" favours managed and serverless over anything you run yourself.',
       '"Most cost-effective" favours the cheapest option that still meets every stated requirement — not the cheapest option overall.',
@@ -108,6 +112,8 @@ export const operationsConcepts: Concept[] = [
       'Almost every AWS service caps what one account can create or consume in one Region. Adjustable quotas can be raised on request through Service Quotas or a support case. Hard limits cannot be raised at all, and a design that needs more has to change shape. Quotas are also a containment mechanism: they stop one runaway workload consuming everything.',
     keyIdea:
       'Quotas are per account and per Region, so the same design in two Regions gets two allowances — and an account boundary is therefore also a quota boundary.',
+    whyItExists:
+      'A multi-tenant cloud cannot let one account draw unbounded capacity, both because the hardware is finite and because the account most likely to try is one with a runaway loop or stolen credentials. Quotas exist as that brake, per account and per Region. The examinable half is that some are a support ticket away and some are structural — and a design that needs more than a hard limit has to change shape rather than ask.',
     onTheExam: [
       '"The launch failed after N instances" is a quota, and the answer is a quota increase request rather than a redesign.',
       'A hard limit in an option means that option is impossible: 5 VPCs per Region is adjustable, 1 internet gateway per VPC is not.',
@@ -158,6 +164,8 @@ export const operationsConcepts: Concept[] = [
       'Scaling up (vertical) replaces a resource with a larger one: a bigger instance type, more provisioned IOPS, more Lambda memory. It is simple, needs no application change, and has a ceiling and usually a restart. Scaling out (horizontal) adds more copies behind a load balancer or a queue. It has no practical ceiling and it heals itself, but the workload has to be stateless enough to spread.',
     keyIdea:
       'Scaling up has a maximum and a restart; scaling out has neither, which is why "elastic", "highly available" and "handle unpredictable traffic" all point outwards. Up is the answer only when the workload cannot be split.',
+    whyItExists:
+      'A bigger machine is the easy answer and it runs out twice: there is a largest instance, and getting there means a restart of the single thing everyone depends on. More machines has no such ceiling and heals itself, but only if the workload does not care which copy serves a request. The distinction exists because that condition — statelessness — is the real subject of most scaling questions.',
     onTheExam: [
       '"Unpredictable or spiky traffic" and "highly available" are both scale-out signals.',
       '"A single-threaded application" or "a licence tied to one host" forces scaling up.',
@@ -210,6 +218,8 @@ export const operationsConcepts: Concept[] = [
       'A tag is a key-value pair attached to a resource. Tags drive three things the exam cares about: cost allocation, once activated in the billing console; automation, since Systems Manager and Backup select resources by tag; and authorisation, since IAM conditions can require or match a tag, which is attribute-based access control.',
     keyIdea:
       'Tags are the only way to attribute cost to a team or project, and they are not retroactive — activating a cost allocation tag applies from that point forwards, never backwards.',
+    whyItExists:
+      "AWS gives you the resource and its own metadata; it cannot know which cost centre owns it, which environment it belongs to, or whether it is in scope for Tuesday's patch window. Tags exist as the place to record what only you know — and because they are readable by IAM conditions, Systems Manager and the billing console, one convention answers cost allocation, automation and access control at once. Untagged, the bill is a total with no owners.",
     onTheExam: [
       '"Break down the bill by department" is cost allocation tags plus Cost Explorer, and the tags must be activated first.',
       '"Enforce that every resource is tagged" is a tag policy in Organizations, or an SCP that denies creation without the tag.',

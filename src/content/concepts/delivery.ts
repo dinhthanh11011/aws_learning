@@ -17,6 +17,8 @@ export const deliveryConcepts: Concept[] = [
       'When Lambda has no warm environment available it creates one: download the code, start the runtime, run the initialisation code outside your handler, then invoke. That setup is the cold start, and only the first request pays it. Subsequent requests reuse the environment until it is reclaimed. Larger deployment packages, VPC attachment with new network interfaces, and heavy initialisation all lengthen it.',
     keyIdea:
       'Initialisation code outside the handler runs once per environment, not once per request. Putting SDK clients and database connections there is the single biggest thing you control.',
+    whyItExists:
+      'Paying nothing for idle means keeping nothing warm, so the first request after a quiet spell has to wait for an environment that does not exist yet. That latency is not a defect; it is the bill for the model. Naming it exists so the trade is discussable — you can shorten it with a smaller package and less initialisation, or buy it away with provisioned concurrency, but you cannot have zero idle cost and zero setup at once.',
     onTheExam: [
       '"Consistent low latency for a spiky workload" is provisioned concurrency, which keeps environments initialised.',
       '"Predictable traffic ramp" is provisioned concurrency with Application Auto Scaling; "steady high volume" needs neither.',
@@ -69,6 +71,8 @@ export const deliveryConcepts: Concept[] = [
       "Sticky sessions make a load balancer send a given client back to the same target, usually with a cookie, so that state held in that target's memory stays available. It works, and it costs you: uneven load, lost sessions when a target is replaced, and a scale-in event that logs people out. The alternative is to keep no state in the instance and put it in a shared store instead — ElastiCache, DynamoDB, or a signed token held by the client.",
     keyIdea:
       'Stickiness makes a stateful design survive a load balancer. Externalising session state makes the design stateless, which is what lets it scale and self-heal — and that is the answer the exam wants unless it says otherwise.',
+    whyItExists:
+      "The moment a server remembers something about a user, the user has to keep coming back to that server — and the load balancer that was free to spread traffic evenly no longer is. Stickiness exists as the least invasive way to make that work, which is precisely why it is a warning sign: it preserves the design that made scaling and instance replacement painful. The exam's preferred answer is nearly always to move the state out instead.",
     onTheExam: [
       '"Users are logged out when the group scales in" — move session state out of the instance, usually to ElastiCache for Redis or DynamoDB.',
       '"Traffic is unevenly distributed across instances" is often stickiness combined with long-lived connections.',
@@ -116,6 +120,8 @@ export const deliveryConcepts: Concept[] = [
       'A cache serves a stored copy instead of recomputing or refetching. Time to live is how long that copy is treated as fresh; once it expires the cache revalidates or fetches again. Invalidation is forcing the copy out before its TTL. The same idea appears at every layer — CloudFront objects, DNS records, ElastiCache entries, browser caches — and each layer has its own TTL that adds to the total staleness a user can see.',
     keyIdea:
       'A long TTL is cheap and stale; a short TTL is fresh and expensive. Every TTL between the user and the origin adds up, which is why DNS TTL is part of your failover time and CloudFront TTL is part of your deployment time.',
+    whyItExists:
+      "A cache is only fast because it is willing to be wrong for a while, so somebody has to say how wrong: with no expiry you serve last week's price, and with no cache you pay for every request. TTL exists to price that staleness, and invalidation exists for the cases where waiting is not acceptable. They matter because the layers stack — CloudFront, DNS, ElastiCache, the browser — and the user sees the sum.",
     onTheExam: [
       '"Users still see the old file after a deployment" — a CloudFront invalidation, or better, a versioned object name so the URL changes.',
       '"Failover takes five minutes" with a DNS-based design — the Route 53 record TTL.',
@@ -168,6 +174,8 @@ export const deliveryConcepts: Concept[] = [
       'All-at-once replaces everything and accepts downtime. Rolling replaces instances in batches, so old and new versions run together. Blue/green stands up a complete second environment and shifts traffic to it, keeping the old one ready for an instant rollback. Canary sends a small percentage to the new version first, then the rest. Linear shifts in equal increments on a timer.',
     keyIdea:
       'Blue/green buys instant rollback by paying for a duplicate environment. Canary buys early detection by exposing a few real users. Rolling buys neither and is simply cheap.',
+    whyItExists:
+      'Every release is a bet that the new version works, and the only real variable is how many users are exposed while you find out — plus how fast you can undo it. The named strategies exist so that bet is chosen rather than inherited from whatever the deploy script does, and so a requirement can be met precisely: instant rollback points at blue/green, limited exposure at canary, no spare capacity at rolling.',
     onTheExam: [
       '"Roll back immediately if there is a problem" is blue/green.',
       '"Expose the change to a small percentage of users first" is canary.',

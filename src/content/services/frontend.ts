@@ -13,6 +13,8 @@ export const frontendServices: Service[] = [
     oneLiner: 'Managed front door for APIs — auth, throttling, caching, transformation.',
     whatItIs:
       'A managed API front end in three flavours. *REST APIs* have the full feature set: request and response transformation, caching, API keys and usage plans, WAF, and multiple authoriser types. *HTTP APIs* are cheaper, faster and simpler, with JWT authorisers but no caching or transformation. *WebSocket APIs* handle bidirectional real-time connections.',
+    whyItExists:
+      'Every service that exposed an API rebuilt the same edge: authentication, throttling so one client cannot starve the rest, API keys per customer, request validation, CORS, and a public TLS endpoint somebody had to keep patched. Each copy differed slightly, so the security review had to be done again per service. API Gateway exists to be that front door once, in configuration — and to give a Lambda function an HTTP address at all.',
     whenToUse: [
       'Fronting Lambda functions as an HTTP API',
       'Authentication and authorisation at the edge of your API — Cognito, IAM or a Lambda authoriser',
@@ -89,6 +91,8 @@ export const frontendServices: Service[] = [
     oneLiner: 'Full-stack hosting and backend scaffolding for web and mobile front ends.',
     whatItIs:
       'Amplify Hosting builds and serves front-end applications from a Git branch on a global CDN with atomic deploys, branch-based preview environments and pull-request previews. The Amplify libraries and backend tooling provision auth (Cognito), data (AppSync/DynamoDB), storage (S3) and functions from a declarative definition.',
+    whyItExists:
+      'A front-end team wanting a deployed site and a working backend had to learn CloudFront, S3, certificates, Cognito, AppSync and IAM before shipping anything — and every branch preview was built by hand or not at all. Amplify exists to collapse that into a Git connection plus a declarative backend, so the cost of a preview environment is a branch push.',
     whenToUse: [
       'Hosting a React, Vue, Angular, Next.js or static site with CI/CD from Git',
       'Per-branch preview environments for review',

@@ -20,6 +20,8 @@ export const identityConcepts: Concept[] = [
       'Every resource has an ARN, and every policy that names a resource names it by ARN. The shape is arn:partition:service:region:account-id:resource — for example arn:aws:s3:::my-bucket/key.txt, or arn:aws:iam::123456789012:role/AppRole. Some fields are deliberately empty: S3 bucket ARNs have no Region or account because bucket names are globally unique, and IAM ARNs have no Region because IAM is global.',
     keyIdea:
       'The empty fields are information, not omissions. An ARN with no Region belongs to a global service; one with no account belongs to a globally unique namespace.',
+    whyItExists:
+      'Once a policy has to name a resource, a name is not enough: two accounts can both have a role called Admin, two Regions can both have a queue called orders, and there is no ambiguity a security decision can survive. The ARN exists to make identity globally unambiguous in one parseable string, which is why account and Region are fields in it — and why the empty fields in an S3 or IAM ARN are telling you that thing is not scoped that way.',
     onTheExam: [
       'A policy that grants access to a bucket needs two ARNs: the bucket for list operations and bucket/* for object operations. Only one of them is the common wrong answer.',
       'Wildcards are allowed in the resource portion, and a policy with Resource "*" is what "least privilege" questions are usually asking you to narrow.',
@@ -65,6 +67,8 @@ export const identityConcepts: Concept[] = [
       'A principal is whoever is asking. It might be an IAM user, a role that something has assumed, an AWS service acting on your behalf such as lambda.amazonaws.com, another account, or an anonymous caller. Identity policies are attached to a principal; resource policies name one. Every authorisation decision starts by establishing which principal is asking.',
     keyIdea:
       'Only resource policies have a Principal element, because an identity policy is already attached to one. Seeing Principal in a policy tells you it is a resource policy without reading anything else.',
+    whyItExists:
+      'Authorisation is a sentence with a subject, and on AWS the subject is often not a person: a service calling on your behalf, a role a workload assumed twenty minutes ago, another account entirely, or nobody at all. "User" cannot cover that. Principal exists as the general term so a policy can name any of them the same way — and so "who is actually making this call" becomes the first question in every access problem.',
     onTheExam: [
       'A service principal such as lambda.amazonaws.com in a trust policy is what lets that service assume the role.',
       'Principal "*" with no condition is public access, and it is the answer to "how did this bucket become public".',
@@ -106,6 +110,8 @@ export const identityConcepts: Concept[] = [
       'An identity-based policy hangs off a user, group or role and says what that identity may do. A resource-based policy hangs off the resource — a bucket, a queue, a KMS key, a Lambda function — and says who may act on it. Within one account, either can grant access on its own. Across accounts, you need both: the resource must allow the outside principal, and the outside principal must be allowed to call.',
     keyIdea:
       'Same account: either policy granting is enough. Cross-account: both must grant. An explicit Deny anywhere always wins, and so does an SCP that never allowed the action.',
+    whyItExists:
+      "Access has two owners with different interests: the team that employs the caller, and the team that owns the thing being called — and neither should be able to grant the other's consent alone. Two policy attachment points exist so each side states its half. That is the whole explanation of why cross-account access needs both, and why the usual failure is having written only one of them.",
     onTheExam: [
       '"Access denied despite a correct IAM policy" in a cross-account scenario means the resource policy is missing.',
       'A KMS key always needs its key policy to grant access. IAM permissions alone are never sufficient, and this is one of the most reliably examined facts in the security domain.',
@@ -151,6 +157,8 @@ export const identityConcepts: Concept[] = [
       "Calling sts:AssumeRole returns temporary credentials — an access key, a secret and a session token — that expire. The role's trust policy decides who may assume it; its permissions policy decides what the session can then do. This is the mechanism behind almost every access pattern AWS recommends: EC2 instance profiles, Lambda execution roles, cross-account access, and federated sign-in from an external identity provider.",
     keyIdea:
       'Roles exist so that nothing has to hold a long-lived credential. Any exam option that stores an access key on an instance, in code, or in an environment variable is wrong, and the correct answer is a role.',
+    whyItExists:
+      'A permanent credential is a permanent liability: it leaks into a repository or a laptop and stays valid until someone notices. But work still needs permissions, sometimes different ones than the caller normally has, and sometimes in another account. Role assumption exists to separate the two questions — a trust policy says who may become this, a permissions policy says what it may then do — so credentials can be temporary and still sufficient.',
     onTheExam: [
       '"How should the application on EC2 access S3" — an instance profile with a role. Never an access key in a config file.',
       '"Grant a team in another account read access" — a role in this account with their account as the trusted principal.',
@@ -198,6 +206,8 @@ export const identityConcepts: Concept[] = [
       'Least privilege means starting from nothing and adding only what a task requires — specific actions, specific resources, and conditions that narrow when the permission applies. AWS gives you several tools for it: policy conditions, permissions boundaries, SCPs, and IAM Access Analyzer, which can generate a policy from what an identity has actually used.',
     keyIdea:
       'On this exam, least privilege is a tie-breaker. When two options both work, the one that names specific actions and specific resource ARNs is the answer, and the one with a wildcard is not.',
+    whyItExists:
+      "Permissions accumulate and never get taken away, because broadening a policy fixes an outage in a minute and narrowing one risks causing another with nothing to gain. Left alone, every role drifts towards administrator, and then any compromise is total. Least privilege exists as the counter-pressure, and AWS's tooling — conditions, boundaries, SCPs, Access Analyzer generating policy from observed use — exists because doing it from memory is what made it lose.",
     onTheExam: [
       'An option using a managed policy such as AmazonS3FullAccess is almost always the distractor when a narrower custom policy is offered.',
       '"Generate a policy based on actual usage" is IAM Access Analyzer policy generation, which reads CloudTrail.',

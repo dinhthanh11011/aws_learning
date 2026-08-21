@@ -311,6 +311,8 @@ export const networkingConcepts: Concept[] = [
       'An internet gateway is a horizontally scaled, redundant VPC component with no bandwidth constraint and no charge of its own. It does two things: it provides a target for internet-bound routes, and it performs the one-to-one address translation between an instance private IP and its public or Elastic IP. One internet gateway attaches to one VPC.',
     keyIdea:
       'An internet gateway allows traffic in both directions, and only for resources that have a public address. Its presence changes nothing until a route table points at it.',
+    whyItExists:
+      'A VPC is private address space, and private addresses are not routable on the internet — no ISP will carry a packet from 10.0.1.5 or return one to it. Something has to sit at the boundary and translate between the address the instance has and the address the internet can reach. The internet gateway exists to be that boundary object, and making it a thing you attach rather than a default is what allows a VPC to have no internet path at all.',
     onTheExam: [
       'The four things a public instance needs, of which the exam removes exactly one: a public or Elastic IP, a route to the internet gateway, an allowing security group, and an allowing NACL in both directions.',
       '"Outbound only" in a requirement rules the internet gateway out for that subnet and points at a NAT gateway.',
@@ -348,6 +350,8 @@ export const networkingConcepts: Concept[] = [
       'NAT rewrites the source address of outbound packets to one the internet can route back to, and keeps a translation table so replies find their way home. In a VPC this is a managed NAT gateway — placed in a public subnet, with an Elastic IP — that private subnets route 0.0.0.0/0 to. The older NAT instance is an EC2 instance doing the same job that you have to scale and patch yourself.',
     keyIdea:
       'NAT is asymmetric on purpose: replies to connections you started come back, and connections started from outside do not. That is exactly what a private subnet that still needs to download patches requires.',
+    whyItExists:
+      'Outbound-only access is the normal requirement — patches, API calls, package installs — and a private instance cannot have it without a routable source address, but giving it a public IP would also make it reachable from outside. NAT exists to resolve that asymmetry: connections initiated from inside get a routable address for the duration, and nothing outside can start one, because there is no translation entry until you make one.',
     onTheExam: [
       '"Private instances must download updates but must not be reachable from the internet" — NAT gateway, every time.',
       '"Highly available NAT" means one NAT gateway per AZ, each with a route table for the private subnets in its own AZ.',
@@ -390,6 +394,8 @@ export const networkingConcepts: Concept[] = [
       'A private IPv4 address comes from the subnet CIDR, is assigned for the life of the network interface and is only routable inside the VPC and anything connected to it. A public IPv4 address is drawn from an AWS pool, assigned at launch if the subnet says so, and released when the instance stops — so it changes. An Elastic IP is a public address you allocate to your account and keep until you release it.',
     keyIdea:
       'Private addresses persist and are not reachable; public addresses are reachable and do not persist. An Elastic IP is what you use when you need both, and it is the one that costs money while unused.',
+    whyItExists:
+      "One kind of address cannot do all three jobs. There are not enough public IPv4 addresses to give every instance a permanent one, so AWS hands them out from a pool and takes them back when an instance stops — which is fine until something depends on the address never changing, such as a partner's allowlist or a DNS record. The three kinds exist because reachability and stability have different costs, and Elastic IPs are the ones you pay for when idle for exactly that reason.",
     onTheExam: [
       '"The address changed after a reboot" — it was a public IP, and the fix is an Elastic IP or, better, a DNS name in front of a load balancer.',
       '"A fixed IP the firewall team can allow-list" — Elastic IP, or Global Accelerator when they need two static addresses at the edge.',
@@ -431,6 +437,8 @@ export const networkingConcepts: Concept[] = [
       'A stateful filter tracks connections: if it allowed the outbound request, it allows the reply automatically, whatever the inbound rules say. A stateless filter has no memory, so the reply is evaluated on its own and needs its own rule. In a VPC, security groups are stateful and network ACLs are stateless — which is why NACLs need rules for ephemeral ports and security groups do not.',
     keyIdea:
       'Stateful means the reply is allowed automatically. Stateless means the reply is a separate packet needing its own rule — in practice, an outbound rule for ports 1024 to 65535.',
+    whyItExists:
+      'A reply arrives on a port nobody could predict — the client picked an ephemeral one — so a filter with no memory has to be told to allow a huge range inbound, which is most of the protection gone. Keeping connection state avoids that but costs memory and makes the filter care about ordering. Both exist in a VPC because they answer different questions, and every "my return traffic is blocked" NACL question is really testing whether you know which is which.',
     onTheExam: [
       'Any question where outbound works and the reply never arrives is a stateless filter missing an ephemeral-port rule.',
       'Security groups only have allow rules, so "block this one IP address" cannot be a security group — it has to be a NACL, WAF or Network Firewall.',

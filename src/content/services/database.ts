@@ -13,6 +13,8 @@ export const databaseServices: Service[] = [
     oneLiner: 'Managed relational databases — six engines, patched and backed up for you.',
     whatItIs:
       'MySQL, PostgreSQL, MariaDB, Oracle, SQL Server and Db2 as managed instances. AWS handles provisioning, patching, backups and failover; you still choose instance size, storage type and topology. Two features carry most of the exam weight, and they are different things: Multi-AZ is for availability, read replicas are for read scale.',
+    whyItExists:
+      'Running a database on an instance means somebody owns the parts nobody wants to own: minor version patches, a backup that has actually been tested, and a failover procedure written down and rehearsed. That work is identical at every company, and it is skipped until the night it is needed. RDS exists to take the operational half and leave you the schema — which is why the exam expects you to reach for it unless something forces self-management.',
     whenToUse: [
       'Existing relational schema, joins, transactions and SQL you do not want to rewrite',
       'Lift-and-shift of an on-premises database onto a managed platform',
@@ -93,6 +95,8 @@ export const databaseServices: Service[] = [
     oneLiner: "AWS's own MySQL/PostgreSQL-compatible engine on a distributed storage layer.",
     whatItIs:
       'Aurora keeps six copies of your data across three AZs in a shared storage volume that grows automatically, and separates that storage from the compute instances in front of it. Because replicas read the same volume rather than replaying a log, there are up to 15 of them with millisecond replica lag, and failover is seconds rather than a minute.',
+    whyItExists:
+      'Bolting a managed service onto MySQL or PostgreSQL left the hard part untouched: the storage was still a volume attached to one instance, so a replica replayed a log to keep up, failover took a minute or more, and growing the disk was a planned event. Aurora exists because AWS rewrote that storage layer instead — replicas read the same six-way replicated volume rather than chasing it — which is why the answer to "same engine, better availability and replica lag" is Aurora.',
     whenToUse: [
       'MySQL- or PostgreSQL-compatible workloads wanting more throughput and faster failover than RDS',
       'Heavy read scale-out — up to 15 low-lag replicas behind a single reader endpoint',
@@ -160,6 +164,8 @@ export const databaseServices: Service[] = [
     oneLiner: 'Aurora capacity that scales in fine steps with load, billed per ACU-second.',
     whatItIs:
       'A capacity mode for Aurora. Instead of choosing an instance size, you set a minimum and maximum in Aurora Capacity Units and the cluster scales between them in fractions of a second, without dropping connections. Mixed clusters — some provisioned instances, some serverless — are supported.',
+    whyItExists:
+      "An instance size is a guess about tomorrow's load, so a spiky or unpredictable workload was either sized for the peak and paid for around the clock, or sized for the average and slow when it mattered. Resizing meant a maintenance window. Aurora Serverless v2 exists so capacity follows load in fine steps without dropping connections — the answer whenever a question stresses unpredictable or intermittent traffic.",
     whenToUse: [
       'Unpredictable or spiky load where a fixed instance is either too small at peak or wasted at trough',
       'Dev, test and staging databases that are idle most of the day',
@@ -206,6 +212,8 @@ export const databaseServices: Service[] = [
       'Serverless key-value and document store with single-digit-millisecond latency at any scale.',
     whatItIs:
       'A fully managed NoSQL table. Every item has a partition key, optionally plus a sort key, and the partition key decides which physical partition the item lives on — which is why key design is the whole game. There are no servers, no version upgrades, and no practical size ceiling. For DVA this is the most heavily examined data service; for SAA it is the default answer whenever the access pattern is key-based.',
+    whyItExists:
+      'Scaling a relational database past one machine meant sharding it yourself: a routing layer, a rebalancing plan, cross-shard queries that no longer worked, and an upgrade that everyone dreaded. Teams paid that price for workloads that only ever looked items up by key. DynamoDB exists to give up joins and ad-hoc queries in exchange for flat latency at any size — which is why key design, not tuning, is the whole game.',
     whenToUse: [
       'Known, simple access patterns: get by id, query a partition, list by time within a partition',
       'Session state, shopping carts, user profiles, device state, leaderboards, event logs',
@@ -312,6 +320,8 @@ export const databaseServices: Service[] = [
     oneLiner: 'Managed Redis (Valkey) or Memcached — microsecond reads in front of a slower store.',
     whatItIs:
       'In-memory caching as a managed service. The engine choice is the exam question: Memcached is a simple, multi-threaded, horizontally shardable cache with no persistence and no replication. Redis/Valkey adds replication, automatic failover, persistence, transactions, pub/sub, sorted sets and other data structures.',
+    whyItExists:
+      'The same expensive query ran thousands of times a second because the answer changed once an hour, so the database was scaled up to serve work it had already done. Caching in each application process meant every instance had a different, colder copy. ElastiCache exists to make that memory a shared tier the fleet can hit in microseconds, so the database only sees the reads that genuinely need it.',
     whenToUse: [
       'Read-heavy workloads hammering the same rows — cache in front of RDS or Aurora',
       'Session stores for a stateless web tier behind a load balancer',
@@ -372,6 +382,8 @@ export const databaseServices: Service[] = [
     oneLiner: 'Petabyte-scale columnar data warehouse for analytical SQL.',
     whatItIs:
       'A columnar, massively-parallel warehouse. Data is distributed across compute nodes by a distribution key and sorted by a sort key, so an aggregation over a billion rows touches only the columns it needs. Redshift Spectrum queries data left in S3 without loading it; Redshift Serverless removes cluster sizing entirely.',
+    whyItExists:
+      'Analytical questions — sum this column across two years — were asked of a database built to fetch whole rows one at a time, so it read every field of every row to add up one of them. Teams scaled the transactional database until reporting hurt the application it shared. Redshift exists because columnar storage across parallel nodes is a different machine for a different question, and separating it means a report cannot slow down checkout.',
     whenToUse: [
       'Business intelligence and dashboards over large historical datasets',
       'Complex analytical SQL — joins and aggregations across many large tables',
@@ -434,6 +446,8 @@ export const databaseServices: Service[] = [
     oneLiner: 'Connection pooler in front of RDS/Aurora — the fix for Lambda connection storms.',
     whatItIs:
       'A managed, highly available proxy that pools and reuses database connections. Applications connect to the proxy instead of the database, so thousands of short-lived clients share a small number of real connections. It also shortens failover: the proxy holds client connections open and reroutes them to the new writer.',
+    whyItExists:
+      'A relational database charges real memory for every connection, and serverless compute breaks that assumption: a thousand concurrent Lambda invocations open a thousand connections, each used for 40 ms, and the database falls over from the handshakes alone. Pooling inside the function is impossible, because the function is the thing being multiplied. RDS Proxy exists to hold the pool outside — and, as a bonus, to hide a failover from clients.',
     whenToUse: [
       'Lambda functions or containers scaling out and exhausting the database connection limit',
       'Many short-lived connections where each new connection costs the database real work',
