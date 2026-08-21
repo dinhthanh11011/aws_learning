@@ -54,6 +54,8 @@ export is the only backup that exists.
 | `phases.ts` | The 5-phase learning path (mirrors the user's Notion roadmap) |
 | `idle-costs.ts` | What a forgotten lab costs per month |
 | `labs.ts` | Lab metadata |
+| `stories/*.ts` | Storylines: one complete architecture plus the chapters that reveal it |
+| `story-registry.ts` | Aggregates the storylines. Same naming rule as `service-registry.ts` |
 | `index.ts` | The `@/content` barrel: lookups, reverse indexes, `search()`, `contentStats()`, `examCoverage()` |
 
 ### Concepts — the primitives layer
@@ -91,6 +93,39 @@ concept uses `ConceptRef` or `conceptLinkProps`. `useServicePeekKey` binds `s` t
 the services a question or drill card points at. The panel exists because
 navigating away mid-question costs the question, so without it the lookup simply
 does not happen.
+
+### Story mode — the corpus in order
+
+The atlas answers *what is this* and the big picture traces a request through a
+system that is already standing. Neither shows the system being **built**, and
+neither lets one service's limitation motivate the next one — so a learner who
+can recite every card still has no idea why anybody would reach for a NAT
+gateway.
+
+A storyline closes that. `src/content/stories/startup-saa.ts` is thirteen
+chapters following one founder from an email address to a design that survives
+losing a Region, and the rule it is written to is that **every chapter's pain is
+caused by the previous chapter's design**. If a chapter could be reordered, it
+has not earned its place.
+
+The architecture is declared once, whole, and each chapter names only the ids it
+adds — see invariant 18 for why, and `src/engines/story/cumulative.ts` for the
+fold that turns "chapter N" into "what is on screen". Chapter bodies reuse
+`LessonSectionSchema`, which means the renderer built for this
+(`src/components/lesson/Sections.tsx`, `src/components/diagram/Diagram.tsx`,
+`src/lib/md.tsx`) is the renderer the lesson player was always blocked on.
+
+`Diagram.tsx` is hand-rolled inline SVG rather than a graph library. The
+load-bearing feature is *nested labelled regions* — Region ⊃ VPC ⊃ AZ ⊃ subnet,
+each box computed from the union of its own nodes and its children's boxes, with
+padding that grows with depth — which is what node-and-edge libraries are worst
+at, and an SVG drops straight into lesson prose. `startup-saa.test.ts` pins the
+containment and non-overlap numerically, because the failure mode is silent: the
+ids stay valid, the page renders, and the picture quietly stops making sense.
+
+Earlier chapters' work is de-emphasised with fill, stroke weight and dashes —
+never `opacity`, which is invariant 6. Every text colour is identical in both
+states, so nothing drops below the contrast threshold as the diagram grows.
 
 ### The tier system
 

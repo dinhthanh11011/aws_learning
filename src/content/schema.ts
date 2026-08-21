@@ -26,10 +26,7 @@ export const CERT_FAMILY_IDS = ['saa', 'dva'] as const
 export const CertFamilySchema = z.enum(CERT_FAMILY_IDS)
 export type CertFamily = (typeof CERT_FAMILY_IDS)[number]
 
-export const CERT_FAMILIES: Record<
-  CertFamily,
-  { id: CertFamily; short: string; label: string }
-> = {
+export const CERT_FAMILIES: Record<CertFamily, { id: CertFamily; short: string; label: string }> = {
   saa: { id: 'saa', short: 'SAA', label: 'Solutions Architect – Associate' },
   dva: { id: 'dva', short: 'DVA', label: 'Developer – Associate' },
 }
@@ -259,6 +256,13 @@ export const ServiceSchema = z.object({
   /** One sentence. Shown on the canvas and in search results. */
   oneLiner: z.string().min(1),
   whatItIs: z.string().min(1),
+  /**
+   * The pain that existed before this did. Not what it is (`whatItIs`) and not
+   * when to reach for it (`whenToUse`) — what someone was doing instead, and
+   * why that hurt. A learner who cannot say what a service replaces is
+   * memorising a name, and on a scenario question a name eliminates nothing.
+   */
+  whyItExists: z.string().min(1).optional(),
   whenToUse: z.array(z.string().min(1)),
   whenNotToUse: z.array(z.string().min(1)),
   keyNumbers: z.array(KeyNumberSchema).default([]),
@@ -367,6 +371,12 @@ export const ConceptSchema = z.object({
    * 0.0.0.0/0 to an internet gateway". This is the card the learner drills.
    */
   keyIdea: z.string().min(1),
+  /**
+   * Why the idea had to be invented at all — the constraint that forces it.
+   * A Region exists because nobody can build one data centre for the world;
+   * knowing that is what stops "Region" being a word the learner nods at.
+   */
+  whyItExists: z.string().min(1).optional(),
   /** How the exam phrases a question that is really about this concept. */
   onTheExam: z.array(z.string().min(1)).default([]),
   keyNumbers: z.array(KeyNumberSchema).default([]),
@@ -578,7 +588,14 @@ export const DiagramGroupSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   kind: z.enum(DIAGRAM_GROUP_KINDS),
-  nodeIds: z.array(z.string()).min(1),
+  /**
+   * Defaulted rather than `.min(1)`: a group's content can live entirely in its
+   * children. An Availability Zone holds no node directly — it holds subnets,
+   * and the subnets hold the instances. Requiring a direct node here would force
+   * a fake one into every intermediate group. `content:check` still fails a
+   * group that has neither a node nor a child, which is the real invariant.
+   */
+  nodeIds: z.array(z.string()).default([]),
   /** Nest inside another group (a subnet inside an AZ inside a VPC). */
   parent: z.string().optional(),
 })
@@ -690,6 +707,83 @@ export const LessonSchema = z.object({
   requires: z.array(z.string()).default([]),
 })
 export type Lesson = z.infer<typeof LessonSchema>
+
+/* ── Stories: one system, built in order ─────────────────────────────────── */
+
+/**
+ * A storyline is the corpus's answer to "why do I need this?" asked in
+ * sequence. The atlas says what each service is; the big picture traces a
+ * request through a system that is already standing. Neither shows the system
+ * being *built*, and neither lets one service's limitation motivate the next
+ * one — which is how anybody actually learns an architecture.
+ *
+ * The rule that keeps it a story rather than a syllabus: every chapter's `pain`
+ * is caused by the previous chapter's design. If a chapter could be reordered,
+ * it has not earned its place.
+ */
+
+/** What a chapter contributes to the growing architecture, by id. */
+export const StoryAddsSchema = z.object({
+  nodeIds: z.array(z.string()).default([]),
+  edgeIds: z.array(z.string()).default([]),
+  groupIds: z.array(z.string()).default([]),
+})
+export type StoryAdds = z.infer<typeof StoryAddsSchema>
+
+/**
+ * The pick that opens a chapter. The learner chooses before the prose explains,
+ * because choosing first is retrieval and reading first is only recognition —
+ * and this whole app is built on that difference.
+ */
+export const StoryDecisionSchema = z.object({
+  /** The situation in the founder's words, not exam phrasing. */
+  situation: z.string().min(1),
+  prompt: z.string().min(1),
+  options: z
+    .array(
+      z.object({
+        /** A service *or* concept slug — they share one namespace. */
+        slug: z.string().min(1),
+        correct: z.boolean(),
+        why: z.string().min(1),
+      }),
+    )
+    .min(3),
+})
+export type StoryDecision = z.infer<typeof StoryDecisionSchema>
+
+export const StoryChapterSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+-c\d{1,2}$/),
+  title: z.string().min(1),
+  /** The pain the previous chapter's design created. This is the hook. */
+  pain: z.string().min(1),
+  minutes: z.number().int().positive(),
+  /** Real task statement, so the decision's attempt rolls into domain mastery. */
+  taskId: z.string().min(1),
+  serviceSlugs: z.array(z.string()).default([]),
+  conceptSlugs: z.array(z.string()).default([]),
+  adds: StoryAddsSchema,
+  decision: StoryDecisionSchema,
+  sections: z.array(LessonSectionSchema).min(1),
+  checks: z.array(CheckSchema).default([]),
+})
+export type StoryChapter = z.infer<typeof StoryChapterSchema>
+
+export const StorySchema = z.object({
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(1),
+  /** Who is building what, and why — in the learner's terms. */
+  premise: z.string().min(1),
+  families: z.array(CertFamilySchema).min(1),
+  versionScope: VersionScopeSchema.optional(),
+  /**
+   * The finished architecture, declared once. Chapters reveal parts of it and
+   * none of them redefines it, which is what makes drift inexpressible.
+   */
+  architecture: DiagramSpecSchema,
+  chapters: z.array(StoryChapterSchema).min(1),
+})
+export type Story = z.infer<typeof StorySchema>
 
 /* ── Decision engines ────────────────────────────────────────────────────── */
 

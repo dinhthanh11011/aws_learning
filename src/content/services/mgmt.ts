@@ -91,6 +91,8 @@ export const mgmtServices: Service[] = [
     oneLiner: 'Audit log of every API call — who did what, when, from where.',
     whatItIs:
       'Records API activity across your account. Management events (control-plane operations like RunInstances or DeleteBucket) are logged for the last 90 days free in Event history. Data events (object-level S3 reads and writes, Lambda invocations) are high-volume and off by default. A *trail* delivers events durably to S3 — and optionally to CloudWatch Logs — for long retention and analysis.',
+    whyItExists:
+      'When a resource is gone, the resource cannot tell you who deleted it, and application logs only record what the application did — not what someone did to the account. CloudTrail exists so that every API call, including the console clicks that are really API calls, leaves a record independent of the thing it acted on. It answers "who did this and when", which is the question that follows almost every incident and cannot be reconstructed afterwards if nobody was recording.',
     whenToUse: [
       'Security investigations and forensics: who deleted it, who changed the policy',
       'Compliance requirements for an immutable audit record',

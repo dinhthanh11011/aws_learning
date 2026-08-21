@@ -22,6 +22,7 @@ import { taskMastery } from '@/engines/progress/mastery'
 import { generate } from '@/engines/plan/generate'
 import { phaseStepProgress } from '@/engines/plan/steps'
 import { NextStepCard } from '@/components/map/NextStepCard'
+import { NextChapterCard } from '@/components/map/NextChapterCard'
 import { StudySteps } from './StudySteps'
 import { MasteryRing } from '@/components/ui/MasteryRing'
 import { Badge } from '@/components/ui/Badge'
@@ -124,6 +125,7 @@ export function RoadmapView() {
   return (
     <div className="flex flex-col gap-5">
       <NextStepCard />
+      <NextChapterCard />
 
       <div className="surface p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">

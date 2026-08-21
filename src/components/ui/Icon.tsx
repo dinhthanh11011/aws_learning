@@ -133,6 +133,15 @@ export const IconBlocks = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+/** An open book: story mode is the one surface that is read in order. */
+export const IconBook = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M8 4.25C6.9 3.4 5.6 3 4.25 3c-.75 0-1.5.1-2.25.35v9.3c.75-.25 1.5-.35 2.25-.35 1.35 0 2.65.4 3.75 1.25" />
+    <path d="M8 4.25C9.1 3.4 10.4 3 11.75 3c.75 0 1.5.1 2.25.35v9.3c-.75-.25-1.5-.35-2.25-.35-1.35 0-2.65.4-3.75 1.25" />
+    <path d="M8 4.25v9.3" />
+  </svg>
+)
+
 export const ICONS = {
   target: IconTarget,
   layers: IconLayers,
@@ -149,6 +158,7 @@ export const ICONS = {
   check: IconCheck,
   search: IconSearch,
   blocks: IconBlocks,
+  book: IconBook,
 } as const
 
 export type IconName = keyof typeof ICONS

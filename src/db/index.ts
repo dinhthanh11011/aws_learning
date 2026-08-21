@@ -67,7 +67,12 @@ export interface Attempt {
   ms: number
   at: number
   /** Which surface it came from, so exam data can be separated from drilling. */
-  source: 'exam' | 'quiz' | 'drill' | 'lesson'
+  /**
+   * `story` is a chapter's "you decide" pick. It records as a real attempt so it
+   * feeds the same accuracy stream as a quiz answer — reading a chapter awards
+   * nothing, but choosing before the reveal is retrieval and counts as such.
+   */
+  source: 'exam' | 'quiz' | 'drill' | 'lesson' | 'story'
 }
 
 export interface LessonRecord {
@@ -76,6 +81,16 @@ export interface LessonRecord {
   checksPassed: number
   checksTotal: number
   seconds: number
+  at: number
+}
+
+/**
+ * A chapter that has been read. Row presence *is* the tick, so unticking is a
+ * delete — the same shape as `StepRecord`, and for the same reason: it awards
+ * nothing and moves no ring, because a self-report is not evidence.
+ */
+export interface StoryRecord {
+  chapterId: string
   at: number
 }
 
@@ -164,6 +179,7 @@ class AwsDb extends Dexie {
   dailyStats!: Table<DailyStat, string>
   serviceMarks!: Table<ServiceMark, string>
   steps!: Table<StepRecord, string>
+  storyChapters!: Table<StoryRecord, string>
 
   constructor() {
     super('aws-learning')
@@ -199,6 +215,11 @@ class AwsDb extends Dexie {
             normaliseSrsRow(row as Record<string, unknown>)
           }),
       )
+    // v4 adds the story reader's chapter ticks. Additive only, exactly as v2
+    // was for study steps, so an existing profile upgrades losing nothing.
+    this.version(4).stores({
+      storyChapters: 'chapterId, at',
+    })
   }
 }
 

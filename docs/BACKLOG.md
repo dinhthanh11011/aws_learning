@@ -99,6 +99,71 @@ teaching "251 usable addresses" is still reported as an orphan even though the
 CIDR concept now carries it. Widening `atlasText()` to include
 `conceptsForService()` output is a few lines.
 
+### Story mode and `whyItExists` (August 2026)
+
+Two gaps a learner named directly: nothing said *why* a service exists — "why do
+I need a Region at all?" — and nothing joined the corpus into a single arc.
+
+`whyItExists` is now an optional field on `ServiceSchema` and `ConceptSchema`,
+rendered as the leading section of both atlases and of the quick-look panel.
+Optional with a counted `content:check` warning rather than required: making it
+required turned the gate red 178 times on the first run. **21 of 135 are written**
+— the tier-1/2 services and concepts that chapters 1–4 lean on. The rest is
+mechanical authoring and the warning tracks it.
+
+Story mode is `/story` and `/story/[slug]`, with one 13-chapter SAA arc
+(`startup-saa`, 9 h) from creating a root account to surviving the loss of a
+Region. What landed:
+
+- `src/content/stories/startup-saa.ts` — the arc, ~1,450 lines. One complete
+  `DiagramSpec` (20 nodes, 15 edges, 10 nested groups) plus per-chapter `adds`
+- `src/content/story-registry.ts`, wired into the barrel with the
+  import-then-export-local-binding rule
+- `src/engines/story/cumulative.ts` — `visibleAt`, `storyProgress`,
+  `nextChapter`. 11 tests
+- **`src/components/diagram/Diagram.tsx` + `layout.ts`** — the inline-SVG
+  `DiagramSpec` renderer, with nested group layout. 13 tests. This is the piece
+  the lesson player has been blocked on
+- `src/lib/md.tsx` — the inline formatter (`**bold**`, `` `code` ``, `[[slug]]` →
+  a real `ServiceRef`). Returns ReactNode, so no `dangerouslySetInnerHTML`. 10 tests
+- `src/components/lesson/Sections.tsx` — a renderer for every `LessonSection`
+  kind, not just the ones this arc uses
+- Dexie **v4**: a `storyChapters` table, additive as v2 was. `Attempt.source`
+  gains `'story'` (no migration — the index is by value). 4 persistence tests
+  including the export/import round trip and restoring a pre-story backup
+- `content:check` gains the whole story integrity section, and prints
+  `stories  1  (13 chapters, 9 h)`
+- `NextChapterCard` on `/map` and Mission Control, kept separate from
+  `NextStepCard` rather than overloading it
+
+Verified: 178 tests pass, typecheck and `eslint src scripts` clean, build
+prerenders both story routes, `content:check` valid. The cumulative fold and the
+nesting geometry were verified against the **served HTML** — chapter 1 renders one
+node, chapter 13 renders all 20 with 19 settled, and Region ⊃ VPC ⊃ AZ ⊃ subnet
+containment plus region non-overlap were asserted numerically and are now pinned
+by `startup-saa.test.ts`.
+
+**Not verified in a real browser.** A Chrome instance from another session held
+the devtools profile throughout, so the visual result — the three theme states,
+1440 px and 500 px layouts, the sticky diagram, clicking a node to open the peek,
+and a Lighthouse pass on `/story/[slug]` — has **not** been driven. That is the
+repo's standard for "verified" and it is outstanding. Do it before trusting the
+look of this.
+
+**The obvious next things here:**
+- Backfill the remaining 114 `whyItExists` entries
+- A DVA arc — build-and-ship rather than infrastructure. The frame is proven now
+- Point study steps at chapters. `StudyStepSchema.actions` validates against an
+  exact `ROUTES` match, so a `?chapter=` deep link needs the checker to strip the
+  query string first — which also unblocks the `?domain=` item below
+- `@xyflow/react` is in `package.json` and imported nowhere. `BigPictureCanvas`
+  is hand-rolled CSS grid and `Diagram.tsx` is hand-rolled SVG, so the dependency
+  can probably just go
+- `BigPictureCanvas` uses `opacity-25` to dim a node outside the selected flow.
+  It is transient rather than a persistent locked state, so it is not the
+  invariant-6 case, but it is the same contrast risk and the story diagram's
+  fill/stroke/dash recipe is the fix if the audit ever flags it
+
 ### 1. The lesson player — `/learn/[cert]/[lesson]`
 
 The **only** deviation from the approved plan. `LessonSchema`, `LessonSection`
@@ -110,10 +175,11 @@ the animated diagrams and inline checks schema-validated and lets one renderer
 handle every lesson. Section kinds already specified: `prose`, `callout`,
 `diagram`, `compare`, `numbers`, `steps`, `code`, `heading`, `services`.
 
-To build it you need: a `DiagramSpec` renderer (inline SVG, groups for
-VPC/AZ/subnet nesting, optional step-through), a section renderer, a tiny inline
-markdown formatter (`**bold**`, `` `code` ``, `[[service-slug]]` links), the route,
-and lessons. `phases.ts` already has empty `lessonIds` arrays waiting.
+**Most of this now exists.** Story mode built the `DiagramSpec` renderer (inline
+SVG with nested VPC/AZ/subnet groups), the section renderer for every
+`LessonSection` kind, and the inline markdown formatter. What is left is the
+route, the `checks` wiring and the lessons themselves — the hard, reusable parts
+are done and tested. `phases.ts` already has empty `lessonIds` arrays waiting.
 
 Until it exists the teaching lives in the atlas, concepts, decoder, trees and
 labs — which is genuinely most of it. This is an enhancement, not a hole.

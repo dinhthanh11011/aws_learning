@@ -13,6 +13,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Who may perform which action on which resource, under which conditions.',
     whatItIs:
       'The authorisation engine every AWS API call passes through. Identities (users, groups, roles) carry identity policies; resources (buckets, keys, queues) can carry resource policies. Every request is evaluated against all applicable policies, and the order is fixed and testable: an explicit Deny anywhere wins; otherwise an Allow is needed; otherwise the default is deny. Organizations SCPs and permissions boundaries cap what a policy can grant, they never grant anything themselves.',
+    whyItExists:
+      'The account you signed up with owns everything and can spend without limit, and there is exactly one of it. Sharing that login with a second person means neither of you can ever be told apart in an audit, and revoking one person\'s access means changing the password for everybody. IAM exists so that identity, permission and credential are three separate things you can change independently — which is what makes "this contractor may read one bucket, until Friday" expressible at all.',
     whenToUse: [
       'Always — there is no opting out',
       'Roles for anything that is code: EC2 instance profiles, Lambda execution roles, ECS task roles',
@@ -198,6 +200,8 @@ export const securityServices: Service[] = [
     oneLiner: 'Multi-account structure with consolidated billing and service control policies.',
     whatItIs:
       'A management account plus member accounts, arranged into organizational units. It gives you consolidated billing with pooled volume discounts and shared Reserved Instances or Savings Plans, and — the security half — service control policies that set a permission ceiling for every principal in an account, including the root user.',
+    whyItExists:
+      'IAM can express what a person may do, but everything still shares one billing account, one set of service quotas, and one blast radius — so a mistyped command in a test still deletes a production table, and no policy an administrator can write also constrains that administrator. Organizations exists because some boundaries have to sit above the account: an SCP is a ceiling nobody inside can raise, and a separate account is the only isolation that survives someone having admin.',
     whenToUse: [
       'Any environment with more than one account, which in practice means any serious environment',
       'Separating prod, dev, sandbox and audit by account boundary',

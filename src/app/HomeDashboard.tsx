@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { NextStepCard } from '@/components/map/NextStepCard'
+import { NextChapterCard } from '@/components/map/NextChapterCard'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, today } from '@/db'
@@ -43,7 +44,10 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
   const openMistakes = useLiveQuery(() => db.mistakes.filter((m) => !m.resolved).count(), [], 0)
   const examCount = useLiveQuery(() => db.exams.filter((e) => e.endedAt !== null).count(), [], 0)
   const lastExam = useLiveQuery(
-    async () => (await db.exams.orderBy('startedAt').reverse().limit(10).toArray()).find((e) => e.scaled !== null),
+    async () =>
+      (await db.exams.orderBy('startedAt').reverse().limit(10).toArray()).find(
+        (e) => e.scaled !== null,
+      ),
     [],
   )
 
@@ -97,7 +101,10 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
 
   const level = levelFromXp(profile.xp)
   const daysToExam = profile.examDate
-    ? Math.max(0, Math.ceil((new Date(`${profile.examDate}T00:00:00`).getTime() - nowMs) / 86_400_000))
+    ? Math.max(
+        0,
+        Math.ceil((new Date(`${profile.examDate}T00:00:00`).getTime() - nowMs) / 86_400_000),
+      )
     : null
 
   const doneCount = missions.filter((m) => m.done).length
@@ -107,6 +114,7 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
       {/* The next roadmap step, before anything else: the daily missions below
           say what kind of work to do, this says which topic. */}
       <NextStepCard compact />
+      <NextChapterCard compact />
 
       {/* Today — the only thing that matters on opening the app. */}
       <section className="surface overflow-hidden p-0">
@@ -146,7 +154,17 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
                   )}
                   aria-hidden
                 >
-                  {m.done ? '✓' : m.kind === 'drill' ? '⟳' : m.kind === 'quiz' ? '?' : m.kind === 'lab' ? '⚙' : m.kind === 'review' ? '✎' : '⚿'}
+                  {m.done
+                    ? '✓'
+                    : m.kind === 'drill'
+                      ? '⟳'
+                      : m.kind === 'quiz'
+                        ? '?'
+                        : m.kind === 'lab'
+                          ? '⚙'
+                          : m.kind === 'review'
+                            ? '✎'
+                            : '⚿'}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span
@@ -173,9 +191,7 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
         <section className="surface p-4 lg:col-span-2">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-[15px] font-semibold tracking-tight">
-                {cert.id} readiness
-              </h2>
+              <h2 className="text-[15px] font-semibold tracking-tight">{cert.id} readiness</h2>
               <p className="mt-0.5 text-[12.5px] text-fg-subtle">
                 Weighted by domain, capped until you have real timed-exam evidence.
               </p>
@@ -191,7 +207,9 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
           <Progress
             value={ready?.percent ?? 0}
             max={100}
-            tone={(ready?.percent ?? 0) >= 70 ? 'ok' : (ready?.percent ?? 0) >= 40 ? 'accent' : 'warn'}
+            tone={
+              (ready?.percent ?? 0) >= 70 ? 'ok' : (ready?.percent ?? 0) >= 40 ? 'accent' : 'warn'
+            }
             height={8}
             label="Exam readiness"
           />
@@ -201,7 +219,10 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
           <div className="mt-4 flex flex-col gap-2.5">
             {ready?.perDomain.map((d) => (
               <div key={d.domainId} className="flex items-center gap-3">
-                <span className="w-[46%] shrink-0 truncate text-[12.5px] text-fg-muted" title={d.title}>
+                <span
+                  className="w-[46%] shrink-0 truncate text-[12.5px] text-fg-muted"
+                  title={d.title}
+                >
                   {d.title}
                 </span>
                 <Badge tone="neutral" className="shrink-0">
@@ -259,7 +280,9 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
         <Stat
           label="Due reviews"
           value={queue.dueCount}
-          hint={queue.laterToday ? `${queue.laterToday} more later today` : 'Retrieval beats re-reading'}
+          hint={
+            queue.laterToday ? `${queue.laterToday} more later today` : 'Retrieval beats re-reading'
+          }
           href="/drill"
           tone={queue.dueCount > 30 ? 'warn' : 'accent'}
         />
@@ -305,9 +328,22 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
           </p>
           <ol className="mt-4 flex flex-col gap-2">
             {[
-              { href: '/big-picture', title: 'See the whole system', detail: 'Five layers, seven traceable flows, 20 minutes.' },
-              { href: '/onboarding', title: 'Set your target and hours', detail: 'Generates a week-by-week plan you can actually follow.' },
-              { href: '/decoder', title: `Drill the ${triggersFor(profile.targetCert).length} trigger phrases`, detail: 'The fastest single gain available: recognise the phrase, eliminate two options.' },
+              {
+                href: '/big-picture',
+                title: 'See the whole system',
+                detail: 'Five layers, seven traceable flows, 20 minutes.',
+              },
+              {
+                href: '/onboarding',
+                title: 'Set your target and hours',
+                detail: 'Generates a week-by-week plan you can actually follow.',
+              },
+              {
+                href: '/decoder',
+                title: `Drill the ${triggersFor(profile.targetCert).length} trigger phrases`,
+                detail:
+                  'The fastest single gain available: recognise the phrase, eliminate two options.',
+              },
             ].map((s, i) => (
               <li key={s.href}>
                 <Link
@@ -333,7 +369,8 @@ export function HomeDashboard({ nowMs }: { nowMs: number }) {
         <div className="mb-3 flex items-baseline justify-between gap-3">
           <h2 className="text-[14px] font-semibold tracking-tight">Coverage</h2>
           <span className="text-[11.5px] text-fg-subtle">
-            {cert.id} · {domains.length} domains · {cert.questionCount} questions in {cert.minutes} min
+            {cert.id} · {domains.length} domains · {cert.questionCount} questions in {cert.minutes}{' '}
+            min
           </span>
         </div>
         <StackedBar
@@ -386,8 +423,7 @@ function Stat({
   href: string
   tone: 'accent' | 'ok' | 'warn' | 'bad' | 'neutral'
 }) {
-  const color =
-    tone === 'neutral' ? 'var(--fg)' : `var(--${tone})`
+  const color = tone === 'neutral' ? 'var(--fg)' : `var(--${tone})`
   return (
     <Link
       href={href}

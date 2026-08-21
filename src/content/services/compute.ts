@@ -13,6 +13,8 @@ export const computeServices: Service[] = [
     oneLiner: 'Virtual machines you rent by the second and administer yourself.',
     whatItIs:
       'Resizable virtual servers. You pick an instance family (what the hardware is optimised for), a size (how much of it you get), an AMI (the disk image it boots), and a purchase model (how you pay). Everything above the hypervisor is yours to patch, scale and secure — which is exactly why the exam usually wants you to choose something else, unless the question gives you a reason you cannot.',
+    whyItExists:
+      'Buying a server meant a purchase order, a delivery, a rack, and a three-year bet on how much capacity you would need — placed before you had any users. Getting it wrong cost either an outage or a room full of idle metal. EC2 exists to turn that capital bet into an hourly one: the same machine, rented by the hour, returnable when you are wrong. Almost every other AWS service is an argument about what you should stop running on it.',
     whenToUse: [
       'A workload needs a specific OS, kernel module, licensed agent or long-running process that will not fit in a container or a 15-minute function',
       'Lift-and-shift of an existing server where "no application changes" is stated or implied',

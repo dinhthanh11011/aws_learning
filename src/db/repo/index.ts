@@ -1,4 +1,18 @@
-import { db, DEFAULT_PROFILE, today, type Attempt, type DailyStat, type LabRecord, type LessonRecord, type MistakeNote, type Profile, type ServiceMark, type SrsCard, type StepRecord } from '..'
+import {
+  db,
+  DEFAULT_PROFILE,
+  today,
+  type Attempt,
+  type DailyStat,
+  type LabRecord,
+  type LessonRecord,
+  type MistakeNote,
+  type Profile,
+  type ServiceMark,
+  type SrsCard,
+  type StepRecord,
+  type StoryRecord,
+} from '..'
 import { levelFromXp, touchStreak, XP } from '@/engines/gamify/rules'
 import type { CertId } from '@/content/schema'
 import { retirementTarget } from '@/content/cert-registry'
@@ -112,7 +126,11 @@ export async function saveCard(card: SrsCard): Promise<void> {
   await db.srsCards.put(card)
 }
 
-export async function recordReview(card: SrsCard, seconds: number, hard: boolean): Promise<XpAward> {
+export async function recordReview(
+  card: SrsCard,
+  seconds: number,
+  hard: boolean,
+): Promise<XpAward> {
   await db.srsCards.put(card)
   await bumpDaily({ reviews: 1 })
   return awardXp(hard ? XP.reviewCardHard : XP.reviewCard, { seconds })
@@ -169,11 +187,7 @@ export async function activeExam(): Promise<Awaited<ReturnType<typeof getExam>>>
 
 export const allLabs = () => db.labs.toArray()
 
-export async function recordLab(
-  labId: string,
-  score: number,
-  brokenId?: string,
-): Promise<XpAward> {
+export async function recordLab(labId: string, score: number, brokenId?: string): Promise<XpAward> {
   const cur = await db.labs.get(labId)
   const broken = new Set(cur?.broken ?? [])
   const isNewBreak = brokenId ? !broken.has(brokenId) : false
@@ -250,6 +264,25 @@ export async function setStepDone(stepId: string, done: boolean): Promise<void> 
   else await db.steps.delete(stepId)
 }
 
+/* ── Story chapters ──────────────────────────────────────────────────────── */
+
+export const allStoryChapters = () => db.storyChapters.toArray()
+
+/**
+ * Marking a chapter read awards nothing, for exactly the reason `setStepDone`
+ * awards nothing: it is a self-report. The chapter's "you decide" pick and its
+ * recall checks are what award, because those are retrieval.
+ */
+export async function setChapterRead(chapterId: string, read: boolean): Promise<void> {
+  if (read) await db.storyChapters.put({ chapterId, at: Date.now() })
+  else await db.storyChapters.delete(chapterId)
+}
+
+/** Clears a storyline's ticks — the "read it again" escape hatch. */
+export async function clearStoryChapters(chapterIds: string[]): Promise<void> {
+  await db.storyChapters.bulkDelete(chapterIds)
+}
+
 /** Clears a phase's ticks — the "start this phase again" escape hatch. */
 export async function clearSteps(stepIds: string[]): Promise<void> {
   await db.steps.bulkDelete(stepIds)
@@ -282,6 +315,7 @@ export interface Backup {
   dailyStats: DailyStat[]
   serviceMarks: ServiceMark[]
   steps: StepRecord[]
+  storyChapters?: StoryRecord[]
 }
 
 export async function exportAll(): Promise<Backup> {
@@ -300,6 +334,7 @@ export async function exportAll(): Promise<Backup> {
     dailyStats: await db.dailyStats.toArray(),
     serviceMarks: await db.serviceMarks.toArray(),
     steps: await db.steps.toArray(),
+    storyChapters: await db.storyChapters.toArray(),
   }
 }
 
@@ -320,7 +355,20 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
   }
   await db.transaction(
     'rw',
-    [db.profile, db.srsCards, db.attempts, db.lessons, db.exams, db.labs, db.mistakes, db.achievements, db.dailyStats, db.serviceMarks, db.steps],
+    [
+      db.profile,
+      db.srsCards,
+      db.attempts,
+      db.lessons,
+      db.exams,
+      db.labs,
+      db.mistakes,
+      db.achievements,
+      db.dailyStats,
+      db.serviceMarks,
+      db.steps,
+      db.storyChapters,
+    ],
     async () => {
       await Promise.all([
         db.srsCards.clear(),
@@ -333,6 +381,7 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
         db.dailyStats.clear(),
         db.serviceMarks.clear(),
         db.steps.clear(),
+        db.storyChapters.clear(),
       ])
       if (b.profile) await db.profile.put(b.profile)
       // Backups taken before cards were tagged by family carry `certs`
@@ -341,19 +390,25 @@ export async function importAll(data: unknown): Promise<{ ok: boolean; message: 
       // the drill queue would quietly come back empty.
       if (b.srsCards?.length) {
         await db.srsCards.bulkPut(
-          b.srsCards.map((c) => normaliseSrsRow({ ...c } as unknown as Record<string, unknown>) as unknown as SrsCard),
+          b.srsCards.map(
+            (c) =>
+              normaliseSrsRow({ ...c } as unknown as Record<string, unknown>) as unknown as SrsCard,
+          ),
         )
       }
       if (b.attempts?.length) await db.attempts.bulkPut(b.attempts.map((a) => omitId(a) as Attempt))
       if (b.lessons?.length) await db.lessons.bulkPut(b.lessons)
       if (b.exams?.length) await db.exams.bulkPut(b.exams as never[])
       if (b.labs?.length) await db.labs.bulkPut(b.labs)
-      if (b.mistakes?.length) await db.mistakes.bulkPut(b.mistakes.map((m) => omitId(m) as MistakeNote))
+      if (b.mistakes?.length)
+        await db.mistakes.bulkPut(b.mistakes.map((m) => omitId(m) as MistakeNote))
       if (b.achievements?.length) await db.achievements.bulkPut(b.achievements)
       if (b.dailyStats?.length) await db.dailyStats.bulkPut(b.dailyStats)
       if (b.serviceMarks?.length) await db.serviceMarks.bulkPut(b.serviceMarks)
       // Absent from backups taken before the roadmap had steps, hence the guard.
       if (b.steps?.length) await db.steps.bulkPut(b.steps)
+      // Absent from backups taken before the story reader existed, same guard.
+      if (b.storyChapters?.length) await db.storyChapters.bulkPut(b.storyChapters)
     },
   )
   return { ok: true, message: 'Backup restored.' }
@@ -372,6 +427,7 @@ export async function resetAll(): Promise<void> {
     db.dailyStats.clear(),
     db.serviceMarks.clear(),
     db.steps.clear(),
+    db.storyChapters.clear(),
   ])
 }
 

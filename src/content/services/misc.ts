@@ -299,6 +299,8 @@ export const miscServices: Service[] = [
     oneLiner: 'Set cost, usage, RI or Savings Plans thresholds and get alerted — or act.',
     whatItIs:
       'Threshold monitors on cost, usage, Reserved Instance coverage or Savings Plans utilisation, with alerts on actual *or forecast* breach. Budget Actions go further: they can apply an IAM or SCP restriction, or stop EC2 and RDS instances, when a threshold is crossed.',
+    whyItExists:
+      'Renting by the hour means a mistake keeps costing money quietly for as long as nobody looks, and the bill arrives a month after the decision that caused it. A forgotten NAT gateway or an oversized instance is invisible until it is expensive. Budgets exists to close that feedback loop to hours instead of weeks — which matters most to a learner, because the thing that makes people afraid to practise in a real account is not the cost but the not knowing.',
     whenToUse: [
       'Alerting before the bill becomes a surprise — the first thing to configure in any account',
       'Per-team or per-project spend limits, by tag or account',
@@ -770,6 +772,8 @@ export const miscServices: Service[] = [
       'Regions, Availability Zones and edge locations — the geography every design rests on.',
     whatItIs:
       'A *Region* is a geographic area containing multiple isolated *Availability Zones*, each one or more discrete data centres with independent power, cooling and networking, connected to its siblings by low-latency links. *Edge locations* (hundreds of them) serve CloudFront and Global Accelerator. *Local Zones* extend a Region closer to a metro area; *Wavelength Zones* sit inside carrier networks. Nearly every resilience question is really a question about which of these boundaries a failure crosses.',
+    whyItExists:
+      'Every other AWS service is placed somewhere, and almost every design question is really about where — which failures a copy survives, which laws apply to it, and how far light has to travel to reach it. This entry exists because that vocabulary has to come first: Region, AZ and edge location are the coordinate system the rest of the atlas is written in, and a learner without it reads every resilience answer as a list of product names.',
     whenToUse: [
       'Multi-AZ for high availability within a Region — the default for anything production',
       'Multi-Region for disaster recovery, data residency, or global latency',

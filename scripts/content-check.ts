@@ -36,7 +36,11 @@ import {
   type Scoped,
   resolveTaskId,
   inScope,
+  StorySchema,
+  stories,
 } from '../src/content'
+import { serviceSlugForNode } from '../src/components/diagram/layout'
+import { refSlugs } from '../src/lib/md'
 
 const problems: string[] = []
 const warnings: string[] = []
@@ -199,6 +203,7 @@ const ROUTES = new Set([
   '/concepts',
   '/services',
   '/settings',
+  '/story',
 ])
 
 const stepIds = new Set<string>()
@@ -347,14 +352,20 @@ for (const cert of certs) {
 for (const family of CERT_FAMILY_IDS) {
   const live = currentCerts.filter((c) => c.family === family)
   if (live.length > 1) {
-    fail(`family ${family}`, `has ${live.length} current versions: ${live.map((c) => c.id).join(', ')}`)
+    fail(
+      `family ${family}`,
+      `has ${live.length} current versions: ${live.map((c) => c.id).join(', ')}`,
+    )
   }
   if (!live.length) warn(`family ${family}`, 'has no current exam version')
 }
 
 const firsts = certs.filter((c) => c.recommendedFirst)
 if (firsts.length > 1) {
-  fail('certs', `${firsts.length} certs set recommendedFirst: ${firsts.map((c) => c.id).join(', ')}`)
+  fail(
+    'certs',
+    `${firsts.length} certs set recommendedFirst: ${firsts.map((c) => c.id).join(', ')}`,
+  )
 }
 
 /*
@@ -392,7 +403,10 @@ const collectScope = (where: string, item: Scoped) => {
     const cert = certs.find((c) => c.id === id)
     if (!cert) fail(where, `versionScope names unknown cert "${id}"`)
     else if (!item.families.includes(cert.family)) {
-      fail(where, `versionScope names ${id} but the item is not tagged for the ${cert.family} family`)
+      fail(
+        where,
+        `versionScope names ${id} but the item is not tagged for the ${cert.family} family`,
+      )
     } else if (cert.status === 'retired') {
       warn(where, `versionScope names retired ${id} — the override can be deleted`)
     }
@@ -414,6 +428,199 @@ for (const item of [
   if (!data.versionScope) continue
   if (!currentCerts.some((cert) => inScope(data, cert.id))) {
     fail(where, 'versionScope excludes it from every current paper — it is dead content')
+  }
+}
+
+/* ── 4c. Stories ─────────────────────────────────────────────────────────── */
+
+/**
+ * The architecture is declared once and chapters reveal parts of it, so the
+ * failure modes are all about the two halves disagreeing: a chapter adding an id
+ * that does not exist, or an id existing that no chapter ever introduces. Both
+ * are silent in the UI — the first draws nothing, the second draws nothing ever
+ * — which is exactly why they are failures here.
+ */
+for (const st of stories) {
+  const where = `story ${st.slug}`
+  const parsed = StorySchema.safeParse(st)
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      fail(where, `${issue.path.join('.')}: ${issue.message}`)
+    }
+    continue
+  }
+
+  const arch = st.architecture
+  const nodeIds = new Set(arch.nodes.map((n) => n.id))
+  const edgeIds = new Set(arch.edges.map((e) => e.id))
+  const groupIds = new Set(arch.groups.map((g) => g.id))
+
+  if (nodeIds.size !== arch.nodes.length) fail(where, 'architecture has duplicate node ids')
+  if (edgeIds.size !== arch.edges.length) fail(where, 'architecture has duplicate edge ids')
+  if (groupIds.size !== arch.groups.length) fail(where, 'architecture has duplicate group ids')
+
+  // A service-kind node must name a real service, or clicking it opens nothing.
+  for (const n of arch.nodes) {
+    if (n.kind !== 'service') continue
+    if (!serviceSlugForNode(n.id, (slug) => serviceBySlug.has(slug))) {
+      fail(where, `node "${n.id}" is kind service but resolves to no service slug`)
+    }
+  }
+
+  for (const e of arch.edges) {
+    if (!nodeIds.has(e.from)) fail(where, `edge "${e.id}" comes from unknown node "${e.from}"`)
+    if (!nodeIds.has(e.to)) fail(where, `edge "${e.id}" goes to unknown node "${e.to}"`)
+  }
+
+  // A parent chain that does not terminate would hang the layout.
+  for (const g of arch.groups) {
+    if (!g.parent) continue
+    if (!groupIds.has(g.parent)) {
+      fail(where, `group "${g.id}" names unknown parent "${g.parent}"`)
+      continue
+    }
+    const seen = new Set([g.id])
+    let cur: string | undefined = g.parent
+    while (cur) {
+      if (seen.has(cur)) {
+        fail(where, `group "${g.id}" is in a parent cycle`)
+        break
+      }
+      seen.add(cur)
+      cur = arch.groups.find((x) => x.id === cur)?.parent
+    }
+    for (const id of g.nodeIds) {
+      if (!nodeIds.has(id)) fail(where, `group "${g.id}" names unknown node "${id}"`)
+    }
+  }
+
+  // The real invariant behind the relaxed schema: a group must contain
+  // something, directly or through a child. An empty one draws a labelled box
+  // around nothing.
+  for (const g of arch.groups) {
+    const hasChild = arch.groups.some((x) => x.parent === g.id)
+    if (!g.nodeIds.length && !hasChild) {
+      fail(where, `group "${g.id}" holds no node and has no child group`)
+    }
+  }
+
+  // Chapter ids must match position, exactly as study-step ids do — so a
+  // reordered chapter is a build error rather than a wrong deep link.
+  const introduced = {
+    nodes: new Map<string, string>(),
+    edges: new Map<string, string>(),
+    groups: new Map<string, string>(),
+  }
+  st.chapters.forEach((c, i) => {
+    const cw = `story ${st.slug} chapter ${c.id}`
+    const expected = `${st.slug}-c${i + 1}`
+    if (c.id !== expected) fail(cw, `id should be "${expected}" for position ${i + 1}`)
+
+    if (!taskById.has(c.taskId)) fail(cw, `references unknown task "${c.taskId}"`)
+    else {
+      const lands = currentCerts.some(
+        (cert) => inScope(st, cert.id) && resolveTaskId(c.taskId, cert.id),
+      )
+      if (!lands) fail(cw, `task "${c.taskId}" resolves on no current paper`)
+    }
+
+    for (const slug of c.serviceSlugs) {
+      if (!serviceBySlug.has(slug)) fail(cw, `serviceSlugs names unknown service "${slug}"`)
+    }
+    for (const slug of c.conceptSlugs) {
+      if (!conceptBySlug.has(slug)) fail(cw, `conceptSlugs names unknown concept "${slug}"`)
+    }
+
+    // Decision options point into the shared service+concept namespace.
+    if (!c.decision.options.some((o) => o.correct)) {
+      fail(cw, 'decision has no correct option')
+    }
+    if (c.decision.options.filter((o) => o.correct).length > 1) {
+      fail(cw, 'decision has more than one correct option — the reveal assumes one')
+    }
+    for (const o of c.decision.options) {
+      if (!serviceBySlug.has(o.slug) && !conceptBySlug.has(o.slug)) {
+        fail(cw, `decision option "${o.slug}" is neither a service nor a concept`)
+      }
+    }
+
+    for (const k of c.checks) {
+      if (!k.id.startsWith(c.id)) fail(cw, `check "${k.id}" should be prefixed with the chapter id`)
+      const right = k.options.filter((o) => o.correct).length
+      if (right !== 1) fail(cw, `check "${k.id}" has ${right} correct options, expected exactly 1`)
+    }
+
+    // Every [[slug]] in the prose must resolve, or the reader sees a bare slug.
+    for (const sec of c.sections) {
+      const texts: string[] = []
+      if (sec.kind === 'prose' || sec.kind === 'callout') texts.push(sec.md)
+      if (sec.kind === 'steps') texts.push(...sec.items.map((it) => it.md))
+      if (sec.kind === 'compare') texts.push(...sec.rows.flatMap((r) => r.cells))
+      if (sec.kind === 'services') {
+        for (const slug of sec.slugs) {
+          if (!serviceBySlug.has(slug)) fail(cw, `services section names unknown "${slug}"`)
+        }
+      }
+      for (const t of texts) {
+        for (const slug of refSlugs(t)) {
+          if (!serviceBySlug.has(slug) && !conceptBySlug.has(slug)) {
+            fail(cw, `prose references [[${slug}]], which is neither a service nor a concept`)
+          }
+        }
+      }
+    }
+
+    const claim = (kind: 'nodes' | 'edges' | 'groups', ids: string[], known: Set<string>): void => {
+      for (const id of ids) {
+        if (!known.has(id)) {
+          fail(cw, `adds ${kind} "${id}", which the architecture does not contain`)
+          continue
+        }
+        const first = introduced[kind].get(id)
+        if (first) fail(cw, `adds ${kind} "${id}", already introduced by ${first}`)
+        else introduced[kind].set(id, c.id)
+      }
+    }
+    claim('nodes', c.adds.nodeIds, nodeIds)
+    claim('edges', c.adds.edgeIds, edgeIds)
+    claim('groups', c.adds.groupIds, groupIds)
+
+    // An edge cannot be drawn before both its endpoints exist.
+    for (const id of c.adds.edgeIds) {
+      const e = arch.edges.find((x) => x.id === id)
+      if (!e) continue
+      for (const end of [e.from, e.to]) {
+        if (!introduced.nodes.has(end)) {
+          fail(cw, `adds edge "${id}" but node "${end}" is not introduced by now`)
+        }
+      }
+    }
+
+    // A group must hold something the moment it appears — a node of its own or a
+    // child group. A parent (Region → VPC) legitimately has neither of its own.
+    for (const id of c.adds.groupIds) {
+      const g = arch.groups.find((x) => x.id === id)
+      if (!g) continue
+      if (g.parent && !introduced.groups.has(g.parent)) {
+        fail(cw, `adds group "${id}" before its parent "${g.parent}"`)
+      }
+      const hasNode = g.nodeIds.some((n) => introduced.nodes.has(n))
+      const hasChild = arch.groups.some((x) => x.parent === g.id && c.adds.groupIds.includes(x.id))
+      if (!hasNode && !hasChild) {
+        fail(cw, `adds group "${id}" while it would be empty — no visible node or child group`)
+      }
+    }
+  })
+
+  // Nothing may be declared and never revealed: it would draw exactly never.
+  for (const n of arch.nodes) {
+    if (!introduced.nodes.has(n.id)) fail(where, `node "${n.id}" is introduced by no chapter`)
+  }
+  for (const e of arch.edges) {
+    if (!introduced.edges.has(e.id)) fail(where, `edge "${e.id}" is introduced by no chapter`)
+  }
+  for (const g of arch.groups) {
+    if (!introduced.groups.has(g.id)) fail(where, `group "${g.id}" is introduced by no chapter`)
   }
 }
 
@@ -440,6 +647,26 @@ for (const c of concepts) {
   if (!c.onTheExam.length) warn('depth', `concept "${c.slug}" has no onTheExam phrasings`)
   if (!c.serviceSlugs.length)
     warn('coverage', `concept "${c.slug}" names no service — nothing links to it from the atlas`)
+}
+
+/**
+ * `whyItExists` coverage. Aggregated into one counted line rather than one
+ * warning per entry: this starts life absent on almost the whole corpus, and 180
+ * separate warnings would bury the depth and atlas-gap signals that are actually
+ * actionable today. Tier 3 is excluded — a recognise-only service needs a name
+ * and one job, not a paragraph on its origins.
+ */
+const missingWhy = [
+  ...services.filter((s) => s.tier <= 2 && !s.whyItExists).map((s) => s.slug),
+  ...concepts.filter((c) => !c.whyItExists).map((c) => c.slug),
+]
+if (missingWhy.length) {
+  const owed = services.filter((s) => s.tier <= 2).length + concepts.length
+  warn(
+    'why',
+    `${missingWhy.length} of ${owed} tier-1/2 services and concepts have no whyItExists: ` +
+      `${missingWhy.slice(0, 10).join(', ')}${missingWhy.length > 10 ? ', …' : ''}`,
+  )
 }
 
 /**
@@ -543,6 +770,14 @@ console.log(
   `  study steps     ${phases.flatMap((p) => p.steps).length}  (${Math.round(
     phases.flatMap((p) => p.steps).reduce((n, x) => n + x.minutes, 0) / 60,
   )} h guided of ${phases.reduce((n, p) => n + p.hours, 0)} h)`,
+)
+console.log(
+  `  stories         ${stories.length}  (${stories.reduce(
+    (n, st) => n + st.chapters.length,
+    0,
+  )} chapters, ${Math.round(
+    stories.flatMap((st) => st.chapters).reduce((n, c) => n + c.minutes, 0) / 60,
+  )} h)`,
 )
 console.log('  ─────────────────────────────────────────')
 

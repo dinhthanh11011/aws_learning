@@ -102,6 +102,19 @@ export function ConceptAtlas({
     </section>
   )
 
+  /**
+   * Sits below `keyIdea` rather than above it: the rule that decides questions
+   * is still the thing worth the most marks, so it keeps the top slot. This one
+   * answers the question a learner asks *before* they will accept the rule —
+   * why does this idea need to exist at all.
+   */
+  const whyItExists = c.whyItExists ? (
+    <section className={cn('surface border-accent/25', pad)}>
+      <h2 className={cn(h2, 'text-accent')}>Why it exists</h2>
+      <p className="text-[14.5px] leading-relaxed">{c.whyItExists}</p>
+    </section>
+  ) : null
+
   const whatItIs = (
     <section className={cn('surface', pad)}>
       <h2 className={cn(h2, 'text-fg-subtle')}>What it is</h2>
@@ -259,6 +272,7 @@ export function ConceptAtlas({
     return (
       <div className="flex flex-col gap-4">
         {keyIdea}
+        {whyItExists}
         {whatItIs}
         {numbers}
         {traps}
@@ -274,6 +288,7 @@ export function ConceptAtlas({
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="flex min-w-0 flex-col gap-5">
         {keyIdea}
+        {whyItExists}
         {whatItIs}
         {onTheExam}
         {traps}

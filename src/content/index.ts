@@ -36,6 +36,7 @@ import {
   conceptsFor,
   conceptsForService,
 } from './concept-registry'
+import { chapterById, stories, storiesFor, story, storyBySlug } from './story-registry'
 import { phases } from './phases'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
@@ -122,6 +123,11 @@ export {
   conceptsByGroup,
   conceptsForService,
 }
+
+// Same rule as above: imported once at the top, then the local binding is
+// exported. `export ... from` for a name that is also imported gives the
+// bundler two paths to it and one of them can resolve to undefined.
+export { stories, storyBySlug, story, storiesFor, chapterById }
 
 /** Services a task statement points at, in tier order (core first). */
 export function servicesForTask(taskId: string): Service[] {
@@ -274,5 +280,7 @@ export function contentStats(certId?: CertId) {
       conceptPool.reduce((n, c) => n + c.examTraps.length, 0),
     questions: certId ? questionsFor(certId).length : questions.length,
     steps: certId ? stepsFor(certId).length : phases.flatMap((p) => p.steps).length,
+    stories: certId ? storiesFor(certId).length : stories.length,
+    chapters: (certId ? storiesFor(certId) : stories).reduce((n, s) => n + s.chapters.length, 0),
   }
 }

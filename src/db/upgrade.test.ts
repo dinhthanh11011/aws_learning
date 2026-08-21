@@ -36,7 +36,14 @@ describe('srsCards v2 -> v3 upgrade (shipped schema)', () => {
     expect(legacy.verno).toBe(2)
     await legacy.table('srsCards').bulkPut([
       { cardId: 'num:s3:0', certs: ['SAA-C03'], serviceSlugs: ['s3'], due: 1, reps: 4, lapses: 1 },
-      { cardId: 'num:lambda:0', certs: ['SAA-C03', 'DVA-C02'], serviceSlugs: ['lambda'], due: 2, reps: 0, lapses: 0 },
+      {
+        cardId: 'num:lambda:0',
+        certs: ['SAA-C03', 'DVA-C02'],
+        serviceSlugs: ['lambda'],
+        due: 2,
+        reps: 0,
+        lapses: 0,
+      },
       { cardId: 'idea:cidr', certs: ['DVA-C02'], serviceSlugs: [], due: 3, reps: 9, lapses: 2 },
     ])
     legacy.close()
@@ -44,7 +51,10 @@ describe('srsCards v2 -> v3 upgrade (shipped schema)', () => {
     // Now open with the shipped schema, which must run the v3 upgrade.
     const { db } = await import('.')
     await db.open()
-    expect(db.verno).toBe(3)
+    // At least 3, not exactly 3: this test is about the v3 retag surviving, and
+    // pinning the number means every later additive version has to edit a test
+    // that is not about it. The assertions below are what actually matter.
+    expect(db.verno).toBeGreaterThanOrEqual(3)
 
     const rows = await db.srsCards.orderBy('cardId').toArray()
     expect(rows.map((r) => r.cardId)).toEqual(['idea:cidr', 'num:lambda:0', 'num:s3:0'])

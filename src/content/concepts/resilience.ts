@@ -20,6 +20,8 @@ export const resilienceConcepts: Concept[] = [
       'RPO is the maximum age of the data you are willing to come back with. An RPO of one hour means that when the system returns, the most recent hour of writes may be gone and the business has accepted that. Because it describes data loss, RPO is set by how often you copy data somewhere safe — the interval between snapshots, or the lag of a replication stream.',
     keyIdea:
       'RPO looks backwards and buys replication frequency. Your RPO is, in practice, the gap between your copies: hourly snapshots give you an RPO of an hour, continuous replication gives you an RPO of seconds.',
+    whyItExists:
+      "'Do not lose any data' sounds like a requirement but is unbuyable — zero data loss means synchronous replication to every copy, which makes every write as slow as your slowest replica. RPO exists to turn an absolute into a price: say how many minutes of data you can afford to lose and the architecture follows from it. Without the number, a DR conversation is two people asserting how important the data is.",
     onTheExam: [
       '"No more than 15 minutes of data may be lost" is an RPO, and it rules out anything backed up nightly.',
       '"Near-zero RPO" is continuous replication: read replicas, S3 Cross-Region Replication, Aurora Global Database, or AWS Elastic Disaster Recovery.',
@@ -74,6 +76,8 @@ export const resilienceConcepts: Concept[] = [
       'RTO is the maximum time between the failure and the service answering requests again. An RTO of 15 minutes means everything — detection, decision, failover, DNS propagation, warm-up — has to fit inside a quarter of an hour. Because it describes downtime, RTO is set by how much of the recovery environment is already running before the failure happens.',
     keyIdea:
       'RTO looks forwards and buys idle capacity. The only way to recover in minutes is for the replacement to already exist, which is why a low RTO always costs more than a low RPO.',
+    whyItExists:
+      'Every recovery design is available at some price, from a standby already running to a pile of backups and a long afternoon. RTO exists to make the business, not the engineer, choose where on that line to sit — because the difference between an hour and five minutes is roughly the difference between a warm standby and a full active-active estate, and only the business knows what an hour of downtime actually costs.',
     onTheExam: [
       '"The application must be serving traffic again within 10 minutes" is an RTO, and it rules out restoring from backup.',
       '"Near-zero RTO" means something is already running and taking traffic: Multi-AZ, warm standby, or multi-site active-active.',

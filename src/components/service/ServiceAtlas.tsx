@@ -112,6 +112,19 @@ export function ServiceAtlas({
     </section>
   )
 
+  /**
+   * Motivation before mechanism. "What it is" answers a question the learner
+   * has not asked yet — this one says what someone was doing before the service
+   * existed and why it hurt, which is what makes the rest worth reading.
+   * Optional, so it simply does not render on the entries that lack it.
+   */
+  const whyItExists = s.whyItExists ? (
+    <section className={cn('surface border-accent/25', pad)}>
+      <h2 className={cn(h2, 'text-accent')}>Why it exists</h2>
+      <p className="text-[14.5px] leading-relaxed">{s.whyItExists}</p>
+    </section>
+  ) : null
+
   const whenTo = (
     <div className={cn('grid gap-4', panel ? '' : 'sm:grid-cols-2')}>
       <section className={cn('surface border-ok/25', pad)}>
@@ -373,6 +386,7 @@ export function ServiceAtlas({
     // things you actually came for.
     return (
       <div className="flex flex-col gap-4">
+        {whyItExists}
         {whatItIs}
         {numbers}
         {traps}
@@ -392,6 +406,7 @@ export function ServiceAtlas({
     <>
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex min-w-0 flex-col gap-5">
+          {whyItExists}
           {whatItIs}
           {whenTo}
           {traps}

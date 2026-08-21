@@ -36,6 +36,12 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
         icon: 'layers',
         hint: 'Every service on one canvas',
       },
+      {
+        href: '/story',
+        label: 'Story Mode',
+        icon: 'book',
+        hint: 'One system, built in order — why each service exists',
+      },
       { href: '/map', label: 'Roadmap', icon: 'route', hint: 'The 29-week path, phase by phase' },
     ],
   },

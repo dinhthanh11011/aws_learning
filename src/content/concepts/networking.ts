@@ -22,6 +22,8 @@ export const networkingConcepts: Concept[] = [
       'A Region is a separate physical area of the world — eu-west-1 in Ireland, ap-southeast-1 in Singapore — made up of multiple Availability Zones. Regions are isolated from one another by design: nothing replicates between them unless you configure it to. Most services are Regional, meaning a resource you create exists in one Region and is invisible from the others.',
     keyIdea:
       'Regions are isolated by default. Cross-Region anything — replication, failover, a second copy of your data — is a feature you turn on and pay for, never something you get for free.',
+    whyItExists:
+      "Nobody can build one data centre for the world. Light takes about 70 ms to cross the Pacific and back, so a user in Hanoi talking to a machine in Virginia waits no matter how fast the machine is — and separately, a growing list of countries legally require their citizens' data to stay inside their borders. Regions exist because geography is forced on AWS by physics and by law. Isolation is then the only honest default: a Region that quietly replicated your data somewhere else would break the residency promise that is half its purpose.",
     onTheExam: [
       '"Data must not leave the country" — a data-residency constraint, so the answer keeps everything in one Region.',
       '"Users in Europe see high latency" — either a Region closer to them or an edge service, and the question decides which by whether the content is cacheable.',
@@ -73,6 +75,8 @@ export const networkingConcepts: Concept[] = [
       'An Availability Zone is a failure domain. Each AZ has its own power, cooling and physical security, and is far enough from the others that one flooding or losing power does not take its neighbours with it — while still close enough for single-digit-millisecond latency between them. An AZ is the unit you spread across to survive a facility failure.',
     keyIdea:
       'An AZ is a failure boundary, and a subnet lives in exactly one of them. "Make it highly available" therefore always means "put it in at least two subnets in two different AZs".',
+    whyItExists:
+      'A single building is a single point of failure — one flood, one fire, one power event and everything inside it stops. But putting the second copy in another Region costs about 70 ms on every write, which is too slow for a synchronous database replica. The AZ exists to fill that gap: far enough apart to fail independently, close enough that a replica can still be synchronous. It is the unit that lets you survive losing a data centre without paying the latency of distance.',
     onTheExam: [
       '"Highly available" with no mention of Regions — the answer is Multi-AZ, and cross-Region is the over-engineered distractor.',
       '"The application must survive an AZ failure" — look for what is still single-AZ in the proposed design, usually the database or a NAT gateway.',
@@ -124,6 +128,8 @@ export const networkingConcepts: Concept[] = [
       'Edge locations are a much larger and more widely spread set of sites than Regions. They run CloudFront caches, Route 53 DNS, Global Accelerator entry points, AWS WAF and Shield. You never deploy your own workload to one; you put a managed service in front of your workload and the edge fronts it.',
     keyIdea:
       'The edge shortens the network path, not the compute. It helps a slow response either by serving a cached copy or by getting the request onto the AWS backbone sooner — and the exam separates those two cases by whether the content is cacheable.',
+    whyItExists:
+      'Moving a workload closer to users means running it in more Regions, which multiplies both the cost and the operational surface. But most of what a user waits for is not computed per request — it is an image, a stylesheet, a video segment identical for everyone. Edge locations exist to serve exactly that from hundreds of cities without you running a workload in any of them. They are the answer to latency when the content is cacheable, which is why the exam decides between edge and Region on that one word.',
     onTheExam: [
       '"Static content, users worldwide, reduce latency" — CloudFront, because caching solves it.',
       '"Dynamic, non-cacheable traffic, reduce latency" — Global Accelerator, because only the path can be improved.',
@@ -164,6 +170,8 @@ export const networkingConcepts: Concept[] = [
       'Classless Inter-Domain Routing notation describes a block of addresses. In 10.0.0.0/16 the /16 says the first 16 bits are fixed; the remaining 16 bits vary, so the block holds 2^16 = 65,536 addresses. A smaller prefix number means a larger block: /16 is big, /28 is tiny. Every VPC, every subnet, every security group rule and every route table entry is expressed in this notation.',
     keyIdea:
       'The prefix number counts fixed bits, so it moves opposite to size: each step up — /16 to /17 — halves the block. 0.0.0.0/0 fixes nothing and therefore means "everywhere".',
+    whyItExists:
+      'Before CIDR, addresses came in three fixed sizes — a class A network handed out 16 million addresses to an organisation that needed a few thousand, and the internet was running out of address space while most of it sat unused. CIDR exists to make the network/host boundary a number you choose rather than one the first octet chose for you. That is why the prefix is written down at all: it is the part that used to be implicit and wasteful.',
     onTheExam: [
       'A stem that gives you subnet sizes and asks whether a design fits — count usable addresses, remembering AWS takes five per subnet.',
       '"The two VPCs cannot be peered" — check for overlapping CIDR blocks before looking at anything else.',
@@ -211,6 +219,8 @@ export const networkingConcepts: Concept[] = [
       'A subnet is a sub-range of the VPC address space, bound to a single AZ, into which you place resources. A VPC with 10.0.0.0/16 might hold 10.0.1.0/24 in one AZ and 10.0.2.0/24 in another. Every network interface you create sits in a subnet, and that subnet decides both which AZ the resource is in and which route table governs its traffic.',
     keyIdea:
       'A subnet is two decisions at once: which failure domain the resource lives in, and which route table applies to it. Nothing about a subnet is inherently public or private — the route table decides that.',
+    whyItExists:
+      'One flat network means anything that gets in can reach everything. Subnets exist so that reachability is something you design rather than something you inherit. In AWS the motivation is sharper still: a subnet is pinned to one AZ, so it is simultaneously your blast-radius boundary and your failure-domain boundary. That is why "which subnet" is really two questions at once, and why the answer to a resilience question is so often "more subnets".',
     onTheExam: [
       '"Multi-AZ" in a requirement means at least two subnets in different AZs, and the answer that only has one subnet is wrong however good it otherwise looks.',
       '"The instance cannot reach the internet" — check the route table, then the security group, then the NACL, then whether it has a public IP. In that order.',
@@ -257,6 +267,8 @@ export const networkingConcepts: Concept[] = [
       'A route table is a list of entries, each pairing a destination CIDR with a target: an internet gateway, a NAT gateway, a peering connection, a Transit Gateway, a gateway endpoint, a network interface. Every subnet is associated with exactly one route table; a table can serve many subnets, and the VPC has a main table that any unassociated subnet inherits.',
     keyIdea:
       'Routing is most-specific-prefix-wins, not top-to-bottom. A 10.0.5.0/24 entry beats a 0.0.0.0/0 entry for an address inside it, whatever order they are printed in.',
+    whyItExists:
+      "A machine needs to answer one question for every packet it cannot deliver locally: who do I hand this to? The route table exists to be that answer, written down and editable. It matters more in AWS than in most networks because it is the *only* thing that makes a subnet public or private — there is no checkbox, no zone, no firewall setting that does it. Understanding this is what turns 'my instance cannot reach the internet' from a mystery into a two-line check.",
     onTheExam: [
       'A public subnet is a route table with 0.0.0.0/0 to an internet gateway. Private with outbound access is 0.0.0.0/0 to a NAT gateway. Isolated has no 0.0.0.0/0 route at all.',
       'Any connectivity question where the security groups and NACLs both look correct is usually a missing route — and peering, VPN and Transit Gateway all need routes added on both sides.',

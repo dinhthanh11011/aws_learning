@@ -14,6 +14,8 @@ export const storageServices: Service[] = [
       'Object storage with eleven nines of durability and a storage class for every access pattern.',
     whatItIs:
       'Objects (up to 5 TB each) in flat buckets, addressed by key, reached over HTTPS. There is no filesystem — the "folders" in the console are key prefixes. Durability comes from replication across at least three AZs within the Region. Almost every AWS data question touches S3, because it is the default landing zone for anything that is not a live database.',
+    whyItExists:
+      "Storing user uploads on a server's disk means the second server cannot see the first one's files, the disk eventually fills, and durability is your problem — so growing past one machine and keeping the uploads become the same difficult project. S3 exists to make storage a service rather than a device: no size to choose, no server to attach it to, and eleven nines of durability without a backup plan of your own. That is why it is the default home for anything that is a file rather than live database state.",
     whenToUse: [
       'Static assets, backups, logs, data-lake storage, media, any blob a URL can point at',
       'Static website hosting, usually behind CloudFront',
@@ -165,6 +167,8 @@ export const storageServices: Service[] = [
     oneLiner: 'Network-attached block volumes for EC2 — the disk that survives a stop.',
     whatItIs:
       'Durable block storage replicated within a single Availability Zone and attached over the network to an instance. Volume type is the whole decision: gp3 for general purpose, io1/io2 for high sustained IOPS, st1 for throughput-heavy sequential work, sc1 for cold. Snapshots are incremental, stored in S3, and are how a volume crosses an AZ or Region boundary.',
+    whyItExists:
+      "An instance's own disk dies with the instance, which makes replacing a machine and keeping its data mutually exclusive — and replacing machines freely is the entire point of renting them. EBS exists to give a disk a life independent of the server it is attached to, so an instance becomes disposable while its data does not. That separation is what makes Auto Scaling and instance replacement safe to do at all.",
     whenToUse: [
       'Boot volumes and any single-instance filesystem',
       'Self-managed databases on EC2 that need consistent low-latency block I/O',

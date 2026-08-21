@@ -13,6 +13,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Your own private network inside a Region — subnets, routes, gateways.',
     whatItIs:
       'A logically isolated network you define with a CIDR block, divided into subnets that each live in exactly one Availability Zone. What makes a subnet "public" is nothing about the subnet itself — it is a route table entry sending 0.0.0.0/0 to an internet gateway. Everything else in AWS networking hangs off that one idea.',
+    whyItExists:
+      "Early cloud servers each had a public address and were neighbours with every other tenant, so the only thing standing between the internet and your database was a host firewall — and there was nowhere to put a machine that should have no internet presence at all. The VPC exists to give you the network itself, not just hosts on someone else's: your own address range, your own routing, and therefore the ability to have a private half that simply cannot be reached from outside.",
     whenToUse: [
       'Any workload needing network isolation, private IP addressing or on-premises connectivity',
       'Multi-tier designs where the web tier is reachable and the database tier is not',
@@ -82,6 +84,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Stateful, allow-only firewall attached to an elastic network interface.',
     whatItIs:
       'An instance-level (really ENI-level) firewall. Rules only ever *allow* — there is no deny rule — and it is stateful: if a request is allowed in, the response is allowed out regardless of outbound rules. A security group can reference another security group as its source, which is how you express "only the web tier may reach the database tier" without hard-coding IP addresses.',
+    whyItExists:
+      'A firewall rule written in terms of IP addresses stops being true the moment machines come and go, which under Auto Scaling is constantly — and no human can maintain an address list that changes hourly. Security groups exist so a rule can name another *group* instead of an address: "the database accepts traffic from the web tier" stays correct however many web servers exist. Being stateful is part of the same motivation, because tracking return ports by hand is where hand-written rules mostly go wrong.',
     whenToUse: [
       'The default and primary access control for EC2, RDS, ELB, Lambda-in-VPC, ECS tasks in awsvpc mode',
       "Tier-to-tier rules expressed by referencing the other tier's security group",
@@ -134,6 +138,8 @@ export const networkServices: Service[] = [
     oneLiner: 'Stateless, ordered allow/deny rules at the subnet boundary.',
     whatItIs:
       'A firewall at the subnet edge. Rules are numbered and evaluated lowest-first until one matches, and both allow and deny are available. It is stateless, so inbound and outbound are judged independently — the response to an allowed inbound request is not automatically permitted out.',
+    whyItExists:
+      'Security groups attach to instances, so anyone who can launch an instance can choose its rules — there is no way to say "nothing in this subnet may ever talk to that range" and have it hold. NACLs exist as a subnet-level backstop owned by the network administrator rather than the workload owner. They are stateless because a rule that outlives the connections it describes cannot rely on remembering them, which is also why the ephemeral-port mistake is so common.',
     whenToUse: [
       'Blocking specific IP addresses or ranges — the thing a security group cannot do',
       'A coarse second layer of defence around a whole subnet',
@@ -188,6 +194,8 @@ export const networkServices: Service[] = [
       'Lets private subnets reach the internet outbound, while staying unreachable inbound.',
     whatItIs:
       "A managed network address translation device that lives in a *public* subnet and gets a route from the private subnets. Outbound connections from private instances get translated to the NAT gateway's Elastic IP; nothing from the internet can initiate a connection inward. It is also one of the most common surprises on an AWS bill — you pay hourly *and* per gigabyte processed.",
+    whyItExists:
+      'A private instance still needs to fetch patches and call APIs, but the obvious fix — giving it a public IP — also makes it reachable from the internet, which is exactly what putting it in a private subnet was for. NAT exists to make outbound and inbound separable: connections can start from inside and never from outside. It is metered per hour and per gigabyte because it is a real fleet of machines, which is why it turns up so often as the surprise on a bill.',
     whenToUse: [
       'Private instances need to download patches, call third-party APIs or reach the internet outbound',
       'You want managed, highly available NAT rather than maintaining a NAT instance',
@@ -742,6 +750,8 @@ export const networkServices: Service[] = [
     oneLiner: 'DNS with health checks and seven routing policies — the global traffic director.',
     whatItIs:
       'A highly available authoritative DNS service, plus domain registration, plus health checking. The exam interest is almost entirely in the routing policies, because they are how you express global architecture in DNS: failover, latency-based, geolocation, geoproximity, weighted, multivalue and simple.',
+    whyItExists:
+      'Users type a name, but every failover, every new Region and every load balancer replacement changes an address — and a DNS server that only maps names to addresses cannot tell whether the address it is handing out still works. Route 53 exists because DNS is the first decision in every request and therefore the cheapest place to make a routing one: health checks let it stop answering with a dead endpoint, and latency or geolocation policies let the answer depend on who asked.',
     whenToUse: [
       'Public DNS for your domains, and private DNS inside VPCs via private hosted zones',
       'Active-passive DR with failover routing plus health checks',

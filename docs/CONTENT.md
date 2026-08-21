@@ -21,6 +21,8 @@ npm run content:check && npm run typecheck && npm test
 | A big-picture node or flow | `src/content/big-picture.ts` | Keep it ~25 nodes; the atlas is for lookup |
 | A phase change | `src/content/phases.ts` | Mirrors the user's Notion roadmap — keep in sync |
 | A study step | `src/content/phases.ts`, in that phase's `steps` | Ids must match position; check every URL resolves |
+| A story chapter | `src/content/stories/<slug>.ts`, in `chapters` | Ids must match position; every id in `adds` must exist in the story's own architecture |
+| A `whyItExists` | the service or concept entry | Motivation, not mechanism — see below |
 
 ## A service card
 

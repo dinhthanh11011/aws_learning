@@ -156,6 +156,33 @@ browser before saying a UI change works.
     `content:check` failure, because it would otherwise vanish from every exam
     silently.
 
+18. **A storyline declares its architecture once; chapters only *add* to it.**
+    `src/content/stories/*` carries one complete `DiagramSpec` and each chapter
+    names the node, edge and group ids it introduces. Fourteen per-chapter
+    diagrams would be fourteen places for a node to drift two grid units
+    sideways, and the learner would watch the architecture jump rather than grow.
+    `content:check` fails an id a chapter adds that the spec lacks, an id the
+    spec declares that no chapter introduces, an id added twice, an edge drawn
+    before both endpoints, and a group that would appear empty. Group boxes are
+    laid out from the *whole* spec, not from what is visible, so revealing a node
+    never resizes the Region around it.
+
+19. **Reading a chapter awards nothing.** Same rule as a study step, same
+    reason. The chapter's "you decide" pick records a real `Attempt` against the
+    chapter's `taskId` with `source: 'story'`, so it feeds domain mastery exactly
+    as a quiz answer does; its recall checks award XP but deliberately record no
+    attempt, because inflating the accuracy stream with three-option
+    comprehension checks would make readiness read higher than the learner's
+    actual standing.
+
+20. **`whyItExists` is motivation, not mechanism.** `whatItIs` says what a thing
+    is and `whenToUse` says when it applies; neither says what people did before
+    it existed or why that hurt. It is optional with a counted coverage warning
+    rather than required, because making it required turned the gate red 178
+    times on the first run — and a gate that is always red is a gate nobody
+    reads. It derives no SRS card: the exam asks which service meets a
+    requirement, which `whichService` already drills.
+
 17. **A number the exam sets is read from the `Cert`, never typed into prose.**
     Minutes, question count, pass score and the pass-accuracy anchor all live on
     the cert. Both current papers happen to share 130/65/720, which is exactly
@@ -175,6 +202,7 @@ browser before saying a UI change works.
 | Concepts | 37 primitives in 6 groups | shared corpus, per-cert tagged |
 | Cards | 1,709 derived | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
+| Story chapters | 13 in one arc, 9 h | not written yet |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler
