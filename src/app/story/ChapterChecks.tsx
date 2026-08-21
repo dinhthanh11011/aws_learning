@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { StoryChapter } from '@/content'
 import { awardXp } from '@/db/repo'
 import { XP } from '@/engines/gamify/rules'
+import { seededShuffle } from '@/engines/exam/shuffle'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
 
@@ -19,6 +20,17 @@ import { cn } from '@/lib/cn'
  */
 export function ChapterChecks({ chapter }: { chapter: StoryChapter }) {
   const [picked, setPicked] = useState<Record<string, number>>({})
+  // Checks are authored correct-first too, and three options with the answer
+  // always at the top is a check of nothing. Seeded per check, so the order
+  // holds while the chapter is open.
+  const checks = useMemo(
+    () =>
+      chapter.checks.map((check) => ({
+        ...check,
+        options: seededShuffle(check.options, chapter.id, check.id),
+      })),
+    [chapter],
+  )
 
   const choose = async (checkId: string, i: number, correct: boolean) => {
     if (picked[checkId] !== undefined) return
@@ -35,7 +47,7 @@ export function ChapterChecks({ chapter }: { chapter: StoryChapter }) {
         </span>
       </div>
 
-      {chapter.checks.map((check) => {
+      {checks.map((check) => {
         const pick = picked[check.id]
         const revealed = pick !== undefined
         return (

@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react'
 import { certById, domainsFor, questionsForDomain, questionsFor } from '@/content'
 import { samplePractice, sample } from '@/engines/exam/sampler'
+import { shuffle } from '@/engines/exam/shuffle'
 import { isCorrect } from '@/engines/exam/score'
 import { comboMultiplier, XP } from '@/engines/gamify/rules'
 import { awardXp, recordAttempt } from '@/db/repo'
@@ -38,10 +39,18 @@ export function QuizRunner() {
   const [results, setResults] = useState<boolean[]>([])
   const [combo, setCombo] = useState(0)
   const [label, setLabel] = useState('')
+  // Counts quizzes started this session. Combined with the sampled question
+  // ids below it seeds the option shuffle: stable for the length of one quiz so
+  // the letters do not move between answering and reading the explanation, and
+  // different next time round so the position of the answer is never learnable.
+  // A counter rather than a timestamp because `Date.now()` is impure here.
+  const [runCount, setRunCount] = useState(0)
 
   const startDomain = (domainId: string, title: string) => {
     const pool = questionsForDomain(domainId)
-    const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, QUIZ_SIZE)
+    // A comparator returning random is not a shuffle — it leaves the head of
+    // the array measurably more likely to stay put.
+    const picked = shuffle(pool, Math.random).slice(0, QUIZ_SIZE)
     setQueue(picked)
     setLabel(title)
     reset()
@@ -73,6 +82,7 @@ export function QuizRunner() {
   }
 
   const reset = () => {
+    setRunCount((n) => n + 1)
     setI(0)
     setChosen([])
     setRevealed(false)
@@ -188,6 +198,9 @@ export function QuizRunner() {
 
   /* ── Running ───────────────────────────────────────────────────────────── */
   const q = queue[i]
+  // The sampled set varies even when the run counter repeats across a reload,
+  // so the two together give a different option order every sitting.
+  const seed = `${runCount}:${queue.map((x) => x.id).join('|')}`
   return (
     <div className="flex flex-col gap-4">
       <div className="surface flex flex-wrap items-center gap-3 p-3">
@@ -212,6 +225,7 @@ export function QuizRunner() {
           chosen={chosen}
           onChoose={setChosen}
           revealed={revealed}
+          shuffleSeed={seed}
           index={i}
           total={queue.length}
         />

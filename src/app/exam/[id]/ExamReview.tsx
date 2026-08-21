@@ -65,7 +65,11 @@ export function ExamReview({ examId }: { examId: string }) {
     )
   }
 
-  const result = score(cert, rows.map((r) => r.q), exam.answers)
+  const result = score(
+    cert,
+    rows.map((r) => r.q),
+    exam.answers,
+  )
   const wrongCount = rows.filter((r) => !r.correct).length
 
   const chip = (active: boolean) =>
@@ -83,7 +87,8 @@ export function ExamReview({ examId }: { examId: string }) {
           {exam.scaled} · {exam.passed ? 'Pass' : `Below ${cert.passScore}`}
         </Badge>
         <span className="text-[13px] text-fg-subtle">
-          {result.rawCorrect}/{result.rawTotal} correct · {new Date(exam.startedAt).toLocaleString()}
+          {result.rawCorrect}/{result.rawTotal} correct ·{' '}
+          {new Date(exam.startedAt).toLocaleString()}
         </span>
         <div className="ml-auto flex flex-wrap gap-1.5">
           <button className={chip(filter === 'wrong')} onClick={() => setFilter('wrong')}>
@@ -124,7 +129,14 @@ export function ExamReview({ examId }: { examId: string }) {
                 <span className="text-[11.5px] text-fg-subtle">{domain?.title}</span>
               </div>
 
-              <QuestionCard question={q} chosen={chosen} onChoose={() => {}} revealed />
+              {/* Same seed as the sitting, so the letters match what was picked. */}
+              <QuestionCard
+                question={q}
+                chosen={chosen}
+                onChoose={() => {}}
+                revealed
+                shuffleSeed={exam.id}
+              />
 
               {/* The mistake log: writing it in your own words is the point. */}
               {!correct ? (

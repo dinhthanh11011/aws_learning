@@ -1,10 +1,11 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { type Question } from '@/content'
 import { Badge } from '@/components/ui/Badge'
 import { ServiceRef } from '@/components/service/ServiceRef'
 import { useServicePeekKey } from '@/hooks/useServicePeekKey'
+import { shuffleQuestionOptions } from '@/engines/exam/shuffle'
 import { cn } from '@/lib/cn'
 
 /**
@@ -21,6 +22,7 @@ export function QuestionCard({
   total,
   flagged,
   onFlag,
+  shuffleSeed,
 }: {
   question: Question
   chosen: string[]
@@ -31,12 +33,27 @@ export function QuestionCard({
   total?: number
   flagged?: boolean
   onFlag?: () => void
+  /**
+   * Identifies the sitting — an exam session id, a quiz run id. Options are
+   * authored correct-first, so they must be permuted before display; seeding
+   * from the sitting keeps the order stable across a reload and the review
+   * screen while still varying between attempts. Omitting it falls back to a
+   * per-question order, which is stable but never varies.
+   */
+  shuffleSeed?: string
 }) {
   const reduce = useReducedMotion()
   // Once the answer is revealed, "s" walks the services this question turns on.
   useServicePeekKey(question.serviceSlugs, revealed)
   const multi = question.type === 'multi'
   const correctCount = question.options.filter((o) => o.correct).length
+  // Option ids are preserved by the shuffle, so `chosen` and every stored
+  // attempt stay meaningful; only the order and the displayed letter move.
+  const shuffled = useMemo(
+    () => shuffleQuestionOptions(question, shuffleSeed ?? ''),
+    [question, shuffleSeed],
+  )
+  const options = shuffled.options
 
   const toggle = (id: string) => {
     if (revealed) return
@@ -62,9 +79,9 @@ export function QuestionCard({
         return
       }
       const n = Number(e.key)
-      if (n >= 1 && n <= question.options.length) {
+      if (n >= 1 && n <= options.length) {
         e.preventDefault()
-        toggle(question.options[n - 1].id)
+        toggle(options[n - 1].id)
       }
       if (e.key.toLowerCase() === 'f' && onFlag) {
         e.preventDefault()
@@ -109,7 +126,7 @@ export function QuestionCard({
       <p className="text-[15.5px] leading-relaxed">{question.stem}</p>
 
       <ul className="flex flex-col gap-2">
-        {question.options.map((o, i) => {
+        {options.map((o, i) => {
           const picked = chosen.includes(o.id)
           const showRight = revealed && o.correct
           const showWrong = revealed && picked && !o.correct
@@ -146,7 +163,7 @@ export function QuestionCard({
                   )}
                   aria-hidden
                 >
-                  {showRight ? '✓' : showWrong ? '✗' : o.id}
+                  {showRight ? '✓' : showWrong ? '✗' : String.fromCharCode(65 + i)}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[14px] leading-snug">{o.text}</span>
@@ -191,8 +208,8 @@ export function QuestionCard({
                 <ServiceRef key={slug} slug={slug} />
               ))}
               <span className="ml-auto text-[11px] text-fg-subtle">
-                or press <kbd className="rounded border border-border px-1">s</kbd> — the card
-                opens over this one
+                or press <kbd className="rounded border border-border px-1">s</kbd> — the card opens
+                over this one
               </span>
             </div>
           ) : null}

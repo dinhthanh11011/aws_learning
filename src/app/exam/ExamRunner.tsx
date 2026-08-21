@@ -202,7 +202,11 @@ export function ExamRunner() {
                 Resume — {Math.floor(resumable.remaining / 60)} min left
               </Button>
             ) : null}
-            <Button variant={resumable ? 'secondary' : 'primary'} size="lg" onClick={() => void start()}>
+            <Button
+              variant={resumable ? 'secondary' : 'primary'}
+              size="lg"
+              onClick={() => void start()}
+            >
               {resumable ? 'Start a new paper' : `Start the ${cert.minutes}-minute paper`}
             </Button>
             <ButtonLink href="/quiz" variant="ghost" size="lg">
@@ -283,8 +287,8 @@ export function ExamRunner() {
             {result.scaled}
           </p>
           <p className="mt-1 text-[13px] text-fg-subtle">
-            {result.rawCorrect} of {result.rawTotal} correct ({Math.round(result.accuracy * 100)}%) ·
-            pass mark {cert.passScore}
+            {result.rawCorrect} of {result.rawTotal} correct ({Math.round(result.accuracy * 100)}%)
+            · pass mark {cert.passScore}
           </p>
           <p className="mt-3 text-[14px] font-medium">
             {result.passed
@@ -332,8 +336,8 @@ export function ExamRunner() {
           <p className="mt-4 border-t border-border pt-3 text-[13px] leading-relaxed text-fg-muted">
             <strong className="font-semibold text-fg">Study next:</strong> {stake[0].title} — about{' '}
             {stake[0].points.toFixed(0)} marks of the paper are currently going begging there. Marks
-            at stake matters more than raw accuracy, because a weak 30% domain costs more than a weak
-            20% one.
+            at stake matters more than raw accuracy, because a weak 30% domain costs more than a
+            weak 20% one.
           </p>
         </div>
 
@@ -430,10 +434,9 @@ export function ExamRunner() {
           <QuestionCard
             question={q}
             chosen={session.answers[q.id] ?? []}
-            onChoose={(ids) =>
-              void persist({ answers: { ...session.answers, [q.id]: ids } })
-            }
+            onChoose={(ids) => void persist({ answers: { ...session.answers, [q.id]: ids } })}
             revealed={false}
+            shuffleSeed={session.id}
             index={session.cursor}
             total={qs.length}
             flagged={session.flagged.includes(q.id)}
@@ -458,7 +461,10 @@ export function ExamRunner() {
               {session.flagged.length} flagged
             </span>
             {session.cursor < qs.length - 1 ? (
-              <Button variant="primary" onClick={() => void persist({ cursor: session.cursor + 1 })}>
+              <Button
+                variant="primary"
+                onClick={() => void persist({ cursor: session.cursor + 1 })}
+              >
                 Next →
               </Button>
             ) : (

@@ -1,10 +1,11 @@
 'use client'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { StoryChapter } from '@/content'
 import { conceptBySlug, domains as allDomains, serviceBySlug } from '@/content'
 import { useProfile } from '@/hooks/useProfile'
 import { awardXp, recordAttempt } from '@/db/repo'
 import { XP } from '@/engines/gamify/rules'
+import { seededShuffle } from '@/engines/exam/shuffle'
 import { ConceptRef } from '@/components/service/ConceptRef'
 import { ServiceRef } from '@/components/service/ServiceRef'
 import { Badge } from '@/components/ui/Badge'
@@ -28,6 +29,13 @@ export function StoryDecision({ chapter }: { chapter: StoryChapter }) {
 
   const revealed = picked !== null
   const correct = chapter.decision.options.find((o) => o.correct)!
+  // Authored correct-first, like every option list in the corpus. Shown in that
+  // order the pick stops being a decision. Seeded by chapter so a re-read shows
+  // the same order rather than rewriting the learner's memory of the chapter.
+  const options = useMemo(
+    () => seededShuffle(chapter.decision.options, chapter.id, 'decide'),
+    [chapter],
+  )
 
   const choose = async (slug: string) => {
     if (revealed || !profile) return
@@ -62,7 +70,7 @@ export function StoryDecision({ chapter }: { chapter: StoryChapter }) {
       <p className="mt-2 text-[14.5px] font-medium">{chapter.decision.prompt}</p>
 
       <ul className="mt-3 flex flex-col gap-2">
-        {chapter.decision.options.map((o) => {
+        {options.map((o) => {
           const isPick = picked === o.slug
           const label = serviceBySlug.get(o.slug)?.name ?? conceptBySlug.get(o.slug)?.term ?? o.slug
           return (

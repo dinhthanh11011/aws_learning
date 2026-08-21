@@ -670,6 +670,39 @@ if (missingWhy.length) {
 }
 
 /**
+ * Answer-length bias. Options are shuffled before display, so position is no
+ * longer a tell — but length still is: an option that is visibly the longest is
+ * pickable without reading the stem, and the learner who notices that stops
+ * practising the discrimination the question was written for. Counted in one
+ * aggregated line, because on a corpus authored correct-first-and-fullest this
+ * starts high and comes down question by question. Multi-response questions are
+ * excluded: with two or more correct options the signal means nothing.
+ *
+ * Reference point: pure chance puts the longest option on the answer about
+ * 1-in-n of the time, so a four-option bank should sit near 25%.
+ */
+const singles = questions.filter((q) => q.type === 'single')
+const longestIsAnswer = singles.filter((q) => {
+  const lengths = q.options.map((o) => o.text.length)
+  const max = Math.max(...lengths)
+  return q.options.find((o) => o.correct)!.text.length === max
+})
+if (singles.length) {
+  const pct = Math.round((longestIsAnswer.length / singles.length) * 100)
+  const chance = Math.round(
+    (singles.reduce((n, q) => n + 1 / q.options.length, 0) / singles.length) * 100,
+  )
+  if (pct > chance + 10) {
+    warn(
+      'answer-length',
+      `the correct option is the longest in ${longestIsAnswer.length} of ${singles.length} ` +
+        `single-answer questions (${pct}%, chance is about ${chance}%) — length is a tell ` +
+        `shuffling cannot remove; lengthen a distractor or tighten the answer`,
+    )
+  }
+}
+
+/**
  * Facts taught only in a question explanation are invisible: the atlas does not
  * carry them, so `cards.ts` cannot derive a card from them, and searching for
  * them finds nothing. This audit reads the quantities out of every explanation
