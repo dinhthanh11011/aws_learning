@@ -1,4 +1,4 @@
-import type { Cert, CertId, Domain, Service, Task } from './schema'
+import type { Cert, CertId, Concept, Domain, Service, Task } from './schema'
 import { saaC03 } from './certs/saa-c03'
 import { dvaC02 } from './certs/dva-c02'
 import {
@@ -10,6 +10,15 @@ import {
   servicesByTier,
   servicesFor,
 } from './service-registry'
+import {
+  concept,
+  conceptBySlug,
+  conceptLabel,
+  concepts,
+  conceptsByGroup,
+  conceptsFor,
+  conceptsForService,
+} from './concept-registry'
 import { phases } from './phases'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
@@ -66,6 +75,21 @@ export {
   servicesByTier,
 }
 
+/* ── Concepts ────────────────────────────────────────────────────────────── */
+
+// Same import-then-export-the-local-binding rule as the services above. Doing
+// both for one name gives the bundler two paths to it, and the one it picks can
+// resolve to undefined at runtime.
+export {
+  concepts,
+  conceptBySlug,
+  concept,
+  conceptLabel,
+  conceptsFor,
+  conceptsByGroup,
+  conceptsForService,
+}
+
 /** Services a task statement points at, in tier order (core first). */
 export function servicesForTask(taskId: string): Service[] {
   const slugs = taskById.get(taskId)?.serviceSlugs ?? []
@@ -100,6 +124,7 @@ export const idleCostTotal = idleCosts.reduce((sum, c) => sum + c.usdPerMonth, 0
  */
 export type SearchHit =
   | { kind: 'service'; score: number; service: Service }
+  | { kind: 'concept'; score: number; concept: Concept }
   | { kind: 'task'; score: number; task: Task; domain: Domain }
   | { kind: 'trigger'; score: number; trigger: (typeof triggers)[number] }
 
@@ -121,6 +146,23 @@ export function search(rawQuery: string, certId?: CertId, limit = 20): SearchHit
     else if (s.whatItIs.toLowerCase().includes(q)) score = 20
     // Core services outrank recognise-only ones on an otherwise equal match.
     if (score) hits.push({ kind: 'service', score: score + (4 - s.tier) * 3, service: s })
+  }
+
+  // Concepts score alongside services rather than below them: someone typing
+  // "RPO" wants the definition, not the six services that mention it.
+  for (const c of certId ? conceptsFor(certId) : concepts) {
+    const term = c.term.toLowerCase()
+    const abbr = c.abbr?.toLowerCase() ?? ''
+    let score = 0
+    if (abbr === q) score = 120
+    else if (term === q || c.slug === q) score = 110
+    else if (c.aka?.some((a) => a.toLowerCase() === q)) score = 100
+    else if (term.startsWith(q)) score = 90
+    else if (term.includes(q) || c.aka?.some((a) => a.toLowerCase().includes(q))) score = 70
+    else if (c.slug.includes(q)) score = 60
+    else if (c.oneLiner.toLowerCase().includes(q)) score = 40
+    else if (c.keyIdea.toLowerCase().includes(q) || c.whatItIs.toLowerCase().includes(q)) score = 20
+    if (score) hits.push({ kind: 'concept', score, concept: c })
   }
 
   for (const t of certId ? tasksFor(certId) : tasks) {
@@ -156,7 +198,12 @@ export function questionsForDomain(domainId: string) {
  */
 export function examCoverage(certId: CertId) {
   const cert = certById.get(certId)
-  if (!cert) return { ok: false, total: 0, perDomain: [] as { domainId: string; title: string; have: number; need: number }[] }
+  if (!cert)
+    return {
+      ok: false,
+      total: 0,
+      perDomain: [] as { domainId: string; title: string; have: number; need: number }[],
+    }
   const total = cert.questionCount
   const perDomain = cert.domains.map((d) => ({
     domainId: d.id,
@@ -171,16 +218,22 @@ export function examCoverage(certId: CertId) {
 
 export function contentStats(certId?: CertId) {
   const pool = certId ? servicesFor(certId) : services
+  const conceptPool = certId ? conceptsFor(certId) : concepts
   return {
     services: pool.length,
+    concepts: conceptPool.length,
     tier1: pool.filter((s) => s.tier === 1).length,
     tier2: pool.filter((s) => s.tier === 2).length,
     tier3: pool.filter((s) => s.tier === 3).length,
     domains: certId ? domainsFor(certId).length : domains.length,
     tasks: certId ? tasksFor(certId).length : tasks.length,
     triggers: certId ? triggersFor(certId).length : triggers.length,
-    keyNumbers: pool.reduce((n, s) => n + s.keyNumbers.length, 0),
-    examTraps: pool.reduce((n, s) => n + s.examTraps.length, 0),
+    keyNumbers:
+      pool.reduce((n, s) => n + s.keyNumbers.length, 0) +
+      conceptPool.reduce((n, c) => n + c.keyNumbers.length, 0),
+    examTraps:
+      pool.reduce((n, s) => n + s.examTraps.length, 0) +
+      conceptPool.reduce((n, c) => n + c.examTraps.length, 0),
     questions: certId ? questionsFor(certId).length : questions.length,
     steps: certId ? stepsFor(certId).length : phases.flatMap((p) => p.steps).length,
   }

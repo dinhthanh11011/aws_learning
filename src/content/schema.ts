@@ -205,6 +205,116 @@ export const ServiceSchema = z.object({
 })
 export type Service = z.infer<typeof ServiceSchema>
 
+/* ── Concepts: the primitives the exam assumes you already know ──────────── */
+
+/**
+ * A concept is a thing the exam tests that is *not* an AWS service: CIDR,
+ * subnet, RTO, idempotency, the shape of an ARN.
+ *
+ * These needed their own corpus rather than a fourth service tier. The atlas is
+ * keyed by service slug, so a primitive had nowhere to live — "CIDR" appeared in
+ * ten places in the network atlas and was defined in none of them, and because
+ * `cards.ts` derives from service entries, a primitive with no entry was drilled
+ * by exactly zero cards. Vocabulary you have only ever seen used is recognised,
+ * not recalled, and the exam tests recall.
+ *
+ * Deliberately *not* a `Service` with `tier: 4`: a subnet has no pricing page,
+ * no idle cost and no console, and widening `Service` to cover it would make
+ * every tier badge, category filter and atlas grouping in the app lie a little.
+ */
+export const CONCEPT_GROUPS = [
+  'networking',
+  'resilience',
+  'data',
+  'identity',
+  'delivery',
+  'operations',
+] as const
+export const ConceptGroupSchema = z.enum(CONCEPT_GROUPS)
+export type ConceptGroup = (typeof CONCEPT_GROUPS)[number]
+
+/**
+ * Groups borrow the service categories' hues on purpose — a CIDR card and the
+ * VPC card reading as the same colour family is true, not a coincidence.
+ */
+export const CONCEPT_GROUP_META: Record<
+  ConceptGroup,
+  { id: ConceptGroup; label: string; token: string; blurb: string }
+> = {
+  networking: {
+    id: 'networking',
+    label: 'Networking',
+    token: 'var(--cat-network)',
+    blurb: 'Address space, placement and where a packet is allowed to go.',
+  },
+  resilience: {
+    id: 'resilience',
+    label: 'Resilience',
+    token: 'var(--cat-compute)',
+    blurb: 'What survives a failure, how much is lost and how long it takes.',
+  },
+  data: {
+    id: 'data',
+    label: 'Data',
+    token: 'var(--cat-database)',
+    blurb: 'Consistency, durability and the cost of getting a key wrong.',
+  },
+  identity: {
+    id: 'identity',
+    label: 'Identity',
+    token: 'var(--cat-security)',
+    blurb: 'Who is asking, what they may do and how that is decided.',
+  },
+  delivery: {
+    id: 'delivery',
+    label: 'Delivery',
+    token: 'var(--cat-frontend)',
+    blurb: 'Getting a change or a response to the other end safely.',
+  },
+  operations: {
+    id: 'operations',
+    label: 'Operations',
+    token: 'var(--cat-devtools)',
+    blurb: 'The framing AWS grades your answers against.',
+  },
+}
+
+export const ConceptSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9-]+$/),
+  /** The term as a question would print it: "CIDR block", "Recovery Point Objective". */
+  term: z.string().min(1),
+  /** Short form for chips and dense prose: "CIDR", "RPO". */
+  abbr: z.string().optional(),
+  /**
+   * Other names the same idea travels under, so search finds it either way.
+   * Optional rather than defaulted: most concepts have one name, and forcing
+   * `aka: []` onto thirty entries is noise in a file meant to be read.
+   */
+  aka: z.array(z.string().min(1)).optional(),
+  group: ConceptGroupSchema,
+  certs: z.array(CertIdSchema).min(1),
+  oneLiner: z.string().min(1),
+  whatItIs: z.string().min(1),
+  /**
+   * The one sentence that makes it click, stated as a rule rather than a
+   * definition — "a subnet is public only because its route table sends
+   * 0.0.0.0/0 to an internet gateway". This is the card the learner drills.
+   */
+  keyIdea: z.string().min(1),
+  /** How the exam phrases a question that is really about this concept. */
+  onTheExam: z.array(z.string().min(1)).default([]),
+  keyNumbers: z.array(KeyNumberSchema).default([]),
+  examTraps: z.array(z.string().min(1)).default([]),
+  /** Other *concepts* this one gets mixed up with. */
+  confusedWith: z.array(z.object({ slug: z.string(), difference: z.string().min(1) })).default([]),
+  /** Services where this concept is the thing being configured. */
+  serviceSlugs: z.array(z.string()).default([]),
+  /** Other concept slugs — read these together. */
+  related: z.array(z.string()).default([]),
+  docsUrl: z.string().url(),
+})
+export type Concept = z.infer<typeof ConceptSchema>
+
 /* ── Exam structure: cert → domain → task statement ──────────────────────── */
 
 export const TaskSchema = z.object({
@@ -296,7 +406,7 @@ export type Question = z.infer<typeof QuestionSchema>
 
 /* ── Spaced-repetition cards ─────────────────────────────────────────────── */
 
-export const CARD_KINDS = ['fact', 'number', 'whichService', 'trap', 'contrast'] as const
+export const CARD_KINDS = ['fact', 'number', 'whichService', 'define', 'trap', 'contrast'] as const
 export const CardKindSchema = z.enum(CARD_KINDS)
 export type CardKind = (typeof CARD_KINDS)[number]
 
@@ -307,8 +417,12 @@ export const CARD_KIND_META: Record<CardKind, { label: string; hint: string }> =
     label: 'Which service?',
     hint: 'A requirement — name the service that meets it.',
   },
+  // Its own kind rather than reusing whichService: labelling a concept card
+  // "Which service?" when the answer is "CIDR block" is exactly the kind of
+  // small lie that makes a learner stop trusting the labels.
+  define: { label: 'Which term?', hint: 'A description — name the concept it describes.' },
   trap: { label: 'Trap', hint: 'The plausible-but-wrong answer, and why.' },
-  contrast: { label: 'Contrast', hint: 'Two services that get confused. Separate them.' },
+  contrast: { label: 'Contrast', hint: 'Two things that get confused. Separate them.' },
 }
 
 export const CardSchema = z.object({

@@ -12,6 +12,7 @@ npm run content:check && npm run typecheck && npm test
 | Adding | Edit | Notes |
 |---|---|---|
 | A service | `src/content/services/<category>.ts` | Cards generate automatically |
+| A concept | `src/content/concepts/<group>.ts` | For anything that is not an AWS service |
 | A question | `src/content/questions/` — `saa-d1.ts` … `saa-d4.ts`, `dva.ts` | Every option needs a `why` |
 | A trigger phrase | `src/content/triggers.ts` | Include `notThis` — the trap is the value |
 | A decision tree | `src/content/decision-trees.ts` | |
@@ -61,6 +62,59 @@ The fields that carry the teaching load, in order of value:
 Every slug in `confusedWith`, `related` and any task's `serviceSlugs` must
 resolve, and nothing may point at itself. Add the slug to the relevant task
 statement in `certs/*.ts` too, or `content:check` warns that nothing references it.
+
+## A concept card
+
+A concept is anything the exam tests that is **not** an AWS service: CIDR,
+subnet, route table, RTO, RPO, idempotency, the shape of an ARN. If it has no
+pricing page and no console, it is a concept — see invariant 14 for why these
+are not a fourth service tier.
+
+Write one when you notice a term being *used* across several service cards and
+*defined* in none of them. That was the whole gap this corpus closed.
+
+The fields that carry the teaching load, in order of value:
+
+1. **`keyIdea`** — the load-bearing field. State the rule that decides
+   questions, not a dictionary definition. "A subnet is public only because its
+   route table sends 0.0.0.0/0 to an internet gateway" is a `keyIdea`; "a subnet
+   is a range of addresses" is not, and a learner who recites it still cannot
+   answer the question. This generates the `fact` card.
+2. **`examTraps`** — as for a service. `content:check` warns when a concept has
+   none, because a concept with no traps is a dictionary entry and a dictionary
+   is the thing this corpus exists to not be.
+3. **`onTheExam`** — the phrasings that mean a question is really about this.
+   Quote the stem wording where you can.
+4. **`confusedWith`** — points at other *concepts*, not services. This is where
+   RTO and RPO separate, which is the single most swapped pair on SAA-C03.
+5. **`serviceSlugs`** — the services where this is the thing being configured.
+   It drives the "Assumes you know" panel on every one of those service cards,
+   so it is the link that makes the concept findable from where you hit the gap.
+
+```ts
+{
+  slug: 'kebab-case',                 // must not collide with any service slug
+  term: 'Recovery Point Objective',   // as a question would print it
+  abbr: 'RPO',                        // optional; used on chips and number cards
+  aka: ['RPO', 'acceptable data loss'],   // optional; search matches these too
+  group: 'resilience',                // networking | resilience | data | identity | delivery | operations
+  certs: ['SAA-C03', 'DVA-C02'],
+  oneLiner: '…',                      // reversed, it becomes the `define` card
+  whatItIs: '…',                      // a paragraph; explain the mechanism
+  keyIdea: '…',                       // the rule that decides questions
+  onTheExam: ['…'],
+  keyNumbers: [{ label: '…', value: '…', note: '…', volatile: false }],
+  examTraps: ['…'],
+  confusedWith: [{ slug: 'other-concept', difference: '…' }],
+  serviceSlugs: ['vpc', 'ec2'],
+  related: ['other-concept'],
+  docsUrl: 'https://docs.aws.amazon.com/…',   // curl it before committing
+}
+```
+
+Order matters inside a group file: concepts are read top to bottom and nothing
+may depend on a term below it. `concept-registry.ts` concatenates the groups in
+reading order rather than sorting, for exactly that reason.
 
 ## A question
 

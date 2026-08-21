@@ -36,9 +36,9 @@ it exercises. If the answer is "none", it probably does not belong.
 ```bash
 npm run content:check   # zod validation + referential integrity + coverage warnings
 npm run typecheck       # tsc --noEmit, strict
-npm test                # 104 vitest tests over src/engines
+npm test                # 115 vitest tests over src/engines
 npx eslint src scripts  # must be 0 errors AND 0 warnings
-npm run build           # 160 prerendered pages
+npm run build           # 198 prerendered pages
 ```
 
 All five are currently clean. `npm run dev` for the app; drive it in a real
@@ -89,7 +89,8 @@ browser before saying a UI change works.
    a quota is one AWS changes, mark it "verify". This is a study tool; a
    comfortable lie costs the user marks.
 
-10. **The atlas is the only place a fact lives.** A question explanation may
+10. **The atlas is the only place a fact lives**, and a fact that is not about
+    a service lives in `src/content/concepts/`. A question explanation may
     *restate* a fact, never introduce one. Everything teachable belongs in
     `src/content/services/*` first, because that is what `cards.ts` derives from,
     what search finds, and what the quick-look panel shows — a fact that exists
@@ -122,7 +123,16 @@ browser before saying a UI change works.
     built — the lab, quiz or drill a step points at awards its own XP when the
     work actually happens. Keep `steps` out of `MasteryInput` for that reason.
 
-14. **Every URL in a reading list has been checked to resolve.** All 84 were
+14. **A primitive is a concept, not a fourth service tier.** CIDR, subnet, RPO,
+    idempotency and the shape of an ARN are not AWS services — they have no
+    pricing page, no idle cost and no console — so they live in
+    `src/content/concepts/` behind `ConceptSchema`, aggregated by
+    `concept-registry.ts` (same naming rule as invariant 3). Widening `Service`
+    to hold them would make every tier badge, category filter and atlas grouping
+    lie a little. Concept and service slugs share one namespace because they
+    share the peek stack and the search list; `content:check` fails a collision.
+
+15. **Every URL in a reading list or atlas entry has been checked to resolve.** All 84 were
     curled before being committed. A 404 in a reading list costs the trust that
     makes the learner follow the next one, so check new ones the same way rather
     than writing a plausible-looking doc path from memory.
@@ -133,7 +143,8 @@ browser before saying a UI change works.
 |---|---|---|
 | Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
-| Cards | 1,391 derived | shared corpus |
+| Concepts | 37 primitives in 6 groups | shared corpus, per-cert tagged |
+| Cards | 1,709 derived | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
 
 Both banks now serve two consecutive full papers with no repeated question. A

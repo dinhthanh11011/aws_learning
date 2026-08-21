@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
-import { CATEGORIES, search, TIER_META, type SearchHit } from '@/content'
-import { openService } from '@/lib/service-peek'
+import { CATEGORIES, CONCEPT_GROUP_META, search, TIER_META, type SearchHit } from '@/content'
+import { openConcept, openService } from '@/lib/peek'
 import {
   closeCommandPalette,
   getCommandPaletteOpen,
@@ -14,7 +14,7 @@ import { IconSearch } from '@/components/ui/Icon'
 import { cn } from '@/lib/cn'
 
 /**
- * ⌘K search over services, task statements and trigger phrases. On a corpus
+ * ⌘K search over services, concepts, task statements and trigger phrases. On a corpus
  * this size, getting to a service card in two keystrokes matters more than any
  * amount of navigation hierarchy.
  *
@@ -85,6 +85,9 @@ function PaletteDialog() {
     if (hit.kind === 'service') {
       if (navigate) router.push(`/services/${hit.service.slug}`)
       else openService(hit.service.slug)
+    } else if (hit.kind === 'concept') {
+      if (navigate) router.push(`/concepts/${hit.concept.slug}`)
+      else openConcept(hit.concept.slug)
     } else if (hit.kind === 'task') router.push(`/map#${hit.task.id}`)
     else router.push('/decoder')
   }
@@ -122,7 +125,7 @@ function PaletteDialog() {
               }
               if (e.key === 'Enter' && hits[cursor]) go(hits[cursor], e.metaKey || e.ctrlKey)
             }}
-            placeholder="Search services, task statements, trigger phrases…"
+            placeholder="Search services, concepts, task statements, trigger phrases…"
             className="h-14 flex-1 bg-transparent text-[15px] outline-none placeholder:text-fg-subtle"
           />
           <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px] text-fg-subtle">
@@ -160,6 +163,22 @@ function PaletteDialog() {
                         <span className="shrink-0 text-[10px] text-fg-subtle">
                           {TIER_META[hit.service.tier].label}
                         </span>
+                      </>
+                    ) : hit.kind === 'concept' ? (
+                      <>
+                        <span
+                          className="h-6 w-1 shrink-0 rounded-full"
+                          style={{ background: CONCEPT_GROUP_META[hit.concept.group].token }}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-medium">
+                            {hit.concept.term}
+                          </span>
+                          <span className="block truncate text-[11px] text-fg-subtle">
+                            {hit.concept.oneLiner}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-[10px] text-fg-subtle">Concept</span>
                       </>
                     ) : hit.kind === 'task' ? (
                       <>

@@ -19,9 +19,10 @@ npm run dev          # http://localhost:3000
 | **Big Picture** | Every layer of a real AWS system on one canvas, tinted by your own mastery, with seven traceable flows (a web request, private egress, async work, identity, AZ failure, where the money goes) and the failure symptom for each hop. |
 | **Roadmap** | Five phases over ~22–29 weeks, gated on mastery. Foundations → core services → build & break → exam prep → DVA delta. |
 | **Service Atlas** | 141 in-scope services, tiered by how deeply you actually need each one. Every card carries when *not* to use it, the numbers to memorise, the exam traps, and the services it gets confused with. |
+| **Concepts** | 37 primitives the exam assumes and never defines — CIDR, subnet, route table, RTO and RPO, consistency, idempotency, ARNs. Each one leads with the sentence that decides questions rather than a definition, and every service card links back to the ones it takes for granted. |
 | **Keyword Decoder** | 47 trigger phrases — the wording that gives the answer away — each with the plausible option it was engineered to make you pick instead. |
 | **Decision Trees** | Which compute / database / storage / integration / edge service, walked one question at a time. |
-| **Recall Drill** | 1,391 cards, scheduled with FSRS-6. Derived from the atlas, so they can never contradict it. |
+| **Recall Drill** | 1,709 cards, scheduled with FSRS-6. Derived from the atlas, so they can never contradict it. |
 | **Exam Simulator** | 65 questions in 130 minutes, sampled to the real domain weighting, resumable after a reload. Scaled-score estimate, per-domain breakdown, marks-at-stake advice. |
 | **Labs** | VPC packet tracer (build it, then break it seven ways and predict the symptom), IAM policy puzzle (predict the decision, then read the evaluation trace), storage & teardown cost lab. |
 | **Progress** | Mastery per domain and service, readiness forecast, activity heatmap, exam-score trend, and a mistake log clustered by service. |
@@ -33,10 +34,11 @@ verbatim from the official AWS exam guides. The tiering, traps, trigger phrases
 and questions are written for this app.
 
 ```
-141  services      534  key numbers    452  exam traps
+141  services       37  concepts
+656  key numbers   561  exam traps
 274  questions      47  trigger phrases
  27  task statements  5  decision trees   3  labs
-1,391 spaced-repetition cards (derived)
+1,709 spaced-repetition cards (derived)
 ```
 
 `npm run content:check` validates every piece of content against its zod schema
@@ -57,8 +59,10 @@ src/
     certs/              SAA-C03 and DVA-C02 domain/task trees (verbatim)
     services/           141 service cards, by category
     service-registry.ts Aggregate (deliberately not services/index.ts)
+    concepts/           37 primitives the exam assumes, by group
+    concept-registry.ts Aggregate (same rule as service-registry.ts)
     questions/          Exam-format questions, every option explained
-    cards.ts            SRS cards *derived* from the service cards
+    cards.ts            SRS cards *derived* from services + concepts
     triggers.ts         Keyword decoder
     decision-trees.ts   Which-service-should-I-use trees
     big-picture.ts      The layered system view and its flows
@@ -103,6 +107,10 @@ counts a full paper needs: [`docs/CONTENT.md`](docs/CONTENT.md).
 
 - **A service** — add to the right file in `src/content/services/`. Cards for its
   numbers, traps and confusions are generated automatically.
+- **A concept** — a primitive that is not an AWS service goes in
+  `src/content/concepts/`, in the group file it belongs to and after anything it
+  depends on. `keyIdea` is the load-bearing field: state the rule that decides
+  questions, not a dictionary definition.
 - **A question** — add to `src/content/questions/`. Every option needs a `why`
   explaining the specific misconception it targets, and `taskId` must resolve.
 - **A trigger phrase** — add to `src/content/triggers.ts`, including the trap.

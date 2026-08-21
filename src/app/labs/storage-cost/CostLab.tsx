@@ -5,7 +5,7 @@ import { recordLab } from '@/db/repo'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
-import { openService } from '@/lib/service-peek'
+import { openService } from '@/lib/peek'
 
 /**
  * Two models. The lifecycle side builds intuition for S3 class economics, which

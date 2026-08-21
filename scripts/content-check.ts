@@ -9,6 +9,7 @@
 import {
   CertSchema,
   ServiceSchema,
+  ConceptSchema,
   PhaseSchema,
   StudyStepSchema,
   TriggerSchema,
@@ -16,6 +17,8 @@ import {
   certs,
   services,
   serviceBySlug,
+  concepts,
+  conceptBySlug,
   labById,
   phases,
   triggers,
@@ -51,6 +54,14 @@ for (const s of services) {
   if (!r.success)
     fail(
       `service ${s.slug}`,
+      r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
+    )
+}
+for (const c of concepts) {
+  const r = ConceptSchema.safeParse(c)
+  if (!r.success)
+    fail(
+      `concept ${c.slug}`,
       r.error.issues.map((i) => `${i.path.join('.')} ${i.message}`).join('; '),
     )
 }
@@ -99,6 +110,13 @@ const dupes = <T>(items: T[], key: (t: T) => string) => {
 }
 
 for (const d of dupes(services, (s) => s.slug)) fail('services', `duplicate slug "${d}"`)
+for (const d of dupes(concepts, (c) => c.slug)) fail('concepts', `duplicate slug "${d}"`)
+// Concepts and services share the peek stack and the search result list, so a
+// slug colliding across the two corpora would make one of them unreachable.
+for (const c of concepts) {
+  if (serviceBySlug.has(c.slug))
+    fail('concepts', `slug "${c.slug}" collides with a service of the same slug`)
+}
 for (const d of dupes(tasks, (t) => t.id)) fail('tasks', `duplicate task id "${d}"`)
 for (const d of dupes(domains, (x) => x.id)) fail('domains', `duplicate domain id "${d}"`)
 for (const d of dupes(triggers, (t) => t.id)) fail('triggers', `duplicate trigger id "${d}"`)
@@ -122,6 +140,22 @@ for (const s of services) {
   for (const r of s.related) {
     if (!serviceBySlug.has(r)) fail(`service ${s.slug}`, `related unknown service "${r}"`)
     if (r === s.slug) fail(`service ${s.slug}`, 'related points at itself')
+  }
+}
+
+for (const c of concepts) {
+  for (const other of c.confusedWith) {
+    if (!conceptBySlug.has(other.slug))
+      fail(`concept ${c.slug}`, `confusedWith unknown concept "${other.slug}"`)
+    if (other.slug === c.slug) fail(`concept ${c.slug}`, 'confusedWith points at itself')
+  }
+  for (const r of c.related) {
+    if (!conceptBySlug.has(r)) fail(`concept ${c.slug}`, `related unknown concept "${r}"`)
+    if (r === c.slug) fail(`concept ${c.slug}`, 'related points at itself')
+  }
+  for (const slug of c.serviceSlugs) {
+    if (!serviceBySlug.has(slug))
+      fail(`concept ${c.slug}`, `serviceSlugs references unknown service "${slug}"`)
   }
 }
 
@@ -157,6 +191,7 @@ const ROUTES = new Set([
   '/map',
   '/progress',
   '/quiz',
+  '/concepts',
   '/services',
   '/settings',
 ])
@@ -265,6 +300,15 @@ for (const s of services) {
   if (!s.whenNotToUse.length) warn('depth', `service "${s.slug}" has no whenNotToUse entries`)
 }
 
+for (const c of concepts) {
+  // A concept with no traps and no exam phrasings is a dictionary entry, and a
+  // dictionary is the thing this corpus exists to not be.
+  if (!c.examTraps.length) warn('depth', `concept "${c.slug}" has no exam traps`)
+  if (!c.onTheExam.length) warn('depth', `concept "${c.slug}" has no onTheExam phrasings`)
+  if (!c.serviceSlugs.length)
+    warn('coverage', `concept "${c.slug}" names no service — nothing links to it from the atlas`)
+}
+
 /**
  * Facts taught only in a question explanation are invisible: the atlas does not
  * carry them, so `cards.ts` cannot derive a card from them, and searching for
@@ -355,6 +399,7 @@ console.log(`  task statements ${stats.tasks}`)
 console.log(
   `  services        ${stats.services}  (core ${stats.tier1} · working ${stats.tier2} · recognise ${stats.tier3})`,
 )
+console.log(`  concepts        ${stats.concepts}`)
 console.log(`  key numbers     ${stats.keyNumbers}`)
 console.log(`  exam traps      ${stats.examTraps}`)
 console.log(`  questions       ${questions.length}`)

@@ -1,7 +1,7 @@
 'use client'
 import type { MouseEvent } from 'react'
 import { CATEGORIES, serviceBySlug, serviceLabel } from '@/content'
-import { openService } from '@/lib/service-peek'
+import { openService } from '@/lib/peek'
 import { cn } from '@/lib/cn'
 
 /**

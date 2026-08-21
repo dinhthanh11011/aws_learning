@@ -123,6 +123,16 @@ export const IconSearch = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+/** Four building blocks — the primitives everything else is assembled from. */
+export const IconBlocks = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="2" y="2" width="5" height="5" rx="1" />
+    <rect x="9" y="2" width="5" height="5" rx="1" />
+    <rect x="2" y="9" width="5" height="5" rx="1" />
+    <rect x="9" y="9" width="5" height="5" rx="1" />
+  </svg>
+)
+
 export const ICONS = {
   target: IconTarget,
   layers: IconLayers,
@@ -138,6 +148,7 @@ export const ICONS = {
   external: IconExternal,
   check: IconCheck,
   search: IconSearch,
+  blocks: IconBlocks,
 } as const
 
 export type IconName = keyof typeof ICONS

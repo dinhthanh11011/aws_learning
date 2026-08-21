@@ -43,8 +43,10 @@ export is the only backup that exists.
 | `certs/saa-c03.ts`, `certs/dva-c02.ts` | Domain and task-statement trees. **Titles and every Knowledge/Skills bullet are verbatim from the official AWS exam guides.** `blurb` and `serviceSlugs` are ours |
 | `services/*.ts` | 141 service cards by category |
 | `service-registry.ts` | Aggregates the service files. Must **not** live at `services/index.ts` — see invariant 3 |
+| `concepts/*.ts` | 37 primitives by group — the things the exam assumes and no service card defines |
+| `concept-registry.ts` | Aggregates the concept files. Same naming rule as `service-registry.ts` |
 | `questions/*.ts` | Exam-format questions; every option has a `why` |
-| `cards.ts` | **Derives** ~1,391 SRS cards from services + triggers + idle costs |
+| `cards.ts` | **Derives** ~1,709 SRS cards from services + concepts + triggers + idle costs |
 | `triggers.ts` | 47 keyword→answer mappings, each with its distractor |
 | `decision-trees.ts` | 5 which-service-should-I-use trees |
 | `big-picture.ts` | The 5-layer system view, 25 nodes, 7 traceable flows |
@@ -53,16 +55,41 @@ export is the only backup that exists.
 | `labs.ts` | Lab metadata |
 | `index.ts` | The `@/content` barrel: lookups, reverse indexes, `search()`, `contentStats()`, `examCoverage()` |
 
+### Concepts — the primitives layer
+
+The atlas is keyed by service slug, which left nowhere for the things the exam
+tests that are *not* services. "CIDR" appeared in ten places in the network
+atlas and was defined in none of them; "RTO" appeared in six content files with
+one real explanation, buried in an unrelated service's trap list. Because
+`cards.ts` derives from service entries, a primitive with no entry was drilled by
+exactly zero cards — and vocabulary you have only ever seen used is recognised,
+not recalled.
+
+`ConceptSchema` mirrors `ServiceSchema` where the fields mean the same thing
+(`keyNumbers`, `examTraps`, `confusedWith`) and diverges where they do not: no
+category, no tier, no pricing, no idle cost, and two fields a service has no use
+for — `keyIdea`, the sentence that decides questions, and `onTheExam`, the
+phrasings that signal one. Six groups (`networking`, `resilience`, `data`,
+`identity`, `delivery`, `operations`) borrow the service categories' hues,
+because a CIDR card and the VPC card reading as the same colour family is true.
+
+Concepts and services share one slug namespace — they share the peek stack and
+the search result list — and `content:check` fails a collision. The two corpora
+cross-link both ways: a concept's `serviceSlugs` is where you configure it, and
+`conceptsForService()` drives the "Assumes you know" panel on every service card.
+
 ### Reaching the atlas from anywhere
 
-`ServiceAtlas` (`src/components/service/ServiceAtlas.tsx`) renders one service
-card and is used by both `/services/[slug]` and `ServicePeek`, the quick-look
-drawer mounted once in `AppShell`. `src/lib/service-peek.ts` is the store — a
-stack of slugs, so following "commonly confused with" inside the panel can be
-walked back. Anything mentioning a service inline uses `ServiceRef` or
-`serviceLinkProps`, and `useServicePeekKey` binds `s` to the services a question
-or drill card points at. The panel exists because navigating away mid-question
-costs the question, so without it the lookup simply does not happen.
+`ServiceAtlas` and `ConceptAtlas` (`src/components/service/`) each render one
+card and are each used twice: on `/services/[slug]` and `/concepts/[slug]`, and
+inside `ServicePeek`, the quick-look drawer mounted once in `AppShell`.
+`src/lib/peek.ts` is the store — a stack of `{kind, slug}` targets, so a single
+back stack walks concept → concept → service and back. Anything mentioning a
+service inline uses `ServiceRef` or `serviceLinkProps`; anything mentioning a
+concept uses `ConceptRef` or `conceptLinkProps`. `useServicePeekKey` binds `s` to
+the services a question or drill card points at. The panel exists because
+navigating away mid-question costs the question, so without it the lookup simply
+does not happen.
 
 ### The tier system
 
@@ -80,16 +107,21 @@ in six places, which is the point.
 ### Why cards are derived
 
 A hand-written card set and a hand-written atlas drift apart, and then the
-learner drills something the atlas contradicts. `buildCards()` generates five
+learner drills something the atlas contradicts. `buildCards()` generates six
 kinds from existing content:
 
 | Kind | From | Tiers |
 |---|---|---|
-| `number` | `keyNumbers` (skipping `volatile: true`) | 1–2 |
+| `number` | `keyNumbers` (skipping `volatile: true`) | services 1–2, all concepts |
 | `trap` | `examTraps` | all |
 | `contrast` | `confusedWith` | all |
 | `whichService` | `oneLiner`, plus every trigger phrase | 1–2 |
-| `fact` | `whenNotToUse` | 1 |
+| `define` | a concept's `oneLiner` — name the term | all concepts |
+| `fact` | `whenNotToUse`, and every concept's `keyIdea` | services 1, all concepts |
+
+`define` is its own kind rather than a reused `whichService` because labelling a
+card "Which service?" when the answer is "CIDR block" is the kind of small lie
+that makes a learner stop trusting the labels.
 
 Card ids are stable and derived (`num:s3:0`, `trap:lambda:3`), so FSRS state
 survives content edits. If you *delete* a service, its stored cards become
@@ -100,9 +132,9 @@ orphans — `DrillSession` skips them gracefully rather than crashing.
 `scripts/content-check.ts` does four things beyond schema validation:
 
 1. **Uniqueness** — duplicate ids across services, tasks, questions, triggers, phases
-2. **Referential integrity** — every `serviceSlug`, `taskId`, `domainId`, `confusedWith`, `related` resolves; nothing points at itself
+2. **Referential integrity** — every `serviceSlug`, `taskId`, `domainId`, `confusedWith`, `related` resolves; nothing points at itself; no concept slug collides with a service slug
 3. **Exam-shape invariants** — domain weights sum to 100, `scoredCount ≤ questionCount`, domain indexes are 1..n
-4. **Coverage warnings** — services no task statement references; core services with fewer than three traps or numbers; a question bank that cannot fill a full paper
+4. **Coverage warnings** — services no task statement references; core services with fewer than three traps or numbers; concepts with no traps, no exam phrasings or no service links; a question bank that cannot fill a full paper
 
 Warnings do not fail the build; problems do.
 
@@ -225,6 +257,7 @@ flags, `Space` flips a card, `1–4` grades it, `⌘K` or `/` searches.
 | `/big-picture` | 5 layers, 7 animated flows, failure list per flow |
 | `/map` | Phases gated on 3-ring average of the previous phase. `?phase=` holds the open phase, `?step=` opens and scrolls to one step |
 | `/services`, `/services/[slug]` | 141 SSG pages |
+| `/concepts`, `/concepts/[slug]` | 37 SSG pages, grouped and in dependency order |
 | `/decoder`, `/compare` | Trigger drill; decision-tree walker |
 | `/drill` | FSRS session. Seeds `srsCards` idempotently on first visit |
 | `/quiz`, `/exam`, `/exam/[id]` | Immediate-feedback quiz; timed simulator; per-question review with mistake logging |

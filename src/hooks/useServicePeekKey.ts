@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import { openService } from '@/lib/service-peek'
+import { openService } from '@/lib/peek'
 
 /**
  * Binds "s" to the services on screen right now — the ones a question, a card

@@ -1,20 +1,23 @@
 import type { Card, CertId } from './schema'
 import { services } from './service-registry'
+import { concepts } from './concept-registry'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
 
 /**
- * Cards are *derived* from the service content rather than written separately.
- * That matters for a reason beyond effort: a hand-written card set drifts out of
+ * Cards are *derived* from the service and concept content rather than written
+ * separately. That matters for a reason beyond effort: a hand-written card set drifts out of
  * step with the cards' source material, and then you are drilling something the
  * atlas contradicts. Here there is one source of truth.
  *
- * Five kinds, each testing a different retrieval path:
+ * Six kinds, each testing a different retrieval path:
  *   number       — a limit or quota you must state exactly
  *   trap         — the plausible-but-wrong answer, and why
- *   contrast     — two services that get confused, separated
+ *   contrast     — two things that get confused, separated
  *   whichService — a requirement; name the service
- *   fact         — when *not* to reach for something (the half most material skips)
+ *   define       — a description; name the concept
+ *   fact         — when *not* to reach for something, and the ideas that decide
+ *                  questions (the half most material skips)
  */
 export function buildCards(): Card[] {
   const out: Card[] = []
@@ -83,6 +86,68 @@ export function buildCards(): Card[] {
         back: s.whenNotToUse.map((w) => `• ${w}`).join('\n'),
       })
     }
+  }
+
+  /**
+   * Concept cards. The `fact` card built from `keyIdea` is the important one:
+   * it asks for the sentence that decides questions rather than a definition,
+   * because a learner who can recite "a subnet is public only because its route
+   * table sends 0.0.0.0/0 to an internet gateway" can answer the question, and
+   * one who can recite "a subnet is a range of addresses" cannot.
+   */
+  for (const c of concepts) {
+    const certs = c.certs as CertId[]
+    const base = { certs, serviceSlugs: c.serviceSlugs }
+
+    out.push({
+      ...base,
+      id: `idea:${c.slug}`,
+      kind: 'fact',
+      front: `${c.term} — state the idea that decides questions.`,
+      back: c.keyIdea,
+      extra: c.oneLiner,
+    })
+
+    out.push({
+      ...base,
+      id: `define:${c.slug}`,
+      kind: 'define',
+      front: `Which term: ${c.oneLiner.charAt(0).toLowerCase()}${c.oneLiner.slice(1)}`,
+      back: c.term,
+      extra: c.whatItIs.split('. ')[0] + '.',
+    })
+
+    c.keyNumbers.forEach((n, i) => {
+      if (n.volatile) return // Don't drill a figure AWS keeps changing.
+      out.push({
+        ...base,
+        id: `num:concept:${c.slug}:${i}`,
+        kind: 'number',
+        front: `${c.abbr ?? c.term} — ${n.label}?`,
+        back: n.value,
+        extra: n.note,
+      })
+    })
+
+    c.examTraps.forEach((t, i) => {
+      out.push({
+        ...base,
+        id: `trap:concept:${c.slug}:${i}`,
+        kind: 'trap',
+        front: `${c.term}: what is the trap here?`,
+        back: t,
+      })
+    })
+
+    c.confusedWith.forEach((other) => {
+      out.push({
+        ...base,
+        id: `vs:concept:${c.slug}:${other.slug}`,
+        kind: 'contrast',
+        front: `${c.term} versus ${other.slug.replace(/-/g, ' ')} — what is the dividing line?`,
+        back: other.difference,
+      })
+    })
   }
 
   for (const t of triggers) {

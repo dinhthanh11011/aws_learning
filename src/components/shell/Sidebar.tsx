@@ -24,23 +24,60 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: 'Orient',
     items: [
-      { href: '/', label: 'Mission Control', icon: 'target', hint: 'Today’s plan and where you stand' },
-      { href: '/big-picture', label: 'Big Picture', icon: 'layers', hint: 'Every service on one canvas' },
+      {
+        href: '/',
+        label: 'Mission Control',
+        icon: 'target',
+        hint: 'Today’s plan and where you stand',
+      },
+      {
+        href: '/big-picture',
+        label: 'Big Picture',
+        icon: 'layers',
+        hint: 'Every service on one canvas',
+      },
       { href: '/map', label: 'Roadmap', icon: 'route', hint: 'The 29-week path, phase by phase' },
     ],
   },
   {
     title: 'Learn',
     items: [
-      { href: '/services', label: 'Service Atlas', icon: 'list', hint: '141 services, tiered by exam weight' },
-      { href: '/decoder', label: 'Keyword Decoder', icon: 'key', hint: 'The phrases that give the answer away' },
-      { href: '/compare', label: 'Decision Trees', icon: 'branch', hint: 'Which database? Which compute?' },
+      {
+        href: '/services',
+        label: 'Service Atlas',
+        icon: 'list',
+        hint: '141 services, tiered by exam weight',
+      },
+      {
+        href: '/concepts',
+        label: 'Concepts',
+        icon: 'blocks',
+        hint: 'CIDR, RPO, idempotency — what the exam assumes',
+      },
+      {
+        href: '/decoder',
+        label: 'Keyword Decoder',
+        icon: 'key',
+        hint: 'The phrases that give the answer away',
+      },
+      {
+        href: '/compare',
+        label: 'Decision Trees',
+        icon: 'branch',
+        hint: 'Which database? Which compute?',
+      },
     ],
   },
   {
     title: 'Practise',
     items: [
-      { href: '/drill', label: 'Recall Drill', icon: 'refresh', hint: 'Spaced repetition', counter: 'due' },
+      {
+        href: '/drill',
+        label: 'Recall Drill',
+        icon: 'refresh',
+        hint: 'Spaced repetition',
+        counter: 'due',
+      },
       { href: '/labs', label: 'Labs', icon: 'wrench', hint: 'Build it, then break it' },
       { href: '/exam', label: 'Exam Simulator', icon: 'paper', hint: '65 questions, 130 minutes' },
     ],
@@ -48,7 +85,13 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: 'Review',
     items: [
-      { href: '/progress', label: 'Progress', icon: 'chart', hint: 'Mastery, readiness, mistake log', counter: 'mistakes' },
+      {
+        href: '/progress',
+        label: 'Progress',
+        icon: 'chart',
+        hint: 'Mastery, readiness, mistake log',
+        counter: 'mistakes',
+      },
       { href: '/settings', label: 'Settings', icon: 'sliders', hint: 'Theme, export, reset' },
     ],
   },
@@ -60,7 +103,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const level = levelFromXp(profile.xp)
   const cert = certById.get(profile.targetCert)
 
-  const dueCount = useLiveQuery(() => db.srsCards.where('due').belowOrEqual(Date.now()).count(), [], 0)
+  const dueCount = useLiveQuery(
+    () => db.srsCards.where('due').belowOrEqual(Date.now()).count(),
+    [],
+    0,
+  )
   const mistakeCount = useLiveQuery(() => db.mistakes.filter((m) => !m.resolved).count(), [], 0)
 
   const counters = { due: dueCount, mistakes: mistakeCount }
@@ -80,7 +127,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           λ
         </span>
         <span className="min-w-0">
-          <span className="block truncate text-[13px] font-semibold leading-tight">AWS Trainer</span>
+          <span className="block truncate text-[13px] font-semibold leading-tight">
+            AWS Trainer
+          </span>
           <span className="block truncate text-[11px] leading-tight text-fg-subtle">
             {cert?.shortTitle ?? 'Solutions Architect'}
           </span>
@@ -94,9 +143,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <div className="surface-inset px-3 py-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[13px] font-semibold">Level {level.level}</span>
-          <span className="nums text-[11px] text-fg-subtle">
-            {profile.xp.toLocaleString()} XP
-          </span>
+          <span className="nums text-[11px] text-fg-subtle">{profile.xp.toLocaleString()} XP</span>
         </div>
         <p className="mt-0.5 truncate text-[11px] text-accent">{levelTitle(level.level)}</p>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-bg">
@@ -126,8 +173,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </p>
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const active =
-                  item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+                const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
                 const count = item.counter ? counters[item.counter] : 0
                 const Glyph = ICONS[item.icon]
                 return (

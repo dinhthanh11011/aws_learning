@@ -2,17 +2,19 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'motion/react'
-import { serviceBySlug } from '@/content'
+import { conceptBySlug, serviceBySlug } from '@/content'
 import { ServiceAtlas, ServiceMeta } from '@/components/service/ServiceAtlas'
+import { ConceptAtlas, ConceptMeta } from '@/components/service/ConceptAtlas'
 import { ConfidenceMark } from '@/components/service/ConfidenceMark'
 import {
-  backService,
-  closeServicePeek,
-  getServerServicePeek,
-  getServicePeek,
+  backPeek,
+  closePeek,
+  getPeek,
+  getServerPeek,
+  openConcept,
   openService,
-  subscribeServicePeek,
-} from '@/lib/service-peek'
+  subscribePeek,
+} from '@/lib/peek'
 
 /**
  * The quick look: the whole atlas card for one service, over whatever you were
@@ -25,16 +27,17 @@ import {
  * actually happens.
  */
 export function ServicePeek() {
-  const stack = useSyncExternalStore(subscribeServicePeek, getServicePeek, getServerServicePeek)
-  const slug = stack[stack.length - 1]
-  const service = slug ? serviceBySlug.get(slug) : undefined
+  const stack = useSyncExternalStore(subscribePeek, getPeek, getServerPeek)
+  const target = stack[stack.length - 1]
+  const service = target?.kind === 'service' ? serviceBySlug.get(target.slug) : undefined
+  const concept = target?.kind === 'concept' ? conceptBySlug.get(target.slug) : undefined
   const reduce = useReducedMotion()
 
   const panelRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const restoreTo = useRef<HTMLElement | null>(null)
 
-  const open = Boolean(service)
+  const open = Boolean(service ?? concept)
 
   // Remember what had focus so Escape can hand it back — you were mid-question.
   useEffect(() => {
@@ -56,7 +59,7 @@ export function ServicePeek() {
   // A new card in the stack starts at the top rather than where the last one was.
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0
-  }, [slug])
+  }, [target?.kind, target?.slug])
 
   useEffect(() => {
     if (!open) return
@@ -65,7 +68,7 @@ export function ServicePeek() {
       if (document.querySelector('[data-dialog="command-palette"]')) return
       if (e.key === 'Escape') {
         e.preventDefault()
-        closeServicePeek()
+        closePeek()
       }
       if (e.key === 'Tab' && panelRef.current) {
         const focusable = panelRef.current.querySelectorAll<HTMLElement>(
@@ -88,19 +91,26 @@ export function ServicePeek() {
     return () => window.removeEventListener('keydown', onKey, true)
   }, [open])
 
-  if (!service) return null
+  if (!service && !concept) return null
+
+  // One frame, two kinds of card. The header, the back stack and the keyboard
+  // handling are identical because to the learner it is the same gesture — the
+  // only thing that changes is which atlas renders inside.
+  const title = service ? service.name : (concept?.term ?? '')
+  const oneLiner = service ? service.oneLiner : (concept?.oneLiner ?? '')
+  const fullHref = service ? `/services/${service.slug}` : `/concepts/${concept?.slug}`
 
   return (
     <div
       className="fixed inset-0 z-40 flex justify-end bg-black/50 backdrop-blur-sm"
-      onClick={closeServicePeek}
+      onClick={closePeek}
     >
       <motion.div
         ref={panelRef}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-        aria-label={`${service.name} — quick look`}
+        aria-label={`${title} — quick look`}
         initial={reduce ? undefined : { x: 24, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.16, ease: 'easeOut' }}
@@ -111,31 +121,34 @@ export function ServicePeek() {
           <div className="flex items-start gap-3">
             {stack.length > 1 ? (
               <button
-                onClick={backService}
-                aria-label="Back to the previous service"
+                onClick={backPeek}
+                aria-label="Back to the previous card"
                 className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-border text-fg-subtle hover:text-fg"
               >
                 ←
               </button>
             ) : null}
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-[19px] font-semibold tracking-tight">{service.name}</h2>
-              <p className="mt-0.5 text-[13px] leading-snug text-fg-muted">{service.oneLiner}</p>
+              <h2 className="truncate text-[19px] font-semibold tracking-tight">{title}</h2>
+              <p className="mt-0.5 text-[13px] leading-snug text-fg-muted">{oneLiner}</p>
             </div>
             <button
-              onClick={closeServicePeek}
+              onClick={closePeek}
               aria-label="Close quick look"
               className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-border text-fg-subtle hover:text-fg"
             >
               ✕
             </button>
           </div>
-          <ServiceMeta service={service} />
+          {service ? <ServiceMeta service={service} /> : null}
+          {concept ? <ConceptMeta concept={concept} /> : null}
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-            <ConfidenceMark slug={service.slug} />
+            {/* Confidence is tracked per service. A concept has no ring of its
+                own — it is drilled through the cards derived from it. */}
+            {service ? <ConfidenceMark slug={service.slug} /> : <span />}
             <Link
-              href={`/services/${service.slug}`}
-              onClick={closeServicePeek}
+              href={fullHref}
+              onClick={closePeek}
               className="text-[12px] text-fg-subtle underline decoration-dotted hover:text-fg"
             >
               Open the full page →
@@ -144,7 +157,22 @@ export function ServicePeek() {
         </header>
 
         <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          <ServiceAtlas service={service} layout="panel" onOpenService={openService} />
+          {service ? (
+            <ServiceAtlas
+              service={service}
+              layout="panel"
+              onOpenService={openService}
+              onOpenConcept={openConcept}
+            />
+          ) : null}
+          {concept ? (
+            <ConceptAtlas
+              concept={concept}
+              layout="panel"
+              onOpenConcept={openConcept}
+              onOpenService={openService}
+            />
+          ) : null}
         </div>
 
         <footer className="flex items-center gap-3 border-t border-border bg-bg-raised px-5 py-2 text-[11px] text-fg-subtle">

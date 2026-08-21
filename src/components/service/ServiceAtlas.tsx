@@ -2,6 +2,9 @@
 import Link from 'next/link'
 import {
   CATEGORIES,
+  CONCEPT_GROUP_META,
+  conceptLabel,
+  conceptsForService,
   domainById,
   idleCosts,
   serviceBySlug,
@@ -29,10 +32,12 @@ export function ServiceAtlas({
   service: s,
   layout = 'page',
   onOpenService,
+  onOpenConcept,
 }: {
   service: Service
   layout?: 'page' | 'panel'
   onOpenService?: (slug: string) => void
+  onOpenConcept?: (slug: string) => void
 }) {
   const panel = layout === 'panel'
   // One padding value per column, so every heading in a column starts on the
@@ -49,6 +54,7 @@ export function ServiceAtlas({
   )
   const idle = idleCosts.find((c) => c.slug === s.slug)
   const related = s.related.map((r) => serviceBySlug.get(r)).filter((r): r is Service => Boolean(r))
+  const assumedConcepts = conceptsForService(s.slug)
 
   const ServiceLink = ({
     slug,
@@ -66,6 +72,31 @@ export function ServiceAtlas({
         if (!onOpenService || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
         e.preventDefault()
         onOpenService(slug)
+      }}
+      className={className}
+    >
+      {children}
+    </a>
+  )
+
+  const ConceptLink = ({
+    slug,
+    children,
+    className,
+    title,
+  }: {
+    slug: string
+    children: React.ReactNode
+    className?: string
+    title?: string
+  }) => (
+    <a
+      href={`/concepts/${slug}`}
+      title={title}
+      onClick={(e) => {
+        if (!onOpenConcept || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+        e.preventDefault()
+        onOpenConcept(slug)
       }}
       className={className}
     >
@@ -247,6 +278,38 @@ export function ServiceAtlas({
     </section>
   ) : null
 
+  /**
+   * The primitives this entry takes for granted. Before the concept corpus
+   * existed, a card could say "route table" ten times and define it nowhere —
+   * this is the link back to the definition.
+   */
+  const assumes = assumedConcepts.length ? (
+    <section className={cn('surface', panel ? pad : 'p-4')}>
+      <h2 className={cn(h2Tight, 'text-fg-subtle')}>Assumes you know</h2>
+      <p className="mb-3 text-[12px] text-fg-subtle">
+        Primitives this card uses without defining them.
+      </p>
+      <ul className="flex flex-wrap gap-1.5">
+        {assumedConcepts.map((c) => (
+          <li key={c.slug}>
+            <ConceptLink
+              slug={c.slug}
+              title={c.oneLiner}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-bg-inset px-2 py-1 text-[12px] font-medium hover:border-border-strong hover:bg-bg-overlay"
+            >
+              <span
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ background: CONCEPT_GROUP_META[c.group].token }}
+                aria-hidden
+              />
+              {conceptLabel(c)}
+            </ConceptLink>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ) : null
+
   const examined = relatedTasks.length ? (
     <section className={cn('surface', panel ? pad : 'p-4')}>
       <h2 className={cn(h2, 'text-fg-subtle')}>Examined under</h2>
@@ -314,6 +377,7 @@ export function ServiceAtlas({
         {traps}
         {whenTo}
         {confused}
+        {assumes}
         {pricing}
         {idleCost}
         {phrases}
@@ -335,6 +399,7 @@ export function ServiceAtlas({
         </div>
         <aside className="flex flex-col gap-4">
           {numbers}
+          {assumes}
           {pricing}
           {idleCost}
           {examined}

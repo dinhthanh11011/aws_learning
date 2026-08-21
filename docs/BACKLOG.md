@@ -7,8 +7,8 @@ something — it is the file that saves the next session from re-deriving all th
 
 Verified means: driven in a real browser, not just compiled.
 
-- **Content backbone** — both cert trees verbatim, 141 services, 47 triggers,
-  5 decision trees, 5 phases, big-picture with 7 flows, idle costs
+- **Content backbone** — both cert trees verbatim, 141 services, 37 concepts,
+  47 triggers, 5 decision trees, 5 phases, big-picture with 7 flows, idle costs
 - **Engines** — IAM policy evaluation, VPC packet simulation, FSRS scheduling,
   exam sampling and scoring, mastery and readiness, plan generation, gamification.
   104 tests
@@ -67,6 +67,38 @@ to point at a lesson id instead of a URL — the schema change is a union on
 
 ## Not built
 
+### The concepts corpus (August 2026)
+
+The Service Atlas is keyed by service slug, so the primitives the exam assumes
+had nowhere to live. "CIDR" was used ten times in the network atlas and defined
+nowhere; "RTO" had one real explanation, in an unrelated service's trap list.
+Because `cards.ts` derives from service entries, none of them was drilled by a
+single card. 37 concepts in six groups now close that.
+
+- `src/content/concepts/*` — networking (10), resilience (7), data (6),
+  identity (5), delivery (4), operations (5). 33 doc URLs, all curled
+- `src/content/schema.ts` — `ConceptSchema`, `CONCEPT_GROUPS`,
+  `CONCEPT_GROUP_META`, and a new `define` card kind
+- `src/content/concept-registry.ts` — aggregate, groups in reading order
+- `src/lib/peek.ts` — was `service-peek.ts`; the stack now holds
+  `{kind, slug}`, so one back stack walks concept → concept → service
+- `ConceptAtlas`, `ConceptMeta`, `ConceptRef`, `ConceptTile`; `ServiceAtlas`
+  gained an "Assumes you know" panel driven by `conceptsForService()`
+- `/concepts` and `/concepts/[slug]`; ⌘K searches concepts, scoring `aka` too
+- `cards.ts` — 1,391 → 1,709 cards, 318 of them concept-derived
+- `content-check` — schema, duplicate and cross-corpus slug collisions,
+  reference integrity, and depth warnings for traps/phrasings/service links
+
+Driven in a real browser: the list page, a full concept page, the quick look
+opened from ⌘K, a concept → concept → service back stack, dark theme and 500 px.
+
+**The obvious next thing here:** the atlas-gap audit in `content:check` reads
+quantities out of question explanations and checks them against the *service*
+entries a question points at. It does not yet look at concepts, so a question
+teaching "251 usable addresses" is still reported as an orphan even though the
+CIDR concept now carries it. Widening `atlasText()` to include
+`conceptsForService()` output is a few lines.
+
 ### 1. The lesson player — `/learn/[cert]/[lesson]`
 
 The **only** deviation from the approved plan. `LessonSchema`, `LessonSection`
@@ -83,8 +115,13 @@ VPC/AZ/subnet nesting, optional step-through), a section renderer, a tiny inline
 markdown formatter (`**bold**`, `` `code` ``, `[[service-slug]]` links), the route,
 and lessons. `phases.ts` already has empty `lessonIds` arrays waiting.
 
-Until it exists the teaching lives in the atlas, decoder, trees and labs — which
-is genuinely most of it. This is an enhancement, not a hole.
+Until it exists the teaching lives in the atlas, concepts, decoder, trees and
+labs — which is genuinely most of it. This is an enhancement, not a hole.
+
+That claim was too comfortable before the concepts corpus landed: the vocabulary
+layer *was* a hole, and calling it an enhancement is what let it survive. What is
+left for the lesson player is sequencing and diagrams, which is a real
+enhancement.
 
 ### 2. Question banks — done, with one engine caveat
 
@@ -172,8 +209,9 @@ Recorded because the symptoms pointed away from the causes.
 ```bash
 npm run content:check   # should print counts and "all content valid"
 npm run typecheck
-npm test                # 104 passing
+npm test                # 115 passing
 npx eslint src scripts  # 0 messages, warnings included
+npm run build           # 198 prerendered pages
 ```
 
 If `content:check` warns about DVA coverage, that is expected and documented

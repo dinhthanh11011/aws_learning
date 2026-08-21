@@ -21,7 +21,7 @@ export function SearchButton({
     return (
       <button
         onClick={openCommandPalette}
-        aria-label="Search services (press / or ⌘K)"
+        aria-label="Search services and concepts (press / or ⌘K)"
         className={cn(
           'grid h-8 w-8 place-items-center rounded-lg text-fg-muted hover:bg-bg-overlay',
           className,
@@ -42,7 +42,7 @@ export function SearchButton({
       )}
     >
       <IconSearch className="shrink-0 text-fg-subtle" width={14} height={14} />
-      <span className="min-w-0 flex-1 truncate text-left">Search services…</span>
+      <span className="min-w-0 flex-1 truncate text-left">Search services, concepts…</span>
       <kbd className="shrink-0 rounded border border-border px-1 py-px text-[10px] text-fg-subtle">
         ⌘K
       </kbd>
