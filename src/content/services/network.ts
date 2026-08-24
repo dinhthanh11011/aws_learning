@@ -574,17 +574,6 @@ export const networkServices: Service[] = [
     ],
     keyNumbers: [
       {
-        label: 'ALB',
-        value:
-          'Layer 7 · host/path/header/query routing · Lambda, IP and instance targets · WAF-compatible',
-      },
-      {
-        label: 'NLB',
-        value:
-          'Layer 4 · millions of rps · static IP per AZ · preserves source IP · TLS termination',
-      },
-      { label: 'GWLB', value: 'Layer 3 gateway plus Layer 4 balancing, using GENEVE on port 6081' },
-      {
         label: 'Cross-zone load balancing',
         value: 'On by default for ALB; off by default for NLB (per target group)',
       },
@@ -594,6 +583,53 @@ export const networkServices: Service[] = [
       },
       { label: 'Deregistration delay', value: '300 seconds default — connection draining' },
       { label: 'Subnets', value: 'At least two AZs required' },
+    ],
+    /**
+     * The oneLiner already promises "picking the right one is a guaranteed exam
+     * question", so the four belong in a shape that drills the picking. CLB was
+     * only ever mentioned in prose as legacy, which left it as an unrecognised
+     * distractor.
+     */
+    optionSets: [
+      {
+        id: 'lb-type',
+        label: 'Load balancer types',
+        prompt: 'which load balancer',
+        options: [
+          {
+            name: 'Application Load Balancer',
+            abbr: 'ALB',
+            pick: 'HTTP/HTTPS, and the routing decision depends on something inside the request',
+            signal: 'Layer 7 · host/path/header/query routing · Lambda, IP and instance targets',
+            gotcha:
+              'The only type that works with WAF and with Lambda targets. Its IP addresses change, so it cannot satisfy an allowlist.',
+          },
+          {
+            name: 'Network Load Balancer',
+            abbr: 'NLB',
+            pick: 'TCP/UDP, extreme throughput, a static IP, or the backend must see the real client IP',
+            signal: 'Layer 4 · millions of rps · static IP per AZ · preserves source IP',
+            gotcha:
+              'Static IP and source-IP preservation are both NLB-only tells. Cross-zone balancing is off by default here and on for ALB, which is a cost as well as a distribution difference.',
+          },
+          {
+            name: 'Gateway Load Balancer',
+            abbr: 'GWLB',
+            pick: 'Traffic must pass transparently through third-party firewall or IDS/IPS appliances',
+            signal: 'Layer 3 gateway plus Layer 4 balancing, GENEVE on port 6081',
+            gotcha: 'The tell is a named security appliance. It is not a way to balance your own application.',
+          },
+          {
+            name: 'Classic Load Balancer',
+            abbr: 'CLB',
+            legacy: true,
+            pick: 'Only when a question describes an existing EC2-Classic-era deployment',
+            signal: 'Layer 4 and basic Layer 7, no host or path routing',
+            gotcha:
+              'Never the right answer for a new design. Its presence in an option list is usually there to be eliminated.',
+          },
+        ],
+      },
     ],
     examTraps: [
       "Static IP requirement means NLB. ALB's addresses change, so clients that must allowlist an IP need NLB (or an NLB in front of an ALB).",
@@ -781,22 +817,6 @@ export const networkServices: Service[] = [
       'Content caching — CloudFront',
     ],
     keyNumbers: [
-      { label: 'Simple', value: 'One record, no health checks' },
-      { label: 'Failover', value: 'Primary/secondary with a health check — active-passive DR' },
-      { label: 'Latency-based', value: 'Lowest measured network latency to the client' },
-      {
-        label: 'Geolocation',
-        value: "By the user's country or continent — compliance and localisation",
-      },
-      {
-        label: 'Geoproximity',
-        value: "By geographic distance, with a bias dial to expand or shrink a Region's pull",
-      },
-      { label: 'Weighted', value: 'By percentage — canary and blue/green' },
-      {
-        label: 'Multivalue answer',
-        value: "Up to 8 healthy records returned, with health checks — poor-man's load balancing",
-      },
       {
         label: 'Alias records',
         value: 'Free, point at AWS resources, and can sit at the zone apex where CNAME cannot',
@@ -804,6 +824,65 @@ export const networkServices: Service[] = [
       {
         label: 'Resolver endpoints',
         value: 'Inbound and outbound, for hybrid DNS with on-premises resolvers',
+      },
+    ],
+    /**
+     * The seven routing policies, moved out of `keyNumbers` where they were
+     * already being used as a roster. Nothing new is stated here — the point is
+     * that a roster the exam asks you to *choose* from now derives a card that
+     * asks you to choose, rather than seven cards that ask what each one is.
+     */
+    optionSets: [
+      {
+        id: 'routing-policy',
+        label: 'Routing policies',
+        prompt: 'which routing policy',
+        options: [
+          {
+            name: 'Simple',
+            pick: 'One destination, and nothing to decide between',
+            signal: 'One record, no health checks',
+            gotcha: 'The only policy that cannot use a health check, so it is wrong for anything about failover.',
+          },
+          {
+            name: 'Failover',
+            pick: 'Active-passive disaster recovery: send everyone to the standby when the primary is unhealthy',
+            signal: 'Primary/secondary with a health check',
+            gotcha: 'Needs a health check on the primary record, or it will never fail over.',
+          },
+          {
+            name: 'Latency-based',
+            pick: 'Send each user to whichever Region answers fastest for them',
+            signal: 'Lowest measured network latency to the client',
+            gotcha:
+              'Performance wording means latency. It may route a user out of their own country, which is why it is wrong for data-residency questions.',
+          },
+          {
+            name: 'Geolocation',
+            pick: "Serve content by the user's country or continent — compliance, licensing, localisation",
+            signal: 'By the location the query comes from, with a default record for the rest',
+            gotcha:
+              'Compliance wording means geolocation even when it is slower. Without a default record, unmatched users get no answer at all.',
+          },
+          {
+            name: 'Geoproximity',
+            pick: 'Shift traffic between Regions by geographic distance, with a dial to bias the split',
+            signal: "Bias expands or shrinks a Region's pull",
+            gotcha: 'The only policy with a bias setting, and it requires Route 53 traffic flow.',
+          },
+          {
+            name: 'Weighted',
+            pick: 'Split traffic by percentage — canary releases and blue/green',
+            signal: 'By relative weight across records',
+            gotcha: 'A weight of zero stops traffic to a record, which is how a canary is rolled back.',
+          },
+          {
+            name: 'Multivalue answer',
+            pick: 'Return several healthy endpoints at once, without a load balancer',
+            signal: "Up to 8 healthy records, with health checks — poor-man's load balancing",
+            gotcha: 'Not a substitute for an ELB: there is no connection draining and no session awareness.',
+          },
+        ],
       },
     ],
     examTraps: [

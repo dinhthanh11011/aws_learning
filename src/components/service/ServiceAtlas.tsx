@@ -242,6 +242,111 @@ export function ServiceAtlas({
     </section>
   ) : null
 
+  /**
+   * The option matrix: the mutually exclusive choices inside this service.
+   *
+   * Two shapes of one dataset, following the precedent `alongside` already sets
+   * in this file — a table needs width the 400px panel does not have, and a
+   * four-column table squeezed into it is unreadable. Both shapes render every
+   * option, so the panel is never a summary of the page (invariant 11).
+   *
+   * `legacy` is a dashed border and a muted background, never `opacity`:
+   * dimming drops the text below the contrast threshold (invariant 6).
+   */
+  const optionSets = (s.optionSets ?? []).length ? (
+    <div className="flex flex-col gap-4">
+      {(s.optionSets ?? []).map((set) => (
+        <section key={set.id} className={cn('surface', panel ? pad : 'p-5')}>
+          <h2 className={cn(set.note ? h2Tight : h2, 'text-fg-subtle')}>{set.label}</h2>
+          {set.note ? <p className="mb-3 text-[12.5px] text-fg-subtle">{set.note}</p> : null}
+
+          {panel ? (
+            <ul className="flex flex-col gap-2.5">
+              {set.options.map((o) => (
+                <li
+                  key={o.name}
+                  className={cn(
+                    'rounded-md border px-3 py-2',
+                    o.legacy ? 'border-dashed border-border bg-bg-inset' : 'border-border',
+                  )}
+                >
+                  <p className="flex flex-wrap items-center gap-1.5 text-[13.5px] font-semibold">
+                    {o.slug && o.slug !== s.slug ? (
+                      <ServiceLink slug={o.slug} className="underline decoration-dotted">
+                        {o.name}
+                      </ServiceLink>
+                    ) : (
+                      o.name
+                    )}
+                    {o.legacy ? <Badge tone="neutral">legacy</Badge> : null}
+                  </p>
+                  <p className="mt-0.5 text-[13px] leading-snug text-fg-muted">{o.pick}</p>
+                  {o.signal ? (
+                    <p className="nums mt-0.5 text-[12.5px] leading-snug">{o.signal}</p>
+                  ) : null}
+                  {o.gotcha ? (
+                    <p className="mt-0.5 text-[12.5px] leading-snug text-warn">{o.gotcha}</p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            // Its own scroll container: a wide table must never make the page
+            // scroll sideways.
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[13.5px]">
+                <thead>
+                  <tr>
+                    {['Option', 'When to pick', 'Signal', 'Gotcha'].map((c) => (
+                      <th
+                        key={c}
+                        className="border-b border-border px-2 py-1.5 text-left font-semibold"
+                      >
+                        {c}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {set.options.map((o) => (
+                    <tr
+                      key={o.name}
+                      className={cn('align-top', o.legacy ? 'bg-bg-inset' : undefined)}
+                    >
+                      <th
+                        scope="row"
+                        className={cn(
+                          'border-b px-2 py-2 text-left font-semibold',
+                          o.legacy ? 'border-dashed border-border' : 'border-border',
+                        )}
+                      >
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          {o.slug && o.slug !== s.slug ? (
+                            <ServiceLink slug={o.slug} className="underline decoration-dotted">
+                              {o.name}
+                            </ServiceLink>
+                          ) : (
+                            o.name
+                          )}
+                          {o.legacy ? <Badge tone="neutral">legacy</Badge> : null}
+                        </span>
+                      </th>
+                      <td className="border-b border-border px-2 py-2 text-fg-muted">{o.pick}</td>
+                      <td className="nums border-b border-border px-2 py-2">{o.signal ?? '—'}</td>
+                      <td className="border-b border-border px-2 py-2 text-warn">
+                        {o.gotcha ?? '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      ))}
+    </div>
+  ) : null
+
   const numbers = s.keyNumbers.length ? (
     <section className={cn('surface', panel ? pad : 'p-4')}>
       <h2 className={cn(h2, 'text-fg-subtle')}>The numbers</h2>
@@ -389,6 +494,7 @@ export function ServiceAtlas({
         {whyItExists}
         {whatItIs}
         {numbers}
+        {optionSets}
         {traps}
         {whenTo}
         {confused}
@@ -409,6 +515,7 @@ export function ServiceAtlas({
           {whyItExists}
           {whatItIs}
           {whenTo}
+          {optionSets}
           {traps}
           {confused}
           {phrases}

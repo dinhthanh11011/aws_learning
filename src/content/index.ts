@@ -43,6 +43,7 @@ import { idleCosts } from './idle-costs'
 import { questions, questionById, questionsFor, questionsForTask } from './questions'
 // Cards are derived from the service content — see ./cards.
 import { cards, cardById, cardsFor } from './cards'
+import { OPTION_SET_OWED } from './option-coverage'
 import { labs, labById } from './labs'
 import { decisionTrees, treeById } from './decision-trees'
 
@@ -128,6 +129,7 @@ export {
 // exported. `export ... from` for a name that is also imported gives the
 // bundler two paths to it and one of them can resolve to undefined.
 export { stories, storyBySlug, story, storiesFor, chapterById }
+export { OPTION_SET_OWED }
 
 /** Services a task statement points at, in tier order (core first). */
 export function servicesForTask(taskId: string): Service[] {
@@ -275,6 +277,11 @@ export function contentStats(certId?: CertId) {
     keyNumbers:
       pool.reduce((n, s) => n + s.keyNumbers.length, 0) +
       conceptPool.reduce((n, c) => n + c.keyNumbers.length, 0),
+    optionSets: pool.reduce((n, s) => n + (s.optionSets ?? []).length, 0),
+    options: pool.reduce(
+      (n, s) => n + (s.optionSets ?? []).reduce((m, set) => m + set.options.length, 0),
+      0,
+    ),
     examTraps:
       pool.reduce((n, s) => n + s.examTraps.length, 0) +
       conceptPool.reduce((n, c) => n + c.examTraps.length, 0),

@@ -28,19 +28,6 @@ export const databaseServices: Service[] = [
     ],
     keyNumbers: [
       {
-        label: 'Multi-AZ',
-        value: 'Synchronous standby in another AZ, automatic failover, typically 60–120s',
-        note: 'The standby serves no reads in the classic single-standby deployment.',
-      },
-      {
-        label: 'Multi-AZ DB cluster',
-        value: 'One writer plus two *readable* standbys, faster failover',
-      },
-      {
-        label: 'Read replicas',
-        value: 'Up to 15 for MySQL/MariaDB/PostgreSQL, asynchronous, cross-AZ and cross-Region',
-      },
-      {
         label: 'Automated backup retention',
         value: '1–35 days',
         note: 'Setting it to 0 disables automated backups and point-in-time recovery.',
@@ -54,6 +41,54 @@ export const databaseServices: Service[] = [
         value: 'gp2/gp3 general purpose, io1/io2 provisioned IOPS, magnetic (legacy)',
       },
       { label: 'Storage auto scaling', value: 'Grows automatically up to a ceiling you set' },
+    ],
+    /**
+     * Multi-AZ versus read replicas is the single most reliably examined RDS
+     * distinction, and it was three keyNumbers rows that each described one
+     * option without ever making you choose between them.
+     */
+    optionSets: [
+      {
+        id: 'deployment',
+        label: 'Deployment options',
+        prompt: 'which deployment',
+        note: 'Availability and read scale are separate purchases here. A question that wants both wants two of these.',
+        options: [
+          {
+            name: 'Single-AZ',
+            pick: 'Development and test, where an hour of downtime costs nothing',
+            signal: 'One instance, one AZ · backups still taken',
+            gotcha: 'Maintenance and failure both mean downtime. Never the answer when any availability target is stated.',
+          },
+          {
+            name: 'Multi-AZ instance',
+            pick: 'The database must survive an AZ failure with no manual step',
+            signal: 'Synchronous standby in another AZ · automatic failover, typically 60–120s',
+            gotcha:
+              'Availability only — the standby serves no reads. Choosing it to "spread read load" is the classic wrong answer.',
+          },
+          {
+            name: 'Multi-AZ DB cluster',
+            pick: 'You want automatic failover and the standbys to be useful for reads',
+            signal: 'One writer plus two readable standbys · faster failover than the instance deployment',
+            gotcha:
+              'A narrower set of engines and versions than the plain Multi-AZ instance, so it is not a drop-in for every workload.',
+          },
+          {
+            name: 'Read replica',
+            pick: 'Read traffic is the bottleneck and the reads can tolerate lag',
+            signal: 'Up to 15 for MySQL/MariaDB/PostgreSQL · asynchronous',
+            gotcha:
+              'Not an availability feature: promotion is manual and irreversible, and the application must be changed to send reads to it.',
+          },
+          {
+            name: 'Cross-Region read replica',
+            pick: 'Local reads in another Region, or a warm standby for regional DR',
+            signal: 'Asynchronous across Regions · promotable to a standalone writer',
+            gotcha: 'Multi-AZ never crosses a Region. Anything about surviving a Region loss needs this, not Multi-AZ.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'Multi-AZ is for availability, not performance — the standby takes no read traffic. Read replicas are for performance, not availability, and failing over to one is a manual promotion. Questions that mix the two are testing exactly this.',
@@ -113,21 +148,82 @@ export const databaseServices: Service[] = [
       { label: 'Storage growth', value: 'Automatic, in 10 GB increments, up to 128 TiB' },
       { label: 'Replicas', value: 'Up to 15 Aurora Replicas, typically <10 ms lag' },
       { label: 'Failover', value: 'Usually under 30 seconds to an existing replica' },
-      {
-        label: 'Endpoints',
-        value: 'Cluster (writer) · Reader (load-balanced) · Custom · Instance',
-      },
-      {
-        label: 'Global Database',
-        value:
-          'Up to 5 secondary Regions · typical replication lag under 1 second · RTO under 1 minute',
-      },
       { label: 'Backtrack', value: 'Rewind an Aurora MySQL cluster in place, without a restore' },
+    ],
+    optionSets: [
       {
-        label: 'Storage billing modes',
-        value:
-          'Standard bills I/O per request · I/O-Optimized bundles I/O into a higher instance and storage rate',
-        note: 'I/O-Optimized becomes the cheaper mode once I/O is more than roughly 25% of the Aurora spend.',
+        id: 'endpoint',
+        label: 'Endpoints',
+        prompt: 'which endpoint',
+        note: 'Choosing the wrong one is a design error the exam writes into scenarios rather than asking about directly.',
+        options: [
+          {
+            name: 'Cluster endpoint',
+            pick: 'Writes, and anything that must reach the current primary',
+            signal: 'Always resolves to the writer · follows a failover automatically',
+            gotcha:
+              'Sending reads here puts every query on the writer. That is the most common wrong design in Aurora questions.',
+          },
+          {
+            name: 'Reader endpoint',
+            pick: 'Read traffic that should be spread over the replicas',
+            signal: 'Load-balances across all available replicas',
+            gotcha: 'Round-robins per connection, not per query, so a long-lived pool can still land unevenly.',
+          },
+          {
+            name: 'Custom endpoint',
+            pick: 'A subset of instances should serve a particular workload — reporting on the big instances, say',
+            signal: 'A named set of instances you define',
+            gotcha: 'The answer when a question separates analytics traffic from application traffic inside one cluster.',
+          },
+          {
+            name: 'Instance endpoint',
+            pick: 'Diagnosing one specific instance',
+            signal: 'Points at exactly one instance',
+            gotcha: 'Does not follow a failover. Using it in an application is how a design survives until the first failover and no longer.',
+          },
+        ],
+      },
+      {
+        id: 'deployment',
+        label: 'Deployment and billing options',
+        prompt: 'which Aurora configuration',
+        options: [
+          {
+            name: 'Provisioned',
+            pick: 'Steady, well-understood load',
+            signal: 'Instances you size · cheapest for predictable throughput',
+            gotcha: 'Idle capacity is still billed, which is what makes it wrong for intermittent workloads.',
+          },
+          {
+            name: 'Aurora Serverless v2',
+            slug: 'aurora-serverless',
+            pick: 'Load is intermittent or varies widely and you do not want to size instances',
+            signal: 'Scales in fine ACU increments, per ACU-second, without dropping connections',
+            gotcha:
+              'For genuinely steady load, provisioned plus a commitment is cheaper. Do not answer from v1 behaviour — v1 scaled coarsely and paused.',
+          },
+          {
+            name: 'Aurora Global Database',
+            pick: 'Cross-Region disaster recovery with sub-second replication, or local reads far away',
+            signal: 'Up to 5 secondary Regions · lag typically under 1 second · RTO under 1 minute',
+            gotcha:
+              'Secondary Regions are read-only. Multi-Region *writes* is DynamoDB Global Tables, not this.',
+          },
+          {
+            name: 'Aurora Standard',
+            pick: 'I/O is a modest share of the bill',
+            signal: 'Billed per I/O request',
+            gotcha: 'Cheaper right up until I/O passes roughly 25% of Aurora spend, at which point it quietly stops being so.',
+          },
+          {
+            name: 'Aurora I/O-Optimized',
+            pick: 'The bill is dominated by I/O charges and predictable cost matters',
+            signal: 'No per-request I/O charge · higher instance and storage rate',
+            gotcha:
+              'A cluster configuration, not a different engine, and it makes nothing faster. The threshold is roughly 25% of spend going on I/O.',
+          },
+        ],
       },
     ],
     examTraps: [
@@ -233,10 +329,6 @@ export const databaseServices: Service[] = [
         value: 'Partition key up to 2,048 bytes · sort key up to 1,024 bytes',
         note: 'Hard limits, like the 400 KB item — no support ticket raises them.',
       },
-      {
-        label: 'Capacity modes',
-        value: 'On-demand (per request) or Provisioned (RCU/WCU, with auto scaling)',
-      },
       { label: '1 WCU', value: '1 write per second for an item up to 1 KB' },
       {
         label: '1 RCU',
@@ -248,16 +340,6 @@ export const databaseServices: Service[] = [
         note: 'Exceeding it on one key is a hot partition.',
       },
       { label: 'Query result page', value: '1 MB, then you paginate with LastEvaluatedKey' },
-      {
-        label: 'GSI',
-        value:
-          'Different partition and sort key · eventually consistent only · own capacity · up to 20 per table',
-      },
-      {
-        label: 'LSI',
-        value:
-          'Same partition key, different sort key · can be strongly consistent · must be created with the table · 10 GB per partition-key limit',
-      },
       { label: 'DAX', value: 'In-memory cache in front of DynamoDB, microsecond reads' },
       {
         label: 'Streams',
@@ -267,6 +349,63 @@ export const databaseServices: Service[] = [
         label: 'TTL',
         value: 'Automatic expiry of items by a timestamp attribute, at no cost',
         note: 'Deletion happens within ~48 hours of expiry, not instantly.',
+      },
+    ],
+    /**
+     * Two sets, which is why `optionSets` is an array. Capacity mode and index
+     * type are unrelated decisions that the exam asks about separately, and
+     * folding either back into `keyNumbers` would leave one of them undrilled.
+     */
+    optionSets: [
+      {
+        id: 'capacity-mode',
+        label: 'Capacity modes',
+        prompt: 'which capacity mode',
+        options: [
+          {
+            name: 'On-demand',
+            pick: 'Traffic is unpredictable, spiky, or brand new with no history',
+            signal: 'Billed per request · no capacity to plan · absorbs spikes instantly',
+            gotcha:
+              'Considerably more expensive per request than provisioned. "Unpredictable" in the stem is what justifies it; steady load does not.',
+          },
+          {
+            name: 'Provisioned',
+            pick: 'Traffic is steady and predictable, and cost matters',
+            signal: 'RCU/WCU you set · cheapest per request',
+            gotcha: 'A spike beyond the provisioned ceiling is throttled. Burst capacity buys minutes, not headroom.',
+          },
+          {
+            name: 'Provisioned with auto scaling',
+            pick: 'Predictable daily or weekly shape, with peaks you do not want to pay for all day',
+            signal: 'Target utilisation between a floor and a ceiling',
+            gotcha:
+              'Reacts over minutes, so it does not save you from a sudden spike — that is on-demand. It is the answer for a diurnal curve, not a flash sale.',
+          },
+        ],
+      },
+      {
+        id: 'index-type',
+        label: 'Index types',
+        prompt: 'which index type',
+        options: [
+          {
+            name: 'Global secondary index',
+            abbr: 'GSI',
+            pick: 'Query on an attribute that is not the table partition key',
+            signal: 'Different partition and sort key · own capacity · up to 20 per table',
+            gotcha:
+              'Eventually consistent, always. A question demanding a strongly consistent read on a non-key attribute cannot be answered with a GSI. Throttling a GSI throttles writes to the base table.',
+          },
+          {
+            name: 'Local secondary index',
+            abbr: 'LSI',
+            pick: 'Same partition key, but you need a second sort order — and reads must be strongly consistent',
+            signal: 'Shares the table capacity · 10 GB per partition-key limit',
+            gotcha:
+              'Must be created with the table and can never be added later. That single fact decides most GSI-versus-LSI questions.',
+          },
+        ],
       },
     ],
     examTraps: [

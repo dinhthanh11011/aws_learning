@@ -164,6 +164,77 @@ look of this.
   invariant-6 case, but it is the same contrast risk and the story diagram's
   fill/stroke/dash recipe is the fix if the audit ever flags it
 
+### Option matrices (August 2026)
+
+The exam asks "which storage class / volume type / purchase option", and the
+corpus had no way to say a service *has* mutually exclusive options. The facts
+were mostly present but flat inside `keyNumbers`, and wildly inconsistent about
+it: Route 53 listed all seven routing policies as rows, while **S3 never named
+S3 Standard as a class at all** and Intelligent-Tiering existed only inside an
+`examTrap`. EC2 purchase options were prose split across three entries, with
+Dedicated Hosts and Dedicated Instances absent from the corpus entirely. Of
+1,709 cards, **none** drilled the "which one" recall path.
+
+- `src/content/schema.ts` — `ServiceOptionSchema`, `ServiceOptionSetSchema`,
+  `optionSets` on `ServiceSchema` (optional, not `.default([])`: the `Service`
+  type is zod's *output* type, so a default would have made the field required
+  on all 141 entries). New `whichOption` card kind
+- `src/content/cards.ts` — three card shapes per set: `opt:` (the requirement →
+  the option name), `trap:opt:` where an option carries a `gotcha`, and an
+  `optset:` roster card for tier 1. **1,709 → 1,851 cards**, 83 of them
+  `whichOption`
+- 17 sets / 77 options across the 15 services in
+  `src/content/option-coverage.ts`: s3, ebs, ec2, route53, elb, rds, lambda,
+  dynamodb (×2), efs (×2), ec2-auto-scaling, aurora (×2), kms, api-gateway (×2),
+  fsx, sqs
+- `ServiceAtlas.tsx` — a derived four-column table on the page, a stacked list
+  in the 400px panel. Same data, same component, following the `alongside`
+  precedent, so invariant 11 holds. `legacy` options (gp2, io1, CLB) use a
+  dashed border and a muted background, never `opacity`
+- `content-check` — the duplication failure, plus `atlasText()` widened to read
+  option fields. That last one is not cosmetic: without it every figure moved
+  out of `keyNumbers` reappears as a phantom atlas gap and every figure authored
+  in a matrix counts as invisible
+- The depth warning now counts options as well as key numbers, so migrating a
+  service no longer looks like thinning it
+
+**The id hazard this exposed, and the fix.** Card ids were positional
+(`num:<slug>:<i>`) and the SRS schedule is keyed by card id, so deleting a
+`keyNumbers` row silently re-pointed a learner's reps, ease and due date at
+whichever fact slid up into the slot — invisible, and triggered by exactly this
+migration. Ids are now label-keyed, every pre-existing row orphaned once,
+`orphanCardIds`/`pruneOrphanCards` clear orphans on the next drill seed, and
+`src/content/cards.test.ts` (new) fails any id containing a digits-only segment.
+Verified in the browser: 0 positional ids left in the table, 83 `opt:` rows
+seeded.
+
+Verified in a real browser at 1440 and 500 px, light and dark: the page table on
+`/services/s3` and `/services/ebs`, the stacked panel via ⌘K quick look, no
+horizontal page overflow at 500 px, the `legacy` treatment in dark theme, and a
+`whichOption` card drilled end to end on `/drill` (front, flip, FSRS grading).
+
+**Backlog:** `ecs` launch types, `storage-gateway`, `snow-family`,
+`direct-connect` VIF types, `cloudfront` origin types, `elasticache` Redis vs
+Memcached, `redshift` node types. `ConceptSchema` deliberately has no
+`optionSets` — a product option is a vendor artefact and a primitive has none.
+
+### Decision-tree matrices, and a validation hole (August 2026)
+
+Only 1 of the 5 trees (`compute`) had a `matrix`. The other four now do:
+`database`, `storage`, `integration` and `edge`. The storage tree also gained
+One Zone-IA and Glacier Instant Retrieval, which it had been missing — it
+offered 4 of the 7 S3 classes.
+
+More importantly, **`decision-trees.ts` and `labs.ts` had never been
+`safeParse`d**. `content-check` parsed nine content types and not those two.
+They happened to be valid, which is not the same as being guarded. Now checked:
+schema shape, `rootId` and every `answers[].next` resolving to a real node,
+answer slugs resolving to services, and for a matrix — rows that are services,
+rows that are actually answers in *that* tree, no duplicate rows, and
+`cells.length === columns.length` (a short row used to render as silently
+missing table cells). The new rules caught two bad rows in the matrices being
+added in the same commit, which is a fair advertisement for them.
+
 ### 1. The lesson player — `/learn/[cert]/[lesson]`
 
 The **only** deviation from the approved plan. `LessonSchema`, `LessonSection`

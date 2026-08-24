@@ -123,6 +123,20 @@ export const decisionTrees: DecisionTree[] = [
       { id: 'neptune', kind: 'answer', slug: 'neptune', headline: 'Amazon Neptune', because: 'Queries that traverse relationships rather than filter rows.', watchOut: 'The tell is "recommendation", "fraud ring" or "connections between entities".' },
       { id: 'timestream', kind: 'answer', slug: 'timestream', headline: 'Amazon Timestream', because: 'Time-series queries with automatic hot-to-cold tiering.', watchOut: 'Only when time is the primary axis of the data, not merely a column.' },
     ],
+    matrix: {
+      columns: ['Data model', 'Scale story', 'Latency', 'Reach for it when'],
+      rows: [
+        { slug: 'rds', cells: ['Relational, community engine', 'Vertical + read replicas', 'Milliseconds', 'Predictable load on MySQL/PostgreSQL'] },
+        { slug: 'aurora', cells: ['Relational, AWS storage layer', 'Up to 15 low-lag replicas', 'Milliseconds', 'Same SQL, more availability and read scale'] },
+        { slug: 'aurora-serverless', cells: ['Relational', 'ACUs follow the load', 'Milliseconds', 'Intermittent or unpredictable load'] },
+        { slug: 'dynamodb', cells: ['Key-value and document', 'Horizontal, unbounded', 'Single-digit ms', 'Known access patterns at any scale'] },
+        { slug: 'elasticache', cells: ['In-memory structures', 'Cluster sharding', 'Microseconds', 'Read far more often than written'] },
+        { slug: 'opensearch', cells: ['Documents, inverted index', 'Node and shard count', 'Milliseconds', 'Relevance ranking or fuzzy search'] },
+        { slug: 'redshift', cells: ['Columnar, MPP', 'Nodes and concurrency scaling', 'Seconds', 'Repeated complex analytics by many users'] },
+        { slug: 'neptune', cells: ['Graph', 'Instance size + replicas', 'Milliseconds', 'Queries that traverse relationships'] },
+        { slug: 'timestream', cells: ['Time-series', 'Automatic hot-to-cold tiering', 'Milliseconds', 'Time is the primary axis, not a column'] },
+      ],
+    },
   },
   {
     id: 'storage',
@@ -151,12 +165,16 @@ export const decisionTrees: DecisionTree[] = [
         answers: [
           { label: 'Frequently', next: 's3-standard' },
           { label: 'Rarely, but must open immediately', next: 's3-ia' },
+          { label: 'Rarely, and it can be rebuilt if an AZ is lost', next: 's3-onezone' },
           { label: 'Unpredictably — it varies per object', next: 's3-it' },
+          { label: 'Quarterly at most, but must return in milliseconds', next: 'glacier-ir' },
           { label: 'Almost never; hours to retrieve is fine', next: 'glacier' },
         ],
       },
       { id: 's3-standard', kind: 'answer', slug: 's3', headline: 'S3 Standard', because: 'No minimum duration and no retrieval fee — the right default for hot data.', watchOut: 'Put CloudFront in front for global readers: it cuts both latency and egress cost.' },
       { id: 's3-ia', kind: 'answer', slug: 's3', headline: 'S3 Standard-IA', because: 'Much cheaper storage with millisecond access, for genuinely infrequent reads.', watchOut: '30-day minimum duration and a per-GB retrieval fee. Read it often and it costs more than Standard.' },
+      { id: 's3-onezone', kind: 'answer', slug: 's3', headline: 'S3 One Zone-IA', because: 'Infrequent access at about 20% less than Standard-IA, by giving up the other Availability Zones.', watchOut: 'One AZ. If that AZ is lost the data is gone, so it is only right when the data can be regenerated.' },
+      { id: 'glacier-ir', kind: 'answer', slug: 's3-glacier', headline: 'S3 Glacier Instant Retrieval', because: 'Archive pricing with no wait — milliseconds, like Standard-IA but far cheaper to store.', watchOut: '90-day minimum. "Archive" plus "immediately" means this one, and Deep Archive is the trap.' },
       { id: 's3-it', kind: 'answer', slug: 's3', headline: 'S3 Intelligent-Tiering', because: 'Each object moves tier based on its own access pattern.', watchOut: 'There is a per-object monitoring fee, so it is waste when the pattern is actually known.' },
       { id: 'glacier', kind: 'answer', slug: 's3-glacier', headline: 'S3 Glacier Deep Archive', because: 'The cheapest storage AWS sells, for the compliance tail you hope never to read.', watchOut: 'Standard retrieval is about 12 hours and there is a 180-day minimum. Match the class to the stated retrieval window exactly.' },
       { id: 'ebs', kind: 'answer', slug: 'ebs', headline: 'Amazon EBS', because: 'Block storage for a boot volume or a single-instance filesystem.', watchOut: 'Single-AZ, and one instance at a time. Use gp3 to buy IOPS without buying capacity.' },
@@ -164,6 +182,16 @@ export const decisionTrees: DecisionTree[] = [
       { id: 'fsx-windows', kind: 'answer', slug: 'fsx', headline: 'FSx for Windows File Server', because: 'Real SMB with NTFS ACLs and Active Directory integration.', watchOut: 'It needs a Managed Microsoft AD or a trust to one — AD Connector will not do.' },
       { id: 'fsx-lustre', kind: 'answer', slug: 'fsx', headline: 'FSx for Lustre', because: 'Hundreds of GB/s for HPC and ML training, linked directly to S3.', watchOut: 'Scratch deployments have no replication — S3 stays the source of truth.' },
     ],
+    matrix: {
+      columns: ['How it is reached', 'Shared by many?', 'Durability scope', 'Cost shape'],
+      rows: [
+        { slug: 's3', cells: ['HTTP API, objects', 'Yes, anything with credentials', 'Multi-AZ within a Region', 'Per GB-month by class, plus requests and egress'] },
+        { slug: 's3-glacier', cells: ['S3 API, with a retrieval step', 'Yes', 'Multi-AZ (One Zone variants aside)', 'Cheapest per GB, paid back in retrieval time and fees'] },
+        { slug: 'ebs', cells: ['Block device on one instance', 'No — one instance at a time', 'Single AZ', 'Per provisioned GB and IOPS, whether used or not'] },
+        { slug: 'efs', cells: ['NFS mount, Linux', 'Yes, across AZs', 'Multi-AZ, or One Zone', 'Per GB stored, no capacity to plan'] },
+        { slug: 'fsx', cells: ['SMB, Lustre, NFS or iSCSI', 'Yes', 'Single-AZ or Multi-AZ by type', 'Per provisioned capacity and throughput'] },
+      ],
+    },
   },
   {
     id: 'integration',
@@ -201,6 +229,17 @@ export const decisionTrees: DecisionTree[] = [
       { id: 'kinesis', kind: 'answer', slug: 'kinesis-data-streams', headline: 'Kinesis Data Streams', because: 'An ordered, replayable log that several consumers read independently.', watchOut: 'Ordering is per shard, so partition-key cardinality decides whether you get a hot shard.' },
       { id: 'sfn', kind: 'answer', slug: 'step-functions', headline: 'AWS Step Functions', because: 'It owns the state, the retries and the error handling, and shows exactly which step failed.', watchOut: 'Standard for long or exactly-once workflows; Express for millions of short ones.' },
     ],
+    matrix: {
+      columns: ['Delivery', 'Ordering', 'Fan-out', 'Replay'],
+      rows: [
+        { slug: 'sqs', cells: ['Pull — consumers poll', 'Best effort, or strict on FIFO', 'One consumer group per queue', 'No — a message is deleted once handled'] },
+        { slug: 'sns', cells: ['Push to subscribers', 'None, or strict on FIFO topics', 'Yes — that is the point', 'No'] },
+        { slug: 'eventbridge', cells: ['Push, matched by rule', 'None', 'Yes, by content-based rules', 'Yes, from an archive'] },
+        { slug: 'kinesis-data-streams', cells: ['Pull from a shard', 'Strict per partition key', 'Many independent consumers', 'Yes, within the retention window'] },
+        { slug: 'step-functions', cells: ['Orchestrated state machine', 'Explicit, you define it', 'Parallel and Map states', 'Redrive a failed execution'] },
+        { slug: 'api-gateway', cells: ['Synchronous request/response', 'Caller order', 'No', 'No'] },
+      ],
+    },
   },
   {
     id: 'edge',
@@ -234,6 +273,14 @@ export const decisionTrees: DecisionTree[] = [
       { id: 'aga', kind: 'answer', slug: 'global-accelerator', headline: 'AWS Global Accelerator', because: 'Two static anycast IPs, any TCP/UDP protocol, and regional failover in seconds rather than DNS TTLs.', watchOut: 'It does not cache anything, and there is a fixed hourly charge.' },
       { id: 'r53', kind: 'answer', slug: 'route53', headline: 'Amazon Route 53', because: 'Latency, geolocation, weighted or failover routing, with health checks.', watchOut: 'Client DNS caching bounds how fast failover can be. If "seconds" is required, use Global Accelerator.' },
     ],
+    matrix: {
+      columns: ['What it moves', 'Caches?', 'Failover speed', 'Static IP?'],
+      rows: [
+        { slug: 'cloudfront', cells: ['HTTP content, cached at the edge', 'Yes', 'Origin failover in seconds', 'No'] },
+        { slug: 'global-accelerator', cells: ['Any TCP/UDP, over the AWS backbone', 'No', 'Seconds — health-checked at the edge', 'Yes, two anycast IPs'] },
+        { slug: 'route53', cells: ['Only the DNS answer', 'No', 'Bounded by the record TTL', 'No'] },
+      ],
+    },
   },
 ]
 

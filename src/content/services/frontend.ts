@@ -39,7 +39,6 @@ export const frontendServices: Service[] = [
         note: 'Longer work must be made asynchronous.',
       },
       { label: 'Payload size', value: '10 MB request payload for REST APIs' },
-      { label: 'Endpoint types', value: 'Edge-optimized · Regional · Private' },
       {
         label: 'Authorisers',
         value: 'IAM · Cognito user pool · Lambda (token or request) · JWT (HTTP APIs)',
@@ -50,6 +49,60 @@ export const frontendServices: Service[] = [
         value: 'Lambda proxy · Lambda · HTTP · AWS service · Mock · VPC Link',
       },
       { label: 'Stages', value: 'Named deployments (dev, prod) with stage variables' },
+    ],
+    optionSets: [
+      {
+        id: 'api-type',
+        label: 'API types',
+        prompt: 'which API type',
+        options: [
+          {
+            name: 'REST API',
+            pick: 'You need caching, request or response transformation, usage plans, or WAF',
+            signal: 'The full feature set · the most expensive per request',
+            gotcha:
+              'A requirement to cache or to transform a payload rules out HTTP APIs and lands here. That is the usual way the exam forces the choice.',
+          },
+          {
+            name: 'HTTP API',
+            pick: 'A straightforward proxy to Lambda or an HTTP backend, where cost and latency matter',
+            signal: 'Roughly 70% cheaper and lower latency than REST · native JWT authorisers',
+            gotcha: 'Cannot cache and cannot transform payloads. Choosing it when the question needs either is the trap.',
+          },
+          {
+            name: 'WebSocket API',
+            pick: 'The server must push to the client — chat, live dashboards, notifications',
+            signal: 'Persistent bidirectional connections, routed by message content',
+            gotcha: 'The tell is push or real-time two-way traffic. Polling over a REST API is the wrong answer to that requirement.',
+          },
+        ],
+      },
+      {
+        id: 'endpoint-type',
+        label: 'Endpoint types',
+        prompt: 'which endpoint type',
+        options: [
+          {
+            name: 'Edge-optimized',
+            pick: 'Callers are spread around the world',
+            signal: 'Requests enter at a CloudFront edge location',
+            gotcha: 'The default for REST APIs. It adds nothing when every caller is in the same Region as the API.',
+          },
+          {
+            name: 'Regional',
+            pick: 'Callers are in the same Region, or you want to run your own CloudFront distribution in front',
+            signal: 'Requests go straight to the Region',
+            gotcha: 'The right answer when a question puts its own CDN in front — edge-optimized would mean two hops through CloudFront.',
+          },
+          {
+            name: 'Private',
+            pick: 'The API must be reachable only from inside a VPC',
+            signal: 'Reached through a VPC interface endpoint · never exposed to the internet',
+            gotcha:
+              'Needs both the private endpoint type and an interface endpoint with a resource policy. Half of that configuration fails closed.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'The 29-second integration timeout is a hard ceiling. A long-running backend needs an asynchronous pattern — return a 202 and poll, or use Step Functions.',

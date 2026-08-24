@@ -183,6 +183,28 @@ browser before saying a UI change works.
     reads. It derives no SRS card: the exam asks which service meets a
     requirement, which `whichService` already drills.
 
+21. **A mutually exclusive choice inside a service is an `optionSet`, not more
+    `keyNumbers` rows.** S3 storage classes, EBS volume types, EC2 purchase
+    options and Route 53 routing policies are the shape the exam actually asks
+    about — it describes a requirement and makes you name the option — and a
+    flat `label`/`value` pair cannot say which half is the requirement, so it
+    derives no card that asks you to choose. `pick` is that requirement and is
+    required for exactly that reason. The table on screen is *derived*: the axes
+    are always Option / When to pick / Signal / Gotcha, because per-service axes
+    are how `keyNumbers` drifted into meaning something different on every
+    entry. A `keyNumbers` row whose label names an option **moves** here — never
+    copied — and `content:check` fails the duplicate, because two sources for
+    one fact is the drift invariant 2 exists to prevent even when both sides are
+    derived. `signal` deliberately derives no `number` card for the same reason.
+
+22. **A card id never encodes a position.** The SRS schedule is keyed by card
+    id, so `num:s3:3` meaning one fact today and another tomorrow silently
+    rebinds a learner's reps, ease and due date to something they never studied
+    — invisibly. Ids are keyed by label (`num:<slug>:<kebab(label)>`), so
+    removing a fact *orphans* its card, which the drill reports honestly and
+    `pruneOrphanCards` then clears. `cards.test.ts` fails any id with a
+    digits-only segment.
+
 17. **A number the exam sets is read from the `Cert`, never typed into prose.**
     Minutes, question count, pass score and the pass-accuracy anchor all live on
     the cert. Both current papers happen to share 130/65/720, which is exactly
@@ -200,7 +222,8 @@ browser before saying a UI change works.
 | Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
 | Concepts | 37 primitives in 6 groups | shared corpus, per-cert tagged |
-| Cards | 1,709 derived | shared corpus |
+| Cards | 1,851 derived | shared corpus |
+| Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
 

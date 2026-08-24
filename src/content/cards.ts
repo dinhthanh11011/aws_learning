@@ -6,6 +6,25 @@ import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
 
 /**
+ * A stable, order-independent key for a card id.
+ *
+ * Card ids must never encode a *position*. The SRS schedule is keyed by card id,
+ * so `num:s3:3` meaning "Glacier Deep Archive" today and "Max object size"
+ * tomorrow silently rebinds a learner's review history to a different fact —
+ * the failure is invisible, and it is exactly what happens when a keyNumbers
+ * row is deleted or reordered. Keying by the label instead means a removed row
+ * *orphans* its card, which the drill screen already reports honestly.
+ */
+function kebab(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'x'
+  )
+}
+
+/**
  * Cards are *derived* from the service and concept content rather than written
  * separately. That matters for a reason beyond effort: a hand-written card set drifts out of
  * step with the cards' source material, and then you are drilling something the
@@ -16,6 +35,7 @@ import { idleCosts } from './idle-costs'
  *   trap         — the plausible-but-wrong answer, and why
  *   contrast     — two things that get confused, separated
  *   whichService — a requirement; name the service
+ *   whichOption  — a requirement; name the option *within* one service
  *   define       — a description; name the concept
  *   fact         — when *not* to reach for something, and the ideas that decide
  *                  questions (the half most material skips)
@@ -28,11 +48,11 @@ export function buildCards(): Card[] {
 
     // Numbers only for tier 1 and 2 — memorising a tier-3 quota is wasted effort.
     if (s.tier <= 2) {
-      s.keyNumbers.forEach((n, i) => {
+      s.keyNumbers.forEach((n) => {
         if (n.volatile) return // Don't drill a figure AWS keeps changing.
         out.push({
           ...base,
-          id: `num:${s.slug}:${i}`,
+          id: `num:${s.slug}:${kebab(n.label)}`,
           kind: 'number',
           front: `${s.name} — ${n.label}?`,
           back: n.value,
@@ -41,10 +61,10 @@ export function buildCards(): Card[] {
       })
     }
 
-    s.examTraps.forEach((t, i) => {
+    s.examTraps.forEach((t) => {
       out.push({
         ...base,
-        id: `trap:${s.slug}:${i}`,
+        id: `trap:${s.slug}:${kebab(t.slice(0, 60))}`,
         kind: 'trap',
         front: `${s.name}: what is the trap here?`,
         back: t,
@@ -61,6 +81,61 @@ export function buildCards(): Card[] {
         back: c.difference,
       })
     })
+
+    /**
+     * Option cards — the "which one" recall path, which nothing drilled before.
+     *
+     * The exam does not ask what Standard-IA costs; it describes an access
+     * pattern and makes you name the class. `pick` carries that requirement, so
+     * it becomes the front and the option name becomes the back.
+     *
+     * `signal` deliberately derives no `number` card. That is the duplication
+     * guard at the card layer: numbers come from `keyNumbers`, options come from
+     * `optionSets`, and a fact must never be reachable from both.
+     */
+    for (const set of s.optionSets ?? []) {
+      for (const o of set.options) {
+        const optBase = {
+          families: s.families,
+          serviceSlugs: o.slug && o.slug !== s.slug ? [s.slug, o.slug] : [s.slug],
+        }
+        const key = `${s.slug}:${set.id}:${kebab(o.name)}`
+
+        if (s.tier <= 2) {
+          out.push({
+            ...optBase,
+            id: `opt:${key}`,
+            kind: 'whichOption',
+            front: `${s.name} — ${set.prompt}: ${o.pick}?`,
+            back: o.name,
+            extra: o.signal,
+          })
+        }
+
+        if (o.gotcha) {
+          out.push({
+            ...optBase,
+            id: `trap:opt:${key}`,
+            kind: 'trap',
+            front: `${s.name} ${o.name}: what is the trap here?`,
+            back: o.gotcha,
+          })
+        }
+      }
+
+      // The roster card: name the whole set from memory. Tier 1 only, matching
+      // the `not:` card — reciting eight storage classes is core-service work.
+      if (s.tier === 1) {
+        out.push({
+          ...base,
+          id: `optset:${s.slug}:${set.id}`,
+          kind: 'fact',
+          front: `${s.name} — name the ${set.options.length} ${set.label.toLowerCase()} and when each wins.`,
+          back: set.options.map((o) => `• ${o.name} — ${o.pick}`).join('\n'),
+          extra: set.note,
+        })
+      }
+    }
 
     // "Which service?" from the one-liner, for tier 1 and 2 only: the point is
     // recall of the right tool, and tier-3 services are for elimination.
@@ -115,11 +190,11 @@ export function buildCards(): Card[] {
       extra: c.whatItIs.split('. ')[0] + '.',
     })
 
-    c.keyNumbers.forEach((n, i) => {
+    c.keyNumbers.forEach((n) => {
       if (n.volatile) return // Don't drill a figure AWS keeps changing.
       out.push({
         ...base,
-        id: `num:concept:${c.slug}:${i}`,
+        id: `num:concept:${c.slug}:${kebab(n.label)}`,
         kind: 'number',
         front: `${c.abbr ?? c.term} — ${n.label}?`,
         back: n.value,
@@ -127,10 +202,10 @@ export function buildCards(): Card[] {
       })
     })
 
-    c.examTraps.forEach((t, i) => {
+    c.examTraps.forEach((t) => {
       out.push({
         ...base,
-        id: `trap:concept:${c.slug}:${i}`,
+        id: `trap:concept:${c.slug}:${kebab(t.slice(0, 60))}`,
         kind: 'trap',
         front: `${c.term}: what is the trap here?`,
         back: t,

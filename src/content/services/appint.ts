@@ -40,12 +40,32 @@ export const appIntegrationServices: Service[] = [
         note: 'Cuts empty-receive charges — always prefer it.',
       },
       { label: 'Delay queues', value: 'Up to 15 minutes delivery delay' },
-      {
-        label: 'FIFO throughput',
-        value: '300 messages/second, or 3,000 with batching; high-throughput mode goes far higher',
-      },
-      { label: 'Standard throughput', value: 'Effectively unlimited' },
       { label: 'Batch', value: 'Up to 10 messages per send or receive call' },
+    ],
+    optionSets: [
+      {
+        id: 'queue-type',
+        label: 'Queue types',
+        prompt: 'which queue type',
+        note: 'Two options, asked on essentially every paper, and decided by whether order or throughput is the stated constraint.',
+        options: [
+          {
+            name: 'Standard queue',
+            pick: 'Throughput matters and the consumer can be made idempotent',
+            signal: 'Effectively unlimited throughput · at-least-once delivery · best-effort ordering',
+            gotcha:
+              'Duplicates are guaranteed to happen eventually, so a design that cannot tolerate reprocessing needs FIFO or an idempotency key.',
+          },
+          {
+            name: 'FIFO queue',
+            pick: 'Order must be preserved, or a message must be processed exactly once',
+            signal:
+              '300 messages/second, 3,000 batched, far higher in high-throughput mode · exactly-once processing',
+            gotcha:
+              'Ordering is per message group ID, not per queue — different groups run in parallel, which is what makes "ordered per customer, parallel across customers" work.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'The visibility timeout must exceed the processing time. If it does not, another consumer picks up the same message and you get duplicate processing — the most-asked SQS failure mode.',

@@ -38,6 +38,11 @@ import {
   inScope,
   StorySchema,
   stories,
+  OPTION_SET_OWED,
+  DecisionTreeSchema,
+  decisionTrees,
+  LabSchema,
+  labs,
 } from '../src/content'
 import { serviceSlugForNode } from '../src/components/diagram/layout'
 import { refSlugs } from '../src/lib/md'
@@ -279,6 +284,121 @@ for (const q of questions) {
   const expected = ids.map((_, i) => String.fromCharCode(65 + i))
   if (ids.join('') !== expected.join('')) {
     fail(`question ${q.id}`, `option ids are ${ids.join('')}, expected ${expected.join('')}`)
+  }
+}
+
+/* ── 3b. Option matrices ─────────────────────────────────────────────────── */
+
+/**
+ * The rules that keep an option matrix from becoming a second, competing copy
+ * of the atlas. The duplication rule is the important one: two sources for one
+ * fact is the drift invariant 2 exists to prevent, and it still counts when
+ * both sides are derived — the learner drills the fact twice under two labels
+ * and the atlas prints the row twice.
+ */
+for (const s of services) {
+  const setIds = new Set<string>()
+  for (const set of s.optionSets ?? []) {
+    const where = `service ${s.slug} optionSet "${set.id}"`
+    if (setIds.has(set.id)) fail(where, 'duplicate optionSet id on this service')
+    setIds.add(set.id)
+
+    if (s.tier === 3) {
+      fail(where, 'sits on a tier-3 service, where it derives no cards — nobody would drill it')
+    }
+
+    const names = new Set<string>()
+    const keyNumberLabels = new Set(s.keyNumbers.map((n) => n.label.toLowerCase()))
+    for (const o of set.options) {
+      const what = `${where} option "${o.name}"`
+      if (names.has(o.name.toLowerCase())) fail(what, 'duplicate option name within the set')
+      names.add(o.name.toLowerCase())
+
+      if (o.pick.toLowerCase() === o.name.toLowerCase()) {
+        fail(what, 'pick restates the name — it must be the requirement the exam describes')
+      }
+      if (o.slug && !serviceBySlug.get(o.slug) && !conceptBySlug.get(o.slug)) {
+        fail(what, `slug "${o.slug}" matches no service or concept`)
+      }
+      for (const name of [o.name, o.abbr].filter(Boolean) as string[]) {
+        if (keyNumberLabels.has(name.toLowerCase())) {
+          fail(
+            what,
+            `"${name}" is also a keyNumbers label on this service — a fact must live in one ` +
+              `place, so move the row rather than copying it`,
+          )
+        }
+      }
+    }
+  }
+}
+
+/* ── 3c. Decision trees and labs ─────────────────────────────────────────── */
+
+/**
+ * Neither of these was schema-validated before. They happened to be valid,
+ * which is not the same as being guarded — a short matrix row rendered as
+ * silently missing table cells, and a dangling `next` would have been a dead
+ * end in the UI with nothing to say so.
+ */
+for (const t of decisionTrees) {
+  const where = `decision tree ${t.id}`
+  const parsed = DecisionTreeSchema.safeParse(t)
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      fail(where, `${issue.path.join('.')} ${issue.message}`)
+    }
+    continue
+  }
+
+  const nodeIds = new Set(t.nodes.map((n) => n.id))
+  if (!nodeIds.has(t.rootId)) fail(where, `rootId "${t.rootId}" is not one of its nodes`)
+
+  const answerSlugs = new Set<string>()
+  for (const n of t.nodes) {
+    if (n.kind === 'question') {
+      for (const a of n.answers) {
+        if (!nodeIds.has(a.next)) {
+          fail(where, `node "${n.id}" answers to "${a.next}", which is not a node`)
+        }
+      }
+    } else {
+      answerSlugs.add(n.slug)
+      if (!serviceBySlug.has(n.slug)) {
+        fail(where, `answer "${n.id}" names service "${n.slug}", which does not exist`)
+      }
+    }
+  }
+
+  if (!t.matrix) continue
+  const seen = new Set<string>()
+  for (const row of t.matrix.rows) {
+    if (!serviceBySlug.has(row.slug)) {
+      fail(where, `matrix row "${row.slug}" is not a service`)
+    }
+    // A row for a service the tree never reaches is comparing something the
+    // learner was not offered — the matrix is meant to summarise this tree.
+    if (!answerSlugs.has(row.slug)) {
+      fail(where, `matrix row "${row.slug}" is not an answer in this tree`)
+    }
+    if (seen.has(row.slug)) fail(where, `matrix has two rows for "${row.slug}"`)
+    seen.add(row.slug)
+    if (row.cells.length !== t.matrix.columns.length) {
+      fail(
+        where,
+        `matrix row "${row.slug}" has ${row.cells.length} cells for ` +
+          `${t.matrix.columns.length} columns`,
+      )
+    }
+  }
+}
+
+for (const l of labs) {
+  const parsed = LabSchema.safeParse(l)
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      fail(`lab ${l.id}`, `${issue.path.join('.')} ${issue.message}`)
+    }
   }
 }
 
@@ -634,8 +754,14 @@ for (const s of services) {
   if (s.tier === 1 && s.examTraps.length < 3) {
     warn('depth', `core service "${s.slug}" has only ${s.examTraps.length} exam traps`)
   }
-  if (s.tier === 1 && s.keyNumbers.length < 3) {
-    warn('depth', `core service "${s.slug}" has only ${s.keyNumbers.length} key numbers`)
+  // Option sets count towards depth. A service whose per-option rows moved into
+  // a matrix did not get thinner — the same facts are there, in a shape that
+  // drills better — and a check that says otherwise punishes the migration it
+  // should be neutral about.
+  const quantified =
+    s.keyNumbers.length + (s.optionSets ?? []).reduce((n, set) => n + set.options.length, 0)
+  if (s.tier === 1 && quantified < 3) {
+    warn('depth', `core service "${s.slug}" has only ${quantified} key numbers and options`)
   }
   if (!s.whenNotToUse.length) warn('depth', `service "${s.slug}" has no whenNotToUse entries`)
 }
@@ -703,6 +829,22 @@ if (singles.length) {
 }
 
 /**
+ * Option-matrix coverage. One aggregated line, for the same reason as
+ * `whyItExists` above: fifteen separate warnings would bury the depth and
+ * atlas-gap signals that are actionable today. The list is curated rather than
+ * inferred — see `src/content/option-coverage.ts` for why.
+ */
+const missingOptions = OPTION_SET_OWED.filter((slug) => !serviceBySlug.get(slug)?.optionSets?.length)
+if (missingOptions.length) {
+  warn(
+    'options',
+    `${missingOptions.length} of ${OPTION_SET_OWED.length} services the exam asks ` +
+      `"which option" about have no optionSets: ` +
+      `${missingOptions.slice(0, 10).join(', ')}${missingOptions.length > 10 ? ', …' : ''}`,
+  )
+}
+
+/**
  * Facts taught only in a question explanation are invisible: the atlas does not
  * carry them, so `cards.ts` cannot derive a card from them, and searching for
  * them finds nothing. This audit reads the quantities out of every explanation
@@ -719,6 +861,15 @@ const atlasText = (slug: string): string => {
     ...s.whenToUse,
     ...s.whenNotToUse,
     ...s.keyNumbers.flatMap((n) => [n.label, n.value, n.note ?? '']),
+    // Option matrices are atlas content too. Omitting them would make this
+    // audit lie in both directions: every figure moved out of keyNumbers would
+    // reappear as a phantom gap, and every figure authored in a matrix would
+    // count as taught only in a question (invariant 10).
+    ...(s.optionSets ?? []).flatMap((set) => [
+      set.label,
+      set.note ?? '',
+      ...set.options.flatMap((o) => [o.name, o.abbr ?? '', o.pick, o.signal ?? '', o.gotcha ?? '']),
+    ]),
     ...s.examTraps,
     ...s.confusedWith.map((c) => c.difference),
     s.pricing ?? '',
@@ -795,6 +946,7 @@ console.log(
 )
 console.log(`  concepts        ${stats.concepts}`)
 console.log(`  key numbers     ${stats.keyNumbers}`)
+console.log(`  options         ${stats.options}  (${stats.optionSets} sets)`)
 console.log(`  exam traps      ${stats.examTraps}`)
 console.log(`  questions       ${questions.length}`)
 console.log(`  triggers        ${stats.triggers}`)

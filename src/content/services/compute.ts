@@ -38,15 +38,6 @@ export const computeServices: Service[] = [
           'T/M = general, C = compute, R/X/z = memory, I/D = storage, P/G/Inf/Trn = accelerated',
       },
       {
-        label: 'Spot discount',
-        value: 'Up to ~90% off On-Demand',
-        note: 'Two-minute interruption notice.',
-      },
-      {
-        label: 'Reserved / Savings Plan discount',
-        value: 'Up to ~72% for a 3-year, all-upfront commitment',
-      },
-      {
         label: 'Placement groups',
         value: 'Cluster = low latency, one AZ · Spread = max isolation · Partition = rack-aware',
       },
@@ -54,6 +45,82 @@ export const computeServices: Service[] = [
         label: 'Hibernation',
         value: 'RAM saved to the root EBS volume',
         note: 'Root volume must be encrypted and large enough to hold RAM.',
+      },
+    ],
+    /**
+     * How you pay for the same compute. This existed only in the `pricing`
+     * sentence and split across three atlas entries, which is exactly the shape
+     * that loses marks: the exam names two of these in one option list and asks
+     * which fits a commitment or an interruption constraint.
+     *
+     * Spot and Savings Plans have their own entries and are reached by slug
+     * rather than restated here.
+     */
+    optionSets: [
+      {
+        id: 'purchase-option',
+        label: 'Purchase options',
+        prompt: 'which purchase option',
+        note: 'The question is always the same underneath: what are you willing to commit to, and can the workload survive being interrupted?',
+        options: [
+          {
+            name: 'On-Demand',
+            pick: 'Short, unpredictable workloads, or a first deployment with no usage history',
+            signal: 'Per second (60s minimum on Linux) · no commitment',
+            gotcha:
+              'The baseline every discount is quoted against. It is the right answer when a question stresses that the workload is short-lived or cannot be interrupted and has no steady baseline.',
+          },
+          {
+            name: 'Reserved Instances — Standard',
+            pick: 'A steady baseline you can commit to for 1 or 3 years, on a known instance type',
+            signal: 'Up to ~72% off for 3-year all-upfront · capacity reservation in a specific AZ',
+            gotcha:
+              'Locked to the instance family. Sellable on the Marketplace, which is the escape hatch a question sometimes hangs on.',
+          },
+          {
+            name: 'Reserved Instances — Convertible',
+            pick: 'A steady baseline, but the instance family may need to change',
+            signal: 'Up to ~54% off · exchangeable for a different family',
+            gotcha: 'A smaller discount than Standard, bought for flexibility. Cannot be sold on the Marketplace.',
+          },
+          {
+            name: 'Savings Plans',
+            slug: 'savings-plans',
+            pick: 'A committed spend per hour, with freedom over instance family, size and Region',
+            signal: 'Up to ~72% · commit in $/hour for 1 or 3 years',
+            gotcha:
+              'Commits money, not instances, so it also covers Fargate and Lambda. Buys no capacity reservation — that is the one thing Reserved Instances still do better.',
+          },
+          {
+            name: 'Spot Instances',
+            slug: 'spot',
+            pick: 'Fault-tolerant, interruptible work with flexible start and end times',
+            signal: 'Up to ~90% off · two-minute interruption notice',
+            gotcha:
+              'Any strict SLA on the same tier rules Spot out. "Cheapest for batch" plus "fault-tolerant" is the phrasing that means Spot.',
+          },
+          {
+            name: 'Dedicated Instances',
+            pick: 'Compliance requires hardware not shared with other AWS accounts',
+            signal: 'Billed per instance · hardware isolated at the account level',
+            gotcha:
+              'Isolation only. It gives you no visibility of the underlying host, so it cannot satisfy socket- or core-based licensing.',
+          },
+          {
+            name: 'Dedicated Hosts',
+            pick: 'Bring-your-own licence tied to physical sockets or cores, or you must place instances on a specific host',
+            signal: 'Billed per host · sockets, cores and host id are visible',
+            gotcha:
+              'The distinguishing tell is a per-socket or per-core licence. If a question mentions BYOL for Windows Server or Oracle, Dedicated Instances is the trap and Dedicated Hosts is the answer.',
+          },
+          {
+            name: 'On-Demand Capacity Reservations',
+            pick: 'Capacity must be guaranteed in a specific AZ, with no long commitment',
+            signal: 'Billed at On-Demand rates whether or not the capacity is used',
+            gotcha:
+              'Reserves capacity but gives no discount. Combine with a Savings Plan when a question wants both guaranteed capacity and a lower price.',
+          },
+        ],
       },
     ],
     examTraps: [
@@ -136,6 +203,47 @@ export const computeServices: Service[] = [
         note: 'Default heartbeat 3600s, max 48h — how you drain connections or fetch logs.',
       },
       { label: 'Warm pools', value: 'Pre-initialised, stopped instances for fast scale-out' },
+    ],
+    optionSets: [
+      {
+        id: 'scaling-policy',
+        label: 'Scaling policies',
+        prompt: 'which scaling policy',
+        options: [
+          {
+            name: 'Target tracking',
+            pick: 'Keep a metric near a number — "hold CPU around 60%"',
+            signal: 'One target value · CloudWatch alarms managed for you',
+            gotcha: 'The default right answer whenever a question states a utilisation target and nothing more complex.',
+          },
+          {
+            name: 'Step scaling',
+            pick: 'The response should differ by how far the metric has moved',
+            signal: 'Ordered steps, each adding or removing a different amount',
+            gotcha: 'Only justified when the question describes graduated responses. Otherwise target tracking is simpler and wins.',
+          },
+          {
+            name: 'Simple scaling',
+            legacy: true,
+            pick: 'Only when describing an older configuration',
+            signal: 'One action, then a cooldown before anything else can happen',
+            gotcha: 'The cooldown blocks further scaling while it runs, which is exactly why step scaling replaced it.',
+          },
+          {
+            name: 'Scheduled scaling',
+            pick: 'Load changes by the clock or the calendar, not by a metric',
+            signal: 'Set capacity at a given time, recurring or one-off',
+            gotcha:
+              'The tell is a stated time: market open, a batch window, business hours. A metric-driven policy reacts too late for a known cliff.',
+          },
+          {
+            name: 'Predictive scaling',
+            pick: 'A repeating daily or weekly pattern, and warm-up time is long enough that reacting is too late',
+            signal: 'Machine learning over at least 24 hours of history · scales ahead of the forecast curve',
+            gotcha: 'Needs history before it does anything useful, so it is wrong for a brand-new workload.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'Target tracking is the default right answer for "keep utilisation around X". Step scaling is for staged responses to a big metric jump. Simple scaling is legacy — it waits for a cooldown between actions.',

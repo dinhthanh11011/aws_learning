@@ -6,7 +6,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db, type SrsCard } from '@/db'
 import { cardById, cardsFor, CARD_KIND_META, CATEGORIES, serviceBySlug, serviceLabel } from '@/content'
 import { buildQueue, describeInterval, forecast, GRADE_META, GRADES, newCard, review, type Grade } from '@/engines/srs/scheduler'
-import { ensureCards, recordReview } from '@/db/repo'
+import { ensureCards, pruneOrphanCards, recordReview } from '@/db/repo'
 import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -39,9 +39,11 @@ export function DrillSession() {
   useEffect(() => {
     if (seeded) return
     const defs = cardsFor(profile.targetCert)
-    void ensureCards(
-      defs.map((d) => newCard(d.id, d.families, d.serviceSlugs, d.taskId)),
-    ).then(() => setSeeded(true))
+    void ensureCards(defs.map((d) => newCard(d.id, d.families, d.serviceSlugs, d.taskId)))
+      // Against the whole corpus, never this cert's slice: a card the content
+      // no longer derives should go, but the other cert's progress must not.
+      .then(() => pruneOrphanCards(new Set(cardById.keys())))
+      .then(() => setSeeded(true))
   }, [seeded, profile.targetCert])
 
   // Scope is decided by the content layer, not by the stored row: only

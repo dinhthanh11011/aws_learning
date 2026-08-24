@@ -244,6 +244,63 @@ export const KeyNumberSchema = z.object({
 })
 export type KeyNumber = z.infer<typeof KeyNumberSchema>
 
+/**
+ * A mutually exclusive choice *within* one service: an S3 storage class, an EBS
+ * volume type, an EC2 purchase option, a Route 53 routing policy.
+ *
+ * These deserve their own shape rather than more `keyNumbers` rows for one
+ * reason: the exam does not ask what Standard-IA costs, it describes an access
+ * pattern and makes you name the class. `pick` is that requirement, in the
+ * wording the exam uses, and it is required precisely so `cards.ts` can turn it
+ * into the front of a card. A flat label/value pair cannot say which half is the
+ * requirement, which is why the `compare` lesson section — free-form cells —
+ * derives nothing and is invisible to the SRS.
+ *
+ * The migration rule, which `content:check` enforces: a `keyNumbers` row whose
+ * label is the *name of one option* moves here. A row that is a property of the
+ * whole service stays. S3 keeps `Durability` and `Max object size`; its
+ * per-class minimums move. Never both — two sources for one fact is the drift
+ * invariant 2 exists to prevent, even when both sides are derived.
+ */
+export const ServiceOptionSchema = z.object({
+  /** Verbatim AWS wording: 'S3 Intelligent-Tiering', 'gp3', 'Dedicated Hosts'. */
+  name: z.string().min(1),
+  abbr: z.string().optional(),
+  /** Set when the option is also a corpus entry in its own right (spot, s3-glacier). */
+  slug: z.string().optional(),
+  /** The requirement, as the exam phrases it: 'access pattern is unknown or changing'. */
+  pick: z.string().min(1),
+  /** The cost or limit tell. Deliberately derives no `number` card — those come from keyNumbers. */
+  signal: z.string().optional(),
+  gotcha: z.string().optional(),
+  /** gp2, CLB: still an option the exam offers, never the right answer. Never dimmed with opacity. */
+  legacy: z.boolean().optional(),
+  volatile: z.boolean().optional(),
+})
+export type ServiceOption = z.infer<typeof ServiceOptionSchema>
+
+/**
+ * An array of sets rather than one set per service, because DynamoDB has
+ * capacity modes *and* index types, and EFS has storage classes *and*
+ * throughput modes. One set would push the second back into `keyNumbers`, which
+ * is the disease being treated.
+ *
+ * Note there are no author-supplied columns: the table is derived, and its axes
+ * are always Option / When to pick / Signal / Gotcha. Uniform axes across every
+ * service is the point — per-service axes are how `keyNumbers` drifted into
+ * meaning something different on every entry.
+ */
+export const ServiceOptionSetSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  /** 'Storage classes', 'Volume types'. */
+  label: z.string().min(1),
+  /** The card-front stem, lower case and without a question mark: 'which storage class'. */
+  prompt: z.string().min(1),
+  note: z.string().optional(),
+  options: z.array(ServiceOptionSchema).min(2),
+})
+export type ServiceOptionSet = z.infer<typeof ServiceOptionSetSchema>
+
 export const ServiceSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
@@ -266,6 +323,12 @@ export const ServiceSchema = z.object({
   whenToUse: z.array(z.string().min(1)),
   whenNotToUse: z.array(z.string().min(1)),
   keyNumbers: z.array(KeyNumberSchema).default([]),
+  /**
+   * Mutually exclusive choices within this service. Not on `ConceptSchema`, and
+   * deliberately so: a product option is a vendor artefact, and a primitive has
+   * none. Adding it there later is this field plus a card loop.
+   */
+  optionSets: z.array(ServiceOptionSetSchema).optional(),
   examTraps: z.array(z.string().min(1)).default([]),
   confusedWith: z.array(z.object({ slug: z.string(), difference: z.string().min(1) })).default([]),
   pricing: z.string().optional(),
@@ -510,7 +573,15 @@ export type Question = z.infer<typeof QuestionSchema>
 
 /* ── Spaced-repetition cards ─────────────────────────────────────────────── */
 
-export const CARD_KINDS = ['fact', 'number', 'whichService', 'define', 'trap', 'contrast'] as const
+export const CARD_KINDS = [
+  'fact',
+  'number',
+  'whichService',
+  'whichOption',
+  'define',
+  'trap',
+  'contrast',
+] as const
 export const CardKindSchema = z.enum(CARD_KINDS)
 export type CardKind = (typeof CARD_KINDS)[number]
 
@@ -520,6 +591,13 @@ export const CARD_KIND_META: Record<CardKind, { label: string; hint: string }> =
   whichService: {
     label: 'Which service?',
     hint: 'A requirement — name the service that meets it.',
+  },
+  // Same reasoning as `define` below: the answer is "S3 Intelligent-Tiering",
+  // which is not a service, and a card labelled "Which service?" that wants a
+  // storage class teaches the learner to stop reading the labels.
+  whichOption: {
+    label: 'Which option?',
+    hint: 'A requirement — name the option within one service.',
   },
   // Its own kind rather than reusing whichService: labelling a concept card
   // "Which service?" when the answer is "CIDR block" is exactly the kind of

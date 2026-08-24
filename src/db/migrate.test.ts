@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { familiesFromLegacyCerts, normaliseSrsRow } from './migrate'
+import { familiesFromLegacyCerts, normaliseSrsRow, orphanCardIds } from './migrate'
 
 /**
  * These guard the one step of the families refactor that can lose real user
@@ -44,5 +44,21 @@ describe('normaliseSrsRow', () => {
     // costs nothing beyond that card not being offered.
     const row = normaliseSrsRow({ cardId: 'orphan' })
     expect(row).toEqual({ cardId: 'orphan', families: [] })
+  })
+})
+
+describe('orphanCardIds', () => {
+  const valid = new Set(['num:s3:durability', 'opt:s3:storage-class:s3-standard'])
+
+  it('finds rows the corpus no longer derives', () => {
+    expect(orphanCardIds(['num:s3:0', 'num:s3:durability'], valid)).toEqual(['num:s3:0'])
+  })
+
+  it('keeps every row that still resolves', () => {
+    expect(orphanCardIds([...valid], valid)).toEqual([])
+  })
+
+  it('returns nothing for an empty table', () => {
+    expect(orphanCardIds([], valid)).toEqual([])
   })
 })

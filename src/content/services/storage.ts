@@ -45,20 +45,74 @@ export const storageServices: Service[] = [
         value: 'Strong read-after-write for all operations',
         note: 'Since December 2020 — older study material is wrong about this.',
       },
-      { label: 'Standard-IA / One Zone-IA minimum', value: '30 days, 128 KB billed minimum' },
-      { label: 'Glacier Instant Retrieval', value: '90-day minimum, millisecond retrieval' },
+    ],
+    /**
+     * The classes, in price order. This is the single most asked "which option"
+     * question on SAA, and until now S3 Standard was never actually named as a
+     * class anywhere in the atlas — it was the unstated default, which is no use
+     * when it is one of four plausible options on the screen.
+     *
+     * The per-class minimums that used to be keyNumbers rows live here now; a
+     * fact belongs in one place, so they were moved rather than copied.
+     */
+    optionSets: [
       {
-        label: 'Glacier Flexible Retrieval',
-        value: '90-day minimum · Expedited 1–5 min · Standard 3–5 h · Bulk 5–12 h',
-      },
-      {
-        label: 'Glacier Deep Archive',
-        value: '180-day minimum · Standard 12 h · Bulk 48 h',
-        note: 'Cheapest storage AWS sells.',
-      },
-      {
-        label: 'One Zone-IA availability',
-        value: 'One AZ only — 20% cheaper than Standard-IA, and it is gone if that AZ is lost',
+        id: 'storage-class',
+        label: 'Storage classes',
+        prompt: 'which storage class',
+        note: 'Listed warmest to coldest. Storage price falls down the list; retrieval time and retrieval cost rise.',
+        options: [
+          {
+            name: 'S3 Standard',
+            pick: 'Frequently read, and you cannot predict a quiet period',
+            signal: 'No minimum duration, no retrieval fee, 99.99% availability',
+            gotcha:
+              'The only class with no minimum and no retrieval fee, which is why it wins whenever a question refuses to state an access pattern.',
+          },
+          {
+            name: 'S3 Intelligent-Tiering',
+            pick: 'The access pattern is unknown, changing or unpredictable',
+            signal: 'Per-object monitoring fee · moves objects automatically, no retrieval fee',
+            gotcha:
+              'Only when the pattern is genuinely unknown. If the question states the pattern, naming the class directly is cheaper — the monitoring fee is pure waste.',
+          },
+          {
+            name: 'S3 Standard-IA',
+            pick: 'Read rarely, but must open immediately when it is',
+            signal: '30-day minimum · 128 KB billed minimum · per-GB retrieval fee',
+            gotcha:
+              'Read it often and it costs more than Standard. "Infrequent" has to be real, not aspirational.',
+          },
+          {
+            name: 'S3 One Zone-IA',
+            pick: 'Rarely read, and it can be regenerated if an AZ is lost',
+            signal: 'One AZ · ~20% cheaper than Standard-IA · 99.5% availability',
+            gotcha:
+              'A single AZ. Losing that AZ loses the data, so it is wrong for anything that is the only copy.',
+          },
+          {
+            name: 'S3 Glacier Instant Retrieval',
+            pick: 'Archive that is touched perhaps quarterly but must come back in milliseconds',
+            signal: '90-day minimum · millisecond retrieval',
+            gotcha:
+              'The one archive class with no wait. If a question says "archive" *and* "immediately", this is it and Deep Archive is the trap.',
+          },
+          {
+            name: 'S3 Glacier Flexible Retrieval',
+            pick: 'Archive where minutes to hours to retrieve is acceptable',
+            signal: '90-day minimum · Expedited 1–5 min · Standard 3–5 h · Bulk 5–12 h',
+            gotcha:
+              'Match the tier to the stated retrieval window. A question naming "within 5 minutes" means Expedited, not Standard.',
+          },
+          {
+            name: 'S3 Glacier Deep Archive',
+            slug: 's3-glacier',
+            pick: 'Compliance retention you expect never to read, and hours of wait is fine',
+            signal: '180-day minimum · Standard 12 h · Bulk 48 h · cheapest storage AWS sells',
+            gotcha:
+              'The 180-day minimum makes it the wrong answer for anything with a shorter retention period, however cold it sounds.',
+          },
+        ],
       },
     ],
     examTraps: [
@@ -182,14 +236,65 @@ export const storageServices: Service[] = [
       'Cheap bulk archive — S3 is an order of magnitude cheaper',
     ],
     keyNumbers: [
-      { label: 'gp3 baseline', value: '3,000 IOPS and 125 MB/s included, independent of size' },
-      { label: 'gp3 maximum', value: '16,000 IOPS · 1,000 MB/s' },
-      { label: 'gp2 (legacy)', value: '3 IOPS per GB, burst to 3,000 — performance tied to size' },
-      { label: 'io2 Block Express', value: 'Up to 256,000 IOPS · 4,000 MB/s · 64 TiB' },
-      { label: 'io2 durability', value: '99.999%', note: 'Versus 99.8–99.9% for gp2/gp3.' },
-      { label: 'st1 / sc1', value: 'HDD, throughput-optimised and cold — cannot be boot volumes' },
       { label: 'Max volume size', value: '64 TiB for io2 Block Express, 16 TiB for gp2/gp3' },
       { label: 'Snapshots', value: 'Incremental, stored in S3, copyable across Regions' },
+    ],
+    /**
+     * Volume type is the whole decision on EBS, so it is the thing worth being
+     * able to recite. io1 is listed separately from io2 because the exam still
+     * offers both and io2 is strictly better at the same price — recognising
+     * that is often the entire question.
+     */
+    optionSets: [
+      {
+        id: 'volume-type',
+        label: 'Volume types',
+        prompt: 'which volume type',
+        note: 'SSD types are billed on size and provisioned IOPS; HDD types on size and throughput.',
+        options: [
+          {
+            name: 'gp3',
+            pick: 'The default for almost everything — boot volumes and general workloads',
+            signal: '3,000 IOPS and 125 MB/s baseline included, independent of size · up to 16,000 IOPS · 1,000 MB/s',
+            gotcha:
+              'IOPS are decoupled from size, so "we need more IOPS but not more space" is gp3. Growing a gp2 volume to buy IOPS is the distractor.',
+          },
+          {
+            name: 'gp2',
+            legacy: true,
+            pick: 'Only when a question is describing an existing, older volume',
+            signal: '3 IOPS per GB, bursting to 3,000 — performance tied to size',
+            gotcha:
+              'gp3 is cheaper and faster, so gp2 is never the right *new* choice. A gp2 volume at its burst-credit floor is the hidden cause of "it was fast, now it is slow".',
+          },
+          {
+            name: 'io1',
+            legacy: true,
+            pick: 'Sustained high IOPS on an older design that names it explicitly',
+            signal: 'Up to 64,000 IOPS · 99.8–99.9% durability',
+            gotcha: 'io2 offers the same IOPS at the same price with far better durability. If both are offered, io2 wins.',
+          },
+          {
+            name: 'io2 Block Express',
+            pick: 'Mission-critical databases needing the highest sustained IOPS or sub-millisecond latency',
+            signal: 'Up to 256,000 IOPS · 4,000 MB/s · 64 TiB · 99.999% durability',
+            gotcha:
+              'The only type with 99.999% durability, and the only one above 16 TiB. Both are tells that nothing else will do.',
+          },
+          {
+            name: 'st1',
+            pick: 'Large sequential reads and writes — log processing, big-data scans',
+            signal: 'HDD, throughput-optimised · 125 GiB minimum',
+            gotcha: 'Cannot be a boot volume, and it is poor at small random I/O however cheap it looks.',
+          },
+          {
+            name: 'sc1',
+            pick: 'Colder sequential data touched a few times a month',
+            signal: 'HDD, the cheapest EBS per GB',
+            gotcha: 'Cannot be a boot volume. A question offering sc1 for a root volume is offering a wrong answer.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'gp3 is cheaper than gp2 and lets you raise IOPS without growing the volume. "We need more IOPS but not more space" means gp3 or io2, never a bigger gp2.',
@@ -286,23 +391,74 @@ export const storageServices: Service[] = [
     ],
     keyNumbers: [
       {
-        label: 'Storage classes',
-        value: 'Standard (multi-AZ) · One Zone (single AZ, ~47% cheaper)',
-      },
-      {
         label: 'Lifecycle management',
         value: 'Automatic transition to Infrequent Access and Archive after a set idle period',
-      },
-      { label: 'Throughput modes', value: 'Elastic (recommended) · Provisioned · Bursting' },
-      {
-        label: 'Performance modes',
-        value:
-          'General Purpose (default, lowest latency) · Max I/O (higher throughput, higher latency)',
       },
       { label: 'Protocol', value: 'NFSv4.1 / NFSv4.0 — Linux only' },
       {
         label: 'Encryption',
         value: 'At rest via KMS, in transit via TLS with the EFS mount helper',
+      },
+    ],
+    optionSets: [
+      {
+        id: 'storage-class',
+        label: 'Storage classes',
+        prompt: 'which storage class',
+        options: [
+          {
+            name: 'EFS Standard',
+            pick: 'Shared data that must survive the loss of an Availability Zone',
+            signal: 'Multi-AZ, replicated automatically',
+            gotcha: 'The default. Combine with lifecycle policies rather than downgrading the class when a question is about cost.',
+          },
+          {
+            name: 'EFS One Zone',
+            pick: 'Dev, test, or data that can be rebuilt if an AZ is lost',
+            signal: 'Single AZ · ~47% cheaper than Standard',
+            gotcha:
+              '"Cut our EFS bill" plus a stated tolerance for AZ loss means One Zone. Without that tolerance it is the wrong answer however cheap.',
+          },
+          {
+            name: 'Infrequent Access',
+            abbr: 'IA',
+            pick: 'Files that go untouched for weeks but must stay in the filesystem',
+            signal: 'Reached by a lifecycle policy · per-GB retrieval fee',
+            gotcha: 'Read the file often and the retrieval fee costs more than the storage saved.',
+          },
+          {
+            name: 'Archive',
+            pick: 'Files touched a few times a year that must still be mountable',
+            signal: 'Cheapest EFS class · higher retrieval latency and fee',
+            gotcha: 'Still a filesystem, so still far more expensive than S3. If nothing needs to mount it, the answer is S3.',
+          },
+        ],
+      },
+      {
+        id: 'throughput-mode',
+        label: 'Throughput modes',
+        prompt: 'which throughput mode',
+        options: [
+          {
+            name: 'Elastic',
+            pick: 'Throughput is unpredictable, or you would rather not think about it',
+            signal: 'Scales automatically · pay for what you use',
+            gotcha: 'The recommended default. Paying per use makes it expensive for a sustained heavy workload.',
+          },
+          {
+            name: 'Provisioned',
+            pick: 'A known, sustained throughput requirement that bursting cannot meet',
+            signal: 'Set MB/s independent of stored size',
+            gotcha: 'Charged for the provisioned rate whether or not it is used.',
+          },
+          {
+            name: 'Bursting',
+            pick: 'Throughput can scale with how much data is stored',
+            signal: 'Baseline scales with filesystem size, with burst credits',
+            gotcha:
+              'A small filesystem gets a small baseline, so "it was fast, now it is slow" on a nearly empty EFS is exhausted burst credits — the same shape as gp2 and T-instances.',
+          },
+        ],
       },
     ],
     examTraps: [
@@ -353,13 +509,46 @@ export const storageServices: Service[] = [
       'Object storage needs — S3',
     ],
     keyNumbers: [
-      { label: 'FSx for Windows', value: 'SMB · AD-integrated · Single-AZ or Multi-AZ' },
-      {
-        label: 'FSx for Lustre',
-        value: 'Scratch (no replication, cheapest) or Persistent (replicated)',
-      },
       { label: 'Lustre + S3', value: 'Links to an S3 bucket and lazily loads objects as files' },
-      { label: 'ONTAP protocols', value: 'NFS, SMB and iSCSI on the same filesystem' },
+    ],
+    /**
+     * Four filesystems behind one name. The question is always "which one", and
+     * it is decided by a single word in the stem — SMB, HPC, ONTAP, ZFS.
+     */
+    optionSets: [
+      {
+        id: 'file-system',
+        label: 'File system types',
+        prompt: 'which FSx file system',
+        options: [
+          {
+            name: 'FSx for Windows File Server',
+            pick: 'Windows workloads needing real SMB with NTFS ACLs and Active Directory',
+            signal: 'SMB · AD-integrated · Single-AZ or Multi-AZ',
+            gotcha:
+              'Needs a Managed Microsoft AD or a trust to one — AD Connector will not do. Any mention of Windows, SMB or AD lands here.',
+          },
+          {
+            name: 'FSx for Lustre',
+            pick: 'HPC or ML training that must read S3 data at extreme throughput',
+            signal: 'Hundreds of GB/s · Scratch (no replication) or Persistent (replicated)',
+            gotcha:
+              'Scratch deployments have no replication — S3 remains the source of truth. Choosing Scratch for durable data is the trap.',
+          },
+          {
+            name: 'FSx for NetApp ONTAP',
+            pick: 'An existing NetApp estate, or one filesystem that must serve NFS *and* SMB',
+            signal: 'NFS, SMB and iSCSI together · snapshots, cloning, dedupe',
+            gotcha: 'The tell is "existing ONTAP investment" or two protocols at once. Nothing else in FSx serves both.',
+          },
+          {
+            name: 'FSx for OpenZFS',
+            pick: 'Migrating a Linux ZFS or NFS workload and wanting ZFS snapshots without ONTAP',
+            signal: 'NFS · ZFS snapshots and clones · low latency',
+            gotcha: 'NFS only. If SMB appears in the requirement, this is not it.',
+          },
+        ],
+      },
     ],
     examTraps: [
       'Windows or SMB or Active Directory in the question means FSx for Windows File Server. This is the single most common FSx question.',

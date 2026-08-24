@@ -55,6 +55,43 @@ export const serverlessServices: Service[] = [
         note: 'Bytes reach the client as they are produced — the way past the 6 MB buffered response.',
       },
     ],
+    /**
+     * Reserved versus provisioned concurrency lived only inside an exam trap,
+     * which meant the two were never presented as a choice — and the exam
+     * always presents them as a choice, usually with unreserved as the third
+     * option and a cost or cold-start constraint deciding it.
+     */
+    optionSets: [
+      {
+        id: 'concurrency',
+        label: 'Concurrency controls',
+        prompt: 'which concurrency control',
+        note: 'Two different problems wearing similar names: how many can run at once, and how fast the first one answers.',
+        options: [
+          {
+            name: 'Unreserved concurrency',
+            pick: 'Nothing about throughput or cold starts is stated',
+            signal: 'Draws from the shared account pool, 1,000 per Region by default',
+            gotcha:
+              'A noisy function can exhaust the shared pool and throttle every other function in the account. That is the failure a question describes as "unrelated functions started failing".',
+          },
+          {
+            name: 'Reserved concurrency',
+            pick: 'A function must be guaranteed capacity, or must be stopped from overwhelming a downstream database',
+            signal: 'Free · guarantees that many and caps at that many',
+            gotcha:
+              'It does both at once: the guarantee and the ceiling are the same number. Setting it to 0 is how you switch a function off without deleting it.',
+          },
+          {
+            name: 'Provisioned concurrency',
+            pick: 'Cold-start latency is unacceptable — a latency-sensitive or spiky user-facing path',
+            signal: 'Pre-initialised environments · billed while idle',
+            gotcha:
+              'The only one that costs money when nothing is happening. If a question is about throttling rather than latency, this is the trap and reserved is the answer.',
+          },
+        ],
+      },
+    ],
     examTraps: [
       'Async invocations (S3, SNS, EventBridge) retry twice more, then send the event to a DLQ or an on-failure Destination. Synchronous invocations do not retry — the *caller* must.',
       'Reserved concurrency does two things at once: it guarantees that many concurrent executions *and* caps the function at that number. Provisioned concurrency is the different thing — pre-warmed environments that remove cold starts, and it costs money while idle.',

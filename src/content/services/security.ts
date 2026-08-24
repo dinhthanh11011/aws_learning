@@ -489,10 +489,6 @@ export const securityServices: Service[] = [
     keyNumbers: [
       { label: 'Direct encrypt limit', value: '4 KB' },
       {
-        label: 'Key types',
-        value: 'AWS owned · AWS managed (aws/service) · Customer managed (CMK)',
-      },
-      {
         label: 'Automatic rotation',
         value: 'Annual for customer-managed keys, and AWS-managed keys rotate too',
         note: 'Old key material is retained so existing ciphertext still decrypts.',
@@ -507,10 +503,50 @@ export const securityServices: Service[] = [
         label: 'Multi-Region keys',
         value: 'Same key material replicated across Regions, for cross-Region encrypted workloads',
       },
+    ],
+    optionSets: [
       {
-        label: 'Key material origin',
-        value:
-          'KMS-generated · imported (BYOK) · CloudHSM-backed custom key store · external key store',
+        id: 'key-type',
+        label: 'Key types',
+        prompt: 'which key type',
+        note: 'Control, cost and auditability all move together down this list.',
+        options: [
+          {
+            name: 'AWS owned key',
+            pick: 'Nothing in the requirement mentions control, audit or rotation',
+            signal: 'Free · invisible · shared across accounts',
+            gotcha: 'You cannot see it, audit it, or scope it. Any question about controlling the key rules it out.',
+          },
+          {
+            name: 'AWS managed key',
+            pick: 'Encryption at rest is required but nobody needs to manage the key',
+            signal: 'Free · one per service per account (aws/s3, aws/ebs) · rotates automatically',
+            gotcha:
+              'The policy cannot be edited and it cannot be shared cross-account. "Share the encrypted snapshot with another account" fails here and needs a customer-managed key.',
+          },
+          {
+            name: 'Customer managed key',
+            abbr: 'CMK',
+            pick: 'You must control the key policy, rotation, or cross-account access',
+            signal: 'Monthly charge per key plus requests · editable key policy · 7–30 day deletion window',
+            gotcha:
+              'The answer to almost any KMS question that mentions control, audit, cross-account sharing or disabling a key.',
+          },
+          {
+            name: 'Imported key material',
+            pick: 'Compliance requires that the key material originates outside AWS (BYOK)',
+            signal: 'You supply and re-import the material · no automatic rotation',
+            gotcha:
+              'If the material expires or is deleted, the ciphertext is unrecoverable — AWS has no copy. That is the point and the risk.',
+          },
+          {
+            name: 'CloudHSM-backed custom key store',
+            pick: 'A regulator requires keys in single-tenant, FIPS 140-2 Level 3 hardware you control',
+            signal: 'KMS API in front of your own CloudHSM cluster',
+            gotcha:
+              'You own the cluster, its availability and its backups. The tell is a named hardware or single-tenancy requirement, not merely "highly secure".',
+          },
+        ],
       },
     ],
     examTraps: [

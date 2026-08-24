@@ -45,3 +45,21 @@ export function normaliseSrsRow<T extends Record<string, unknown>>(row: T): T {
   delete (row as Record<string, unknown>).certs
   return row
 }
+
+/**
+ * Stored SRS rows whose card no longer exists in the derived corpus.
+ *
+ * Card ids used to encode a *position* (`num:s3:3`), which meant deleting a
+ * keyNumbers row silently re-pointed a learner's review history — reps, ease,
+ * due date — at whichever fact slid up into that slot. Ids are keyed by label
+ * now, so a removed fact orphans its row instead. Orphans are pruned rather
+ * than left to accumulate, but pruning is the *only* honest option here:
+ * rebinding was the comfortable lie (invariant 9).
+ *
+ * Pure, and takes the valid set explicitly, because the caller must pass the
+ * ids of the WHOLE corpus. Passing one cert's cards would delete the other
+ * cert's progress.
+ */
+export function orphanCardIds(storedIds: readonly string[], validIds: ReadonlySet<string>) {
+  return storedIds.filter((id) => !validIds.has(id))
+}

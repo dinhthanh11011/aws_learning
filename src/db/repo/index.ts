@@ -16,7 +16,7 @@ import {
 import { levelFromXp, touchStreak, XP } from '@/engines/gamify/rules'
 import type { CertId } from '@/content/schema'
 import { retirementTarget } from '@/content/cert-registry'
-import { normaliseSrsRow } from '../migrate'
+import { normaliseSrsRow, orphanCardIds } from '../migrate'
 
 /**
  * All database access goes through here. Components never see Dexie, which
@@ -120,6 +120,17 @@ export async function ensureCards(cards: SrsCard[]): Promise<number> {
   const missing = cards.filter((c) => !existing.has(c.cardId))
   if (missing.length) await db.srsCards.bulkPut(missing)
   return missing.length
+}
+
+/**
+ * Drops stored rows for cards the corpus no longer derives. `validIds` must be
+ * every card id in the corpus, not one cert's — see `orphanCardIds`.
+ */
+export async function pruneOrphanCards(validIds: ReadonlySet<string>): Promise<number> {
+  const stored = (await db.srsCards.toCollection().primaryKeys()) as string[]
+  const orphans = orphanCardIds(stored, validIds)
+  if (orphans.length) await db.srsCards.bulkDelete(orphans)
+  return orphans.length
 }
 
 export async function saveCard(card: SrsCard): Promise<void> {
