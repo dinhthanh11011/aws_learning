@@ -279,15 +279,19 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** One lesson is not a lesson layer. The topics that most
-want this treatment next, in order — each one is a concept the atlas states
-correctly and teaches badly:
+**What is owed here.** One lesson is not a lesson layer. The next eighteen, in
+six batches ordered by how many questions in the bank touch each service, are in
+[`LESSONS.md` § The batches](LESSONS.md) — kept there rather than here so there is
+one list rather than two drifting ones.
 
-- IAM policy evaluation order (explicit deny → SCP → resource policy → allow)
-- The four things a public instance needs, and which one the question removed
-- S3 storage classes as a decision, not a table
-- Multi-AZ versus read replica versus multi-Region
-- RTO/RPO against the four DR strategies
+That document is also where the workflow lives, because the first lesson cost far
+more than writing it: most of the effort went on re-reading content files to find
+facts, and on getting diagram geometry right by screenshotting in a browser. Both
+are now single commands — `npm run lesson:brief` prints every corpus fact about a
+set of slugs, and `npm run diagram:audit` reports overlaps, label collisions and
+dead space from `layout.ts` without opening a browser. The audit was checked
+against the actual broken geometry of the first lesson: it reports all five bugs
+that screenshot loop found.
 
 Two smaller follow-ups: a study step's `reading` should be able to name a lesson
 id instead of a URL (schema change is a union on `reading`, touches 47 steps),

@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "content:check": "tsx scripts/content-check.ts",
-    "content:fingerprint": "tsx scripts/content-dump.ts"
+    "content:fingerprint": "tsx scripts/content-dump.ts",
+    "lesson:brief": "tsx scripts/lesson-brief.ts",
+    "diagram:audit": "tsx scripts/diagram-audit.ts"
   },
   "dependencies": {
     "@xyflow/react": "^12.11.3",

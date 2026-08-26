@@ -3,6 +3,7 @@ import type { DiagramSpec } from '@/content/schema'
 import {
   UNIT,
   clipToBox,
+  edgeGeometry,
   layoutGroups,
   nodeBox,
   nodeCentre,
@@ -169,5 +170,41 @@ describe('clipToBox', () => {
     const p = clipToBox({ x: 120, y: 120 }, { x: 130, y: 120 }, box)
     // Both perimeter crossings are behind or beyond, so it keeps the target.
     expect(p.x).toBeGreaterThan(120)
+  })
+})
+
+describe('edgeGeometry', () => {
+  // The two shapes the lesson diagrams rely on. Pinned because this logic moved
+  // out of the component so `diagram:audit` could share it, and the audit cannot
+  // catch its own drift — it would simply agree with itself.
+  const a = { id: 'a', label: 'A', kind: 'service' as const, x: 0, y: 0, w: 2, h: 1 }
+  const b = { id: 'b', label: 'B', kind: 'service' as const, x: 6, y: 3, w: 2, h: 1 }
+
+  it('clips a straight edge to both boundaries and centres the label between them', () => {
+    const g = edgeGeometry(a, b)
+    // a spans 0..80 x, 0..40 y (centre 40,20); b spans 240..320, 120..160 (280,140).
+    expect(g.start.x).toBeGreaterThan(40)
+    expect(g.end.x).toBeLessThan(280)
+    expect(g.label.x).toBeCloseTo((g.start.x + g.end.x) / 2)
+    expect(g.d).toBe(`M ${g.start.x} ${g.start.y} L ${g.end.x} ${g.end.y}`)
+  })
+
+  it('routes an elbow vertical-then-horizontal and puts the label on the horizontal leg', () => {
+    const g = edgeGeometry(a, b, { elbow: true })
+    // Leaves the source downwards, so it exits through a's bottom edge at x=40.
+    expect(g.start.x).toBe(40)
+    expect(g.start.y).toBe(45)
+    // Arrives horizontally at b's y centre, stopping 5px short of its left edge.
+    expect(g.end.y).toBe(140)
+    expect(g.end.x).toBe(235)
+    expect(g.label.y).toBe(g.end.y - 5)
+    expect(g.d).toBe('M 40 45 L 40 140 L 235 140')
+  })
+
+  it('never ends at the target centre, or the arrowhead would be hidden', () => {
+    for (const elbow of [true, false]) {
+      const g = edgeGeometry(a, b, { elbow })
+      expect(g.end).not.toEqual({ x: 280, y: 140 })
+    }
   })
 })

@@ -27,6 +27,10 @@ npm run content:check && npm run typecheck && npm test
 
 ## A lesson
 
+> The **process** for writing one — batching, the brief generator, the diagram
+> templates, and what not to spend effort on — is in
+> [`LESSONS.md`](LESSONS.md). Read that first. This section is the content shape.
+
 A lesson contains no facts. That is not a limitation, it is the whole design:
 the atlas already holds every fact, and the complaint that produced this layer
 was never that a fact was missing — it was that eight correct paragraphs arriving

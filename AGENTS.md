@@ -20,6 +20,7 @@ in [`docs/`](docs/).
 |---|---|
 | You need the full map — content model, engines, data flow, routes | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | You are adding or editing teaching content | [`docs/CONTENT.md`](docs/CONTENT.md) |
+| You are writing a lesson — read this **first**, it replaces exploring | [`docs/LESSONS.md`](docs/LESSONS.md) |
 | You want to know what is unfinished and what to do next | [`docs/BACKLOG.md`](docs/BACKLOG.md) |
 | You want the user-facing overview | [`README.md`](README.md) |
 
@@ -35,6 +36,7 @@ it exercises. If the answer is "none", it probably does not belong.
 
 ```bash
 npm run content:check   # zod validation + referential integrity + coverage warnings
+npm run diagram:audit   # diagram geometry: overlaps, label collisions, dead space
 npm run content:fingerprint  # hash of the whole corpus — assert it around any file move
 npm run typecheck       # tsc --noEmit, strict
 npm test                # vitest over src/engines, src/content and src/db
@@ -42,8 +44,14 @@ npx eslint src scripts  # must be 0 errors AND 0 warnings
 npm run build           # 202 prerendered pages
 ```
 
-All five are currently clean. `npm run dev` for the app; drive it in a real
-browser before saying a UI change works.
+All six are currently clean. `npm run dev` for the app; drive it in a real
+browser before saying a UI change works — but for a *diagram*, `diagram:audit`
+answers in text what used to take a screenshot loop, so run that first and keep
+the browser pass for whether the page actually teaches.
+
+`npm run lesson:brief -- <slug...>` prints every fact in the corpus about some
+slugs, which is the whole research step for a lesson. Use it instead of reading
+`src/content/services/*` — see [`docs/LESSONS.md`](docs/LESSONS.md).
 
 ## Invariants — these bite if you undo them
 

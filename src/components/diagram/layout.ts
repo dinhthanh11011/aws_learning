@@ -81,6 +81,52 @@ export function clipToBox(a: Point, b: Point, box: Box, gap = 5): Point {
   return { x: a.x + dx * best, y: a.y + dy * best }
 }
 
+export interface EdgeGeometry {
+  start: Point
+  end: Point
+  /** Where the edge's label is drawn, if it has one. */
+  label: Point
+  /** The SVG path `d` attribute. */
+  d: string
+}
+
+/**
+ * Everything about where an edge is drawn, in one place.
+ *
+ * Extracted from the component so `scripts/diagram-audit.ts` can find label
+ * collisions and overlaps without a browser. Getting a diagram to read well used
+ * to be a loop of nudging coordinates, rebuilding and screenshotting; the audit
+ * makes it a text answer, and that only works if it computes exactly what the
+ * renderer draws — hence one function, used by both.
+ */
+export function edgeGeometry(
+  from: DiagramNode,
+  to: DiagramNode,
+  opts: { elbow?: boolean } = {},
+): EdgeGeometry {
+  const a = nodeCentre(from)
+  const centre = nodeCentre(to)
+  const corner = opts.elbow ? { x: a.x, y: centre.y } : a
+
+  // Both ends stop on the node boundary, never the centre: the end must, or the
+  // arrowhead is painted over by the node itself, and the start must, or the
+  // label — drawn at the midpoint — lands on top of a node.
+  const end = clipToBox(corner, centre, nodeBox(to))
+  const start = clipToBox(opts.elbow ? corner : centre, a, nodeBox(from))
+
+  // An elbow's straight-line midpoint is nowhere near the elbow, so its label
+  // follows the path: the middle of the horizontal leg, which has room for text.
+  const label = opts.elbow
+    ? { x: (start.x + end.x) / 2, y: end.y - 5 }
+    : { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 - 4 }
+
+  const d = opts.elbow
+    ? `M ${start.x} ${start.y} L ${start.x} ${end.y} L ${end.x} ${end.y}`
+    : `M ${start.x} ${start.y} L ${end.x} ${end.y}`
+
+  return { start, end, label, d }
+}
+
 const union = (boxes: Box[]): Box => {
   const x = Math.min(...boxes.map((b) => b.x))
   const y = Math.min(...boxes.map((b) => b.y))
