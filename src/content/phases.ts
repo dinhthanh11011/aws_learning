@@ -57,7 +57,7 @@ export const phases: Phase[] = [
       'Root MFA is on, an admin identity exists, and a $10 budget alarm is configured',
     ],
     taskIds: ['saa-1.1', 'saa-1.2'],
-    lessonIds: [],
+    lessonIds: ['security-groups'],
     labIds: ['iam-puzzle'],
     steps: [
       {
@@ -143,7 +143,10 @@ export const phases: Phase[] = [
             minutes: 15,
           },
         ],
-        actions: [{ label: 'VPC Packet Tracer', href: '/labs/vpc-builder' }],
+        actions: [
+          { label: 'Security groups lesson', href: '/learn/security-groups' },
+          { label: 'VPC Packet Tracer', href: '/labs/vpc-builder' },
+        ],
         doneWhen:
           'From memory you can write the security group versus NACL table, and predict the exact symptom when a NACL allows inbound 443 but not the ephemeral return range.',
       },

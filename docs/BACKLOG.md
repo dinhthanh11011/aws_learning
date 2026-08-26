@@ -235,30 +235,63 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — `/learn/[cert]/[lesson]`
+### 1. The lesson player — built, one lesson written
 
-The **only** deviation from the approved plan. `LessonSchema`, `LessonSection`
-and `DiagramSpec` are fully defined in `src/content/schema.ts` but there are no
-lessons and no route.
+**Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
+20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
+renderer, the section renderer for all nine `LessonSection` kinds, and the inline
+markdown formatter.
 
-Lesson bodies are typed section arrays rather than MDX, deliberately: it makes
-the animated diagrams and inline checks schema-validated and lets one renderer
-handle every lesson. Section kinds already specified: `prose`, `callout`,
-`diagram`, `compare`, `numbers`, `steps`, `code`, `heading`, `services`.
+What landed with it:
 
-**Most of this now exists.** Story mode built the `DiagramSpec` renderer (inline
-SVG with nested VPC/AZ/subnet groups), the section renderer for every
-`LessonSection` kind, and the inline markdown formatter. What is left is the
-route, the `checks` wiring and the lessons themselves — the hard, reusable parts
-are done and tested. `phases.ts` already has empty `lessonIds` arrays waiting.
+- `src/content/lessons/security-groups.ts` — the first lesson, and the template
+  the next ones copy. 25 sections, 4 checks, 12 minutes
+- `src/content/lesson-registry.ts` — same naming rule as the service, concept and
+  story registries, for the same Turbopack reason
+- `src/engines/lesson/trace.ts` — `DiagramSpecSchema.steps` had been in the
+  schema since the beginning and the renderer never implemented it. It did not
+  need to: `traceAt()` folds a step index into the `VisibleAt` shape `Diagram`
+  already accepts, so a spec that declares `steps` becomes a walkthrough the
+  reader advances a hop at a time. Pure, and unit-tested
+- `src/components/lesson/Walkthrough.tsx` — the play control. Arrow keys, and it
+  bails while a `[role="dialog"]` is open, per invariant 11
+- `src/components/lesson/LessonChecks.tsx` — near-copy of `ChapterChecks`
+- `content:check` section 4d, and `checkDiagram()` lifted out of the story
+  validator so both share one copy of the diagram rules
 
-Until it exists the teaching lives in the atlas, concepts, decoder, trees and
-labs — which is genuinely most of it. This is an enhancement, not a hole.
+Three bugs in the shared diagram renderer surfaced while driving the first lesson
+in a browser, and all three had been silently wrong in story mode too:
 
-That claim was too comfortable before the concepts corpus landed: the vocabulary
-layer *was* a hole, and calling it an enhancement is what let it survive. What is
-left for the lesson player is sequencing and diagrams, which is a real
-enhancement.
+1. **No arrowhead ever rendered.** Edges were drawn centre-to-centre, so every
+   `marker-end` sat underneath the target node's own rectangle, which is painted
+   afterwards. `clipToBox()` in `layout.ts` now stops both ends on the node
+   boundary. Story mode gained arrowheads it never had
+2. **Edge labels sat at the centre-to-centre midpoint**, which lands on top of a
+   node. Clipping both ends moved every label into the gap where it belongs
+3. **An elbow's label was placed on the straight line it does not follow.** It
+   now sits on the horizontal leg
+
+Also fixed, both pre-existing in `Sections.tsx`: the `numbers` section emitted
+`dl > div > span`, which is invalid HTML and an axe failure, and the `heading`
+kind was hardcoded to `h3` — correct under a story chapter's `h2`, a skipped
+level under a lesson's `h1`. `Sections` now takes `headingLevel`. Lighthouse
+accessibility on `/learn/security-groups` is **100** in dark and 96 in light, the
+96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
+§4 below.
+
+**What is owed here.** One lesson is not a lesson layer. The topics that most
+want this treatment next, in order — each one is a concept the atlas states
+correctly and teaches badly:
+
+- IAM policy evaluation order (explicit deny → SCP → resource policy → allow)
+- The four things a public instance needs, and which one the question removed
+- S3 storage classes as a decision, not a table
+- Multi-AZ versus read replica versus multi-Region
+- RTO/RPO against the four DR strategies
+
+Two smaller follow-ups: a study step's `reading` should be able to name a lesson
+id instead of a URL (schema change is a union on `reading`, touches 47 steps),
+and `phases.lessonIds` is wired but only phase 0 has an entry.
 
 ### 2. Question banks — done, with one engine caveat
 

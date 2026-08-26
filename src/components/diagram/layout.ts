@@ -34,6 +34,53 @@ export const nodeCentre = (n: DiagramNode): { x: number; y: number } => {
   return { x: b.x + b.w / 2, y: b.y + b.h / 2 }
 }
 
+export interface Point {
+  x: number
+  y: number
+}
+
+/**
+ * Where a line heading into a node should actually stop: on the node's
+ * boundary, not at its centre.
+ *
+ * This is what makes arrowheads visible. An SVG `marker-end` sits at the end of
+ * the path, so a path drawn centre-to-centre puts every arrowhead underneath the
+ * target node's own rectangle — which is painted afterwards. The result is
+ * direction-less lines, and on a diagram whose whole subject is which way the
+ * packet went, that is not cosmetic.
+ *
+ * Returns the first crossing of the target's box (grown by `gap`, so the head
+ * does not touch the border) along the segment, or `b` if the segment never
+ * enters it.
+ */
+export function clipToBox(a: Point, b: Point, box: Box, gap = 5): Point {
+  const x1 = box.x - gap
+  const x2 = box.x + box.w + gap
+  const y1 = box.y - gap
+  const y2 = box.y + box.h + gap
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+
+  let best = 1
+  const consider = (t: number): void => {
+    if (!(t > 0 && t < best)) return
+    // The crossing has to be on the box's actual perimeter, not on the infinite
+    // line the edge extends to. A hair of tolerance, because these are floats.
+    const px = a.x + dx * t
+    const py = a.y + dy * t
+    if (px >= x1 - 0.01 && px <= x2 + 0.01 && py >= y1 - 0.01 && py <= y2 + 0.01) best = t
+  }
+  if (dx !== 0) {
+    consider((x1 - a.x) / dx)
+    consider((x2 - a.x) / dx)
+  }
+  if (dy !== 0) {
+    consider((y1 - a.y) / dy)
+    consider((y2 - a.y) / dy)
+  }
+  return { x: a.x + dx * best, y: a.y + dy * best }
+}
+
 const union = (boxes: Box[]): Box => {
   const x = Math.min(...boxes.map((b) => b.x))
   const y = Math.min(...boxes.map((b) => b.y))

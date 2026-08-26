@@ -22,7 +22,47 @@ npm run content:check && npm run typecheck && npm test
 | A phase change | `src/content/phases.ts` | Mirrors the user's Notion roadmap — keep in sync |
 | A study step | `src/content/phases.ts`, in that phase's `steps` | Ids must match position; check every URL resolves |
 | A story chapter | `src/content/stories/<slug>.ts`, in `chapters` | Ids must match position; every id in `adds` must exist in the story's own architecture |
+| A lesson | `src/content/lessons/<id>.ts`, then one line in `lesson-registry.ts` | Restates the atlas, introduces nothing — see below |
 | A `whyItExists` | the service or concept entry | Motivation, not mechanism — see below |
+
+## A lesson
+
+A lesson contains no facts. That is not a limitation, it is the whole design:
+the atlas already holds every fact, and the complaint that produced this layer
+was never that a fact was missing — it was that eight correct paragraphs arriving
+at once in no order is a reference format, and nobody meets an idea for the first
+time in a reference format.
+
+So what a lesson contributes is **sequence**. Copy
+`src/content/lessons/security-groups.ts`; the shape that worked there:
+
+1. A `prose` hook naming the one surprising thing, without explaining it.
+2. A `diagram` **with `steps`** showing that thing happen. This is the move that
+   earns the format — a step the reader advances themselves, onto an arrow they
+   were never asked to write a rule for, is believed in a way a sentence is not.
+   Leave `steps` empty when the whole picture needs to be seen at once.
+3. A `callout` giving the idea its name, *after* it has been seen.
+4. A `code` block of the real configuration, then a `steps` section reading it
+   out one line at a time. Dense syntax becomes legible one line at a time and
+   stays opaque as a block.
+5. The wrong answer written out as real syntax, then a `trap` callout rejecting
+   it. Showing what you cannot write teaches more than saying it is impossible.
+6. `compare` for the head-to-head, *last* — a table before both halves are
+   understood is something to memorise rather than something to follow.
+7. `numbers` at the end, lifted verbatim from the atlas's `keyNumbers`.
+8. `checks` — 3 options, authored correct-first (they are shuffled), one correct.
+   This is the only part of the page that is retrieval and the only part that
+   awards anything. A lesson with none gets a `content:check` warning.
+
+Rules `content:check` enforces: every `[[slug]]` resolves to a service or
+concept, `cardIds` resolve, `taskId` resolves on a current paper, check ids are
+prefixed with the lesson id, a `compare` row has one cell per column, and a
+walkthrough has no edge that no step lights. Use `[[slug|display text]]` when the
+short label reads badly mid-sentence — `[[security-group]]` renders "SG".
+
+If a lesson wants a fact the atlas lacks: edit the atlas entry first. The card
+then derives itself, search finds it, and the quick-look panel shows it. Writing
+it only into the lesson means it is drilled by nothing.
 
 ## A service card
 

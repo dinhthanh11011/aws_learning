@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { DiagramSpec } from '@/content/schema'
-import { UNIT, layoutGroups, nodeBox, nodeCentre, serviceSlugForNode, viewBox } from './layout'
+import {
+  UNIT,
+  clipToBox,
+  layoutGroups,
+  nodeBox,
+  nodeCentre,
+  serviceSlugForNode,
+  viewBox,
+} from './layout'
 
 const spec: DiagramSpec = {
   id: 'd',
@@ -117,5 +125,49 @@ describe('serviceSlugForNode', () => {
 
   it('returns null when nothing resolves', () => {
     expect(serviceSlugForNode('not-real', exists)).toBeNull()
+  })
+})
+
+describe('clipToBox', () => {
+  // 40 wide, 40 tall, top-left at (100, 100). Default gap is 5.
+  const box = { x: 100, y: 100, w: 40, h: 40 }
+
+  it('stops on the near edge coming in horizontally', () => {
+    const p = clipToBox({ x: 0, y: 120 }, { x: 120, y: 120 }, box)
+    expect(p).toEqual({ x: 95, y: 120 })
+  })
+
+  it('stops on the near edge coming in vertically', () => {
+    const p = clipToBox({ x: 120, y: 0 }, { x: 120, y: 120 }, box)
+    expect(p).toEqual({ x: 120, y: 95 })
+  })
+
+  it('stops on the near edge on a diagonal', () => {
+    // Straight down-right at 45°: the vertical edge at x=95 is met first.
+    const p = clipToBox({ x: 0, y: 0 }, { x: 120, y: 120 }, box)
+    expect(p.x).toBeCloseTo(95)
+    expect(p.y).toBeCloseTo(95)
+  })
+
+  it('respects the gap, so the head never touches the border', () => {
+    const tight = clipToBox({ x: 0, y: 120 }, { x: 120, y: 120 }, box, 0)
+    expect(tight.x).toBe(100)
+  })
+
+  it('returns the target unchanged when the segment never reaches the box', () => {
+    // Aimed well below the box: no perimeter crossing on this segment.
+    const p = clipToBox({ x: 0, y: 400 }, { x: 300, y: 400 }, box)
+    expect(p).toEqual({ x: 300, y: 400 })
+  })
+
+  it('returns the target for a zero-length segment rather than NaN', () => {
+    const p = clipToBox({ x: 120, y: 120 }, { x: 120, y: 120 }, box)
+    expect(p).toEqual({ x: 120, y: 120 })
+  })
+
+  it('does not overshoot backwards when the start is already inside', () => {
+    const p = clipToBox({ x: 120, y: 120 }, { x: 130, y: 120 }, box)
+    // Both perimeter crossings are behind or beyond, so it keeps the target.
+    expect(p.x).toBeGreaterThan(120)
   })
 })

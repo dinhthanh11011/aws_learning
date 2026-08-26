@@ -2,6 +2,7 @@
 import type { LessonSection } from '@/content'
 import { CATEGORIES, serviceBySlug } from '@/content'
 import { Diagram } from '@/components/diagram/Diagram'
+import { Walkthrough } from './Walkthrough'
 import { ServiceRef } from '@/components/service/ServiceRef'
 import { formatMd } from '@/lib/md'
 import { cn } from '@/lib/cn'
@@ -21,20 +22,34 @@ const CALLOUT: Record<string, { border: string; text: string; label: string }> =
   money: { border: 'border-accent/30', text: 'text-accent', label: 'Cost' },
 }
 
-export function Sections({ sections }: { sections: LessonSection[] }) {
+export function Sections({
+  sections,
+  headingLevel = 3,
+}: {
+  sections: LessonSection[]
+  /**
+   * A story chapter renders its own `h2` above these, so its section headings
+   * are `h3`. A lesson has nothing between the page `h1` and them, so there they
+   * must be `h2` — skipping a level is a real accessibility failure, not a
+   * stylistic one, and the level is the caller's business either way.
+   */
+  headingLevel?: 2 | 3
+}) {
   return (
     <div className="flex flex-col gap-5">
       {sections.map((s, i) => (
-        <Section key={i} section={s} />
+        <Section key={i} section={s} headingLevel={headingLevel} />
       ))}
     </div>
   )
 }
 
-function Section({ section: s }: { section: LessonSection }) {
+function Section({ section: s, headingLevel }: { section: LessonSection; headingLevel: 2 | 3 }) {
   switch (s.kind) {
-    case 'heading':
-      return <h3 className="mt-2 text-[17px] font-semibold">{s.text}</h3>
+    case 'heading': {
+      const H = headingLevel === 2 ? 'h2' : 'h3'
+      return <H className="mt-2 text-[17px] font-semibold">{s.text}</H>
+    }
 
     case 'prose':
       return <p className="text-[14.5px] leading-relaxed">{formatMd(s.md)}</p>
@@ -51,8 +66,16 @@ function Section({ section: s }: { section: LessonSection }) {
       )
     }
 
+    // A spec that declares `steps` is a walkthrough, not a picture: the
+    // architecture holds still and the reader pushes a packet through it. That
+    // is the only way "the response is allowed back" reads as a demonstration
+    // rather than a claim, so the shape of the data decides the component.
     case 'diagram':
-      return <Diagram spec={s.spec} className="surface p-4" />
+      return s.spec.steps.length ? (
+        <Walkthrough spec={s.spec} />
+      ) : (
+        <Diagram spec={s.spec} className="surface p-4" />
+      )
 
     case 'compare':
       return (
@@ -106,12 +129,20 @@ function Section({ section: s }: { section: LessonSection }) {
             {s.items.map((n) => (
               <div key={n.label} className="flex flex-wrap items-baseline gap-x-2">
                 <dt className="text-[13px] text-fg-muted">{n.label}</dt>
-                <dd className="nums text-[14px] font-semibold">{n.value}</dd>
-                {/* A figure AWS moves is flagged rather than stated as fact. */}
-                {n.volatile ? <span className="text-[11px] text-warn">verify</span> : null}
-                {n.note ? (
-                  <span className="basis-full text-[12.5px] text-fg-subtle">{n.note}</span>
-                ) : null}
+                {/* The badge and note live inside the dd: `dl > div` may contain
+                    only dt and dd, and a stray span there is invalid HTML. */}
+                <dd className="nums flex flex-wrap items-baseline gap-x-2 text-[14px] font-semibold">
+                  {n.value}
+                  {/* A figure AWS moves is flagged rather than stated as fact. */}
+                  {n.volatile ? (
+                    <span className="text-[11px] font-normal text-warn">verify</span>
+                  ) : null}
+                  {n.note ? (
+                    <span className="basis-full text-[12.5px] font-normal text-fg-subtle">
+                      {n.note}
+                    </span>
+                  ) : null}
+                </dd>
               </div>
             ))}
           </dl>

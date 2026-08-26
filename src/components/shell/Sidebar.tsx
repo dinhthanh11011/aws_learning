@@ -49,6 +49,12 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     title: 'Learn',
     items: [
       {
+        href: '/learn',
+        label: 'Lessons',
+        icon: 'cap',
+        hint: 'One idea at a time, in the order that makes it stick',
+      },
+      {
         href: '/services',
         label: 'Service Atlas',
         icon: 'list',

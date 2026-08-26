@@ -38,6 +38,12 @@ import {
   inScope,
   StorySchema,
   stories,
+  LessonSchema,
+  lessons,
+  lessonById,
+  cardById,
+  type DiagramSpec,
+  type LessonSection,
   OPTION_SET_OWED,
   DecisionTreeSchema,
   decisionTrees,
@@ -209,6 +215,10 @@ const ROUTES = new Set([
   '/services',
   '/settings',
   '/story',
+  '/learn',
+  // Derived, not listed: a study step pointing at a lesson must not be able to
+  // go stale when a lesson is renamed, and a hand-maintained list would.
+  ...lessons.map((l) => `/learn/${l.id}`),
 ])
 
 const stepIds = new Set<string>()
@@ -218,6 +228,10 @@ for (const p of phases) {
     if (!taskById.has(id)) fail(`phase ${p.id}`, `references unknown task "${id}"`)
   }
   if (p.weekTo < p.weekFrom) fail(`phase ${p.id}`, 'weekTo is before weekFrom')
+
+  for (const id of p.lessonIds) {
+    if (!lessonById.has(id)) fail(`phase ${p.id}`, `lessonIds names unknown lesson "${id}"`)
+  }
 
   for (const id of p.labIds) {
     // A warning rather than a failure: the roadmap already skips unknown lab
@@ -551,6 +565,87 @@ for (const item of [
   }
 }
 
+/**
+ * The checks that apply to any `DiagramSpec`, wherever it is declared. Lifted
+ * out of the story validator when lessons started declaring specs of their own:
+ * a second copy would have been a second place for these rules to drift, and
+ * every failure here is silent in the UI — a bad id draws nothing rather than
+ * drawing wrong.
+ */
+function checkDiagram(where: string, spec: DiagramSpec): void {
+  const nodeIds = new Set(spec.nodes.map((n) => n.id))
+  const edgeIds = new Set(spec.edges.map((e) => e.id))
+  const groupIds = new Set(spec.groups.map((g) => g.id))
+
+  if (nodeIds.size !== spec.nodes.length) fail(where, `diagram "${spec.id}" has duplicate node ids`)
+  if (edgeIds.size !== spec.edges.length) fail(where, `diagram "${spec.id}" has duplicate edge ids`)
+  if (groupIds.size !== spec.groups.length)
+    fail(where, `diagram "${spec.id}" has duplicate group ids`)
+
+  // A service-kind node must name a real service, or clicking it opens nothing.
+  for (const n of spec.nodes) {
+    if (n.kind !== 'service') continue
+    if (!serviceSlugForNode(n.id, (slug) => serviceBySlug.has(slug))) {
+      fail(where, `node "${n.id}" is kind service but resolves to no service slug`)
+    }
+  }
+
+  for (const e of spec.edges) {
+    if (!nodeIds.has(e.from)) fail(where, `edge "${e.id}" comes from unknown node "${e.from}"`)
+    if (!nodeIds.has(e.to)) fail(where, `edge "${e.id}" goes to unknown node "${e.to}"`)
+  }
+
+  // A parent chain that does not terminate would hang the layout.
+  for (const g of spec.groups) {
+    if (!g.parent) continue
+    if (!groupIds.has(g.parent)) {
+      fail(where, `group "${g.id}" names unknown parent "${g.parent}"`)
+      continue
+    }
+    const seen = new Set([g.id])
+    let cur: string | undefined = g.parent
+    while (cur) {
+      if (seen.has(cur)) {
+        fail(where, `group "${g.id}" is in a parent cycle`)
+        break
+      }
+      seen.add(cur)
+      cur = spec.groups.find((x) => x.id === cur)?.parent
+    }
+    for (const id of g.nodeIds) {
+      if (!nodeIds.has(id)) fail(where, `group "${g.id}" names unknown node "${id}"`)
+    }
+  }
+
+  // The real invariant behind the relaxed schema: a group must contain
+  // something, directly or through a child. An empty one draws a labelled box
+  // around nothing.
+  for (const g of spec.groups) {
+    const hasChild = spec.groups.some((x) => x.parent === g.id)
+    if (!g.nodeIds.length && !hasChild) {
+      fail(where, `group "${g.id}" holds no node and has no child group`)
+    }
+  }
+
+  // A walkthrough step lighting an edge that does not exist advances and draws
+  // nothing, which reads as a broken button rather than as bad data.
+  spec.steps.forEach((step, i) => {
+    for (const id of step.edgeIds) {
+      if (!edgeIds.has(id)) {
+        fail(where, `diagram "${spec.id}" step ${i + 1} lights unknown edge "${id}"`)
+      }
+    }
+  })
+  const lit = new Set(spec.steps.flatMap((step) => step.edgeIds))
+  if (spec.steps.length) {
+    for (const e of spec.edges) {
+      // In a walkthrough every edge is part of the journey. One no step reaches
+      // is invisible for the whole diagram.
+      if (!lit.has(e.id)) fail(where, `diagram "${spec.id}" edge "${e.id}" is lit by no step`)
+    }
+  }
+}
+
 /* ── 4c. Stories ─────────────────────────────────────────────────────────── */
 
 /**
@@ -571,58 +666,10 @@ for (const st of stories) {
   }
 
   const arch = st.architecture
+  checkDiagram(where, arch)
   const nodeIds = new Set(arch.nodes.map((n) => n.id))
   const edgeIds = new Set(arch.edges.map((e) => e.id))
   const groupIds = new Set(arch.groups.map((g) => g.id))
-
-  if (nodeIds.size !== arch.nodes.length) fail(where, 'architecture has duplicate node ids')
-  if (edgeIds.size !== arch.edges.length) fail(where, 'architecture has duplicate edge ids')
-  if (groupIds.size !== arch.groups.length) fail(where, 'architecture has duplicate group ids')
-
-  // A service-kind node must name a real service, or clicking it opens nothing.
-  for (const n of arch.nodes) {
-    if (n.kind !== 'service') continue
-    if (!serviceSlugForNode(n.id, (slug) => serviceBySlug.has(slug))) {
-      fail(where, `node "${n.id}" is kind service but resolves to no service slug`)
-    }
-  }
-
-  for (const e of arch.edges) {
-    if (!nodeIds.has(e.from)) fail(where, `edge "${e.id}" comes from unknown node "${e.from}"`)
-    if (!nodeIds.has(e.to)) fail(where, `edge "${e.id}" goes to unknown node "${e.to}"`)
-  }
-
-  // A parent chain that does not terminate would hang the layout.
-  for (const g of arch.groups) {
-    if (!g.parent) continue
-    if (!groupIds.has(g.parent)) {
-      fail(where, `group "${g.id}" names unknown parent "${g.parent}"`)
-      continue
-    }
-    const seen = new Set([g.id])
-    let cur: string | undefined = g.parent
-    while (cur) {
-      if (seen.has(cur)) {
-        fail(where, `group "${g.id}" is in a parent cycle`)
-        break
-      }
-      seen.add(cur)
-      cur = arch.groups.find((x) => x.id === cur)?.parent
-    }
-    for (const id of g.nodeIds) {
-      if (!nodeIds.has(id)) fail(where, `group "${g.id}" names unknown node "${id}"`)
-    }
-  }
-
-  // The real invariant behind the relaxed schema: a group must contain
-  // something, directly or through a child. An empty one draws a labelled box
-  // around nothing.
-  for (const g of arch.groups) {
-    const hasChild = arch.groups.some((x) => x.parent === g.id)
-    if (!g.nodeIds.length && !hasChild) {
-      fail(where, `group "${g.id}" holds no node and has no child group`)
-    }
-  }
 
   // Chapter ids must match position, exactly as study-step ids do — so a
   // reordered chapter is a build error rather than a wrong deep link.
@@ -742,6 +789,118 @@ for (const st of stories) {
   for (const g of arch.groups) {
     if (!introduced.groups.has(g.id)) fail(where, `group "${g.id}" is introduced by no chapter`)
   }
+}
+
+/* ── 4d. Lessons ─────────────────────────────────────────────────────────── */
+
+/**
+ * A lesson restates the atlas in an order; it introduces nothing. So the checks
+ * here are all about references resolving — an unresolvable `[[slug]]` renders as
+ * bare text, an unknown `cardId` silently drills nothing, and a check with no
+ * correct option can never be answered right.
+ */
+const lessonIdsSeen = new Set<string>()
+
+for (const l of lessons) {
+  const where = `lesson ${l.id}`
+  const parsed = LessonSchema.safeParse(l)
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      fail(where, `${issue.path.join('.')}: ${issue.message}`)
+    }
+    continue
+  }
+
+  if (lessonIdsSeen.has(l.id)) fail(where, 'duplicate lesson id')
+  lessonIdsSeen.add(l.id)
+
+  // The task statement is how a lesson reaches a domain, and therefore how it
+  // reaches mastery. An unresolvable one silently belongs to nothing.
+  if (!taskById.has(l.taskId)) fail(where, `references unknown task "${l.taskId}"`)
+  else {
+    // Same rule questions live under: a lesson that resolves on no current paper
+    // would vanish from every cert silently rather than loudly.
+    const papers = currentCerts.filter((c) => inScope(l, c.id))
+    if (!papers.length) fail(where, 'is in scope for no current paper — it is dead content')
+    else if (!papers.some((c) => resolveTaskId(l.taskId, c.id))) {
+      fail(where, `taskId "${l.taskId}" resolves on none of the papers this lesson is in scope for`)
+    }
+  }
+
+  for (const slug of l.serviceSlugs) {
+    if (!serviceBySlug.has(slug)) fail(where, `serviceSlugs names unknown service "${slug}"`)
+  }
+  for (const id of l.cardIds) {
+    if (!cardById.has(id)) fail(where, `cardIds names unknown card "${id}"`)
+  }
+  for (const id of l.requires) {
+    if (!lessonById.has(id)) fail(where, `requires unknown lesson "${id}"`)
+    if (id === l.id) fail(where, 'requires itself')
+  }
+
+  // Every `[[slug]]` in every string a reader can see. Unresolvable ones render
+  // as the bare slug — visible, but only to whoever happens to read that line.
+  const mdStrings = (s: LessonSection): string[] => {
+    switch (s.kind) {
+      case 'prose':
+        return [s.md]
+      case 'callout':
+        return [s.title, s.md]
+      case 'compare':
+        return s.rows.flatMap((r) => r.cells)
+      case 'steps':
+        return s.items.flatMap((it) => [it.title, it.md])
+      case 'diagram':
+        return s.spec.steps.flatMap((st) => [st.title, st.detail ?? ''])
+      default:
+        return []
+    }
+  }
+  const prose = [
+    l.subtitle,
+    ...l.sections.flatMap(mdStrings),
+    ...l.checks.flatMap((c) => [c.prompt, ...c.options.flatMap((o) => [o.text, o.why])]),
+  ]
+  for (const slug of prose.flatMap(refSlugs)) {
+    if (!serviceBySlug.has(slug) && !conceptBySlug.has(slug)) {
+      fail(where, `prose references "[[${slug}]]", which is neither a service nor a concept`)
+    }
+  }
+
+  for (const s of l.sections) {
+    if (s.kind === 'diagram') checkDiagram(where, s.spec)
+    if (s.kind === 'services') {
+      for (const slug of s.slugs) {
+        if (!serviceBySlug.has(slug)) fail(where, `services section names unknown service "${slug}"`)
+      }
+    }
+    // A short row renders as silently missing table cells — the same bug the
+    // decision-tree matrices had.
+    if (s.kind === 'compare') {
+      for (const r of s.rows) {
+        if (r.cells.length !== s.columns.length) {
+          fail(
+            where,
+            `compare row "${r.label}" has ${r.cells.length} cells for ${s.columns.length} columns`,
+          )
+        }
+      }
+    }
+  }
+
+  const checkIds = new Set<string>()
+  for (const c of l.checks) {
+    if (!c.id.startsWith(l.id)) fail(where, `check "${c.id}" should be prefixed with the lesson id`)
+    if (checkIds.has(c.id)) fail(where, `duplicate check id "${c.id}"`)
+    checkIds.add(c.id)
+    const correct = c.options.filter((o) => o.correct).length
+    if (correct !== 1) fail(where, `check "${c.id}" has ${correct} correct options, expected 1`)
+  }
+
+  // Reading is not evidence, so a lesson with no checks teaches nothing that
+  // sticks. A warning rather than a failure: a purely diagrammatic lesson could
+  // legitimately exist one day.
+  if (!l.checks.length) warn(where, 'has no recall checks — reading alone leaves no trace')
 }
 
 /* ── 5. Coverage warnings (not failures) ─────────────────────────────────── */
@@ -963,6 +1122,15 @@ console.log(
   )} chapters, ${Math.round(
     stories.flatMap((st) => st.chapters).reduce((n, c) => n + c.minutes, 0) / 60,
   )} h)`,
+)
+console.log(
+  `  lessons         ${lessons.length}  (${lessons.reduce(
+    (n, l) => n + l.sections.length,
+    0,
+  )} sections, ${lessons.reduce((n, l) => n + l.checks.length, 0)} checks, ${lessons.reduce(
+    (n, l) => n + l.minutes,
+    0,
+  )} min)`,
 )
 console.log('  ─────────────────────────────────────────')
 

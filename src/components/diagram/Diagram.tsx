@@ -4,7 +4,15 @@ import { motion, useReducedMotion } from 'motion/react'
 import { CATEGORIES, serviceBySlug, type DiagramSpec } from '@/content'
 import type { AddState, VisibleAt } from '@/engines/story/cumulative'
 import { serviceLinkProps } from '@/components/service/ServiceRef'
-import { UNIT, layoutGroups, nodeBox, nodeCentre, serviceSlugForNode, viewBox } from './layout'
+import {
+  UNIT,
+  clipToBox,
+  layoutGroups,
+  nodeBox,
+  nodeCentre,
+  serviceSlugForNode,
+  viewBox,
+} from './layout'
 
 /**
  * An inline-SVG renderer for a `DiagramSpec`. Hand-rolled rather than a graph
@@ -154,14 +162,35 @@ export function Diagram({
           const from = nodeById.get(e.from)
           const to = nodeById.get(e.to)
           if (!from || !to) return null
+          // Both ends stop on the node boundary rather than the centre. The end
+          // has to, or the arrowhead is painted over by the node itself and the
+          // line loses its direction. The start does too, because the label sits
+          // at the midpoint of the segment — measured centre-to-centre it lands
+          // on top of one of the nodes, which is where every label collision in
+          // these diagrams came from.
           const a = nodeCentre(from)
-          const b = nodeCentre(to)
+          const centre = nodeCentre(to)
+          const corner = e.elbow ? { x: a.x, y: centre.y } : a
+          const b = clipToBox(corner, centre, nodeBox(to))
           const isNew = edgeStates.get(e.id) === 'new'
           const colour = isNew ? (TONE[e.tone] ?? TONE.default) : 'var(--border-strong)'
           const marker = isNew ? `${spec.id}-arrow-${e.tone}` : `${spec.id}-arrow-settled`
+          // For an elbow the first leg is vertical, so the exit point is found
+          // along that leg, not along the straight line to the target.
+          // Aimed *at* the source: for an elbow that is back down the vertical
+          // leg from the corner, for a straight line it is back from the target.
+          // Using `corner` for both would be a zero-length segment on a straight
+          // edge, since there the corner is the source centre itself.
+          const start = clipToBox(e.elbow ? corner : centre, a, nodeBox(from))
           const d = e.elbow
-            ? `M ${a.x} ${a.y} L ${a.x} ${b.y} L ${b.x} ${b.y}`
-            : `M ${a.x} ${a.y} L ${b.x} ${b.y}`
+            ? `M ${start.x} ${start.y} L ${start.x} ${b.y} L ${b.x} ${b.y}`
+            : `M ${start.x} ${start.y} L ${b.x} ${b.y}`
+          // An elbow's straight-line midpoint is nowhere near the elbow, so the
+          // label has to follow the path: the middle of the horizontal leg,
+          // which is the leg that has room for text.
+          const label = e.elbow
+            ? { x: (start.x + b.x) / 2, y: b.y - 5 }
+            : { x: (start.x + b.x) / 2, y: (start.y + b.y) / 2 - 4 }
           return (
             <Fragment key={e.id}>
               <path
@@ -175,8 +204,8 @@ export function Diagram({
               />
               {e.label ? (
                 <text
-                  x={(a.x + b.x) / 2}
-                  y={(a.y + b.y) / 2 - 4}
+                  x={label.x}
+                  y={label.y}
                   fontSize={9}
                   textAnchor="middle"
                   fill="var(--fg-muted)"

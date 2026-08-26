@@ -109,6 +109,7 @@ export const networkServices: Service[] = [
       'Stateful versus stateless is the single most-asked networking distinction. Security group: stateful, allow-only, ENI-level. NACL: stateless, allow *and* deny, subnet-level, evaluated in rule-number order.',
       'Because NACLs are stateless, they need an explicit rule for return traffic on ephemeral ports (1024–65535). Forgetting that is the classic "outbound works, responses do not come back" scenario.',
       'Referencing a source security group is the right answer to "allow only traffic from the application tier" — not a CIDR range, which breaks when instances change.',
+      'A referenced security group means "any interface that is a member of that group". It does not inherit that group\'s rules, and it is not a nesting relationship — so a chain of references does not make A able to reach C.',
       'A security group cannot block a single bad IP. If the question says "deny", it is not a security group.',
       'Removing the default outbound allow-all rule breaks package installs, SSM agents and NFS mounts. Questions about mysteriously broken instances sometimes hide here.',
     ],

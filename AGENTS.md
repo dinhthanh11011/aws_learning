@@ -39,7 +39,7 @@ npm run content:fingerprint  # hash of the whole corpus — assert it around any
 npm run typecheck       # tsc --noEmit, strict
 npm test                # vitest over src/engines, src/content and src/db
 npx eslint src scripts  # must be 0 errors AND 0 warnings
-npm run build           # 198 prerendered pages
+npm run build           # 202 prerendered pages
 ```
 
 All five are currently clean. `npm run dev` for the app; drive it in a real
@@ -205,6 +205,27 @@ browser before saying a UI change works.
     `pruneOrphanCards` then clears. `cards.test.ts` fails any id with a
     digits-only segment.
 
+23. **A lesson is an order, not a source.** `src/content/lessons/*` may restate
+    any fact in the atlas or the concepts and may introduce none — same rule as a
+    question explanation, invariant 10, and for the same reason: a fact that
+    exists only in a lesson is drilled by no card and findable by no search. When
+    a lesson wants a fact the atlas lacks, the atlas entry gets edited first and
+    `cards.ts` derives the card for free. The lesson's whole contribution is
+    *sequence*: a picture before the definition, the wrong answer written out
+    before it is rejected, statefulness demonstrated with two arrows before the
+    word is used. That is what the atlas cannot do, being a reference — and it is
+    the actual complaint that produced this layer, not any missing fact.
+
+    A `DiagramSpec` that declares `steps` renders as a walkthrough rather than a
+    picture (`traceAt` in `src/engines/lesson/trace.ts`), so use steps only when
+    the *sequence* is the teaching. If the whole thing needs to be seen at once,
+    leave `steps` empty — `content:check` fails a walkthrough with an edge no
+    step lights, because it would be invisible for the diagram's whole life.
+
+    Reading a lesson awards nothing. `XP.lessonSection` and `XP.lessonComplete`
+    exist and are deliberately unused; only the checks pay, and they record no
+    `Attempt`. Same rule as a study step (13) and a story chapter (19).
+
 17. **A number the exam sets is read from the `Cert`, never typed into prose.**
     Minutes, question count, pass score and the pass-accuracy anchor all live on
     the cert. Both current papers happen to share 130/65/720, which is exactly
@@ -222,10 +243,11 @@ browser before saying a UI change works.
 | Questions | 142 (40/36/34/32) — two full 65q papers | 132 (42/34/32/24) — two full 65q papers |
 | Services | 141 total, tiered core/working/recognise | shared corpus, per-cert tagged |
 | Concepts | 37 primitives in 6 groups | shared corpus, per-cert tagged |
-| Cards | 1,851 derived | shared corpus |
+| Cards | 1,852 derived | shared corpus |
 | Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
+| Lessons | 1 (security groups), 25 sections, 4 checks | not written yet |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

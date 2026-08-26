@@ -142,6 +142,15 @@ export const IconBook = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 )
 
+/** A mortarboard: taught material, as distinct from the open book of a story. */
+export const IconCap = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M1.5 6 8 3l6.5 3L8 9 1.5 6Z" />
+    <path d="M4.25 7.25v3.5c0 .9 1.68 1.75 3.75 1.75s3.75-.85 3.75-1.75v-3.5" />
+    <path d="M13.5 6.25v3.5" />
+  </svg>
+)
+
 export const ICONS = {
   target: IconTarget,
   layers: IconLayers,
@@ -159,6 +168,7 @@ export const ICONS = {
   search: IconSearch,
   blocks: IconBlocks,
   book: IconBook,
+  cap: IconCap,
 } as const
 
 export type IconName = keyof typeof ICONS

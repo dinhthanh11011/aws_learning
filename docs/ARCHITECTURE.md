@@ -56,6 +56,8 @@ export is the only backup that exists.
 | `labs.ts` | Lab metadata |
 | `stories/*.ts` | Storylines: one complete architecture plus the chapters that reveal it |
 | `story-registry.ts` | Aggregates the storylines. Same naming rule as `service-registry.ts` |
+| `lessons/*.ts` | Lessons: the atlas's facts in a teaching order. Introduces none of its own — invariant 23 |
+| `lesson-registry.ts` | Aggregates the lessons. Same naming rule again |
 | `index.ts` | The `@/content` barrel: lookups, reverse indexes, `search()`, `contentStats()`, `examCoverage()` |
 
 ### Concepts — the primitives layer
@@ -113,7 +115,9 @@ adds — see invariant 18 for why, and `src/engines/story/cumulative.ts` for the
 fold that turns "chapter N" into "what is on screen". Chapter bodies reuse
 `LessonSectionSchema`, which means the renderer built for this
 (`src/components/lesson/Sections.tsx`, `src/components/diagram/Diagram.tsx`,
-`src/lib/md.tsx`) is the renderer the lesson player was always blocked on.
+`src/lib/md.tsx`) is the renderer the lesson player was blocked on — and now
+uses. Chapters and lessons render through the same `Sections`, which is why a fix
+to either shows up in both.
 
 `Diagram.tsx` is hand-rolled inline SVG rather than a graph library. The
 load-bearing feature is *nested labelled regions* — Region ⊃ VPC ⊃ AZ ⊃ subnet,
@@ -295,6 +299,7 @@ flags, `Space` flips a card, `1–4` grades it, `⌘K` or `/` searches.
 | `/map` | Phases gated on 3-ring average of the previous phase. `?phase=` holds the open phase, `?step=` opens and scrolls to one step |
 | `/services`, `/services/[slug]` | 141 SSG pages |
 | `/concepts`, `/concepts/[slug]` | 37 SSG pages, grouped and in dependency order |
+| `/learn`, `/learn/[id]` | The lesson player. A `DiagramSpec` with `steps` renders as a walkthrough the reader advances a hop at a time (`src/engines/lesson/trace.ts`); reading awards nothing, the checks award XP and record no attempt |
 | `/decoder`, `/compare` | Trigger drill; decision-tree walker |
 | `/drill` | FSRS session. Seeds `srsCards` idempotently on first visit |
 | `/quiz`, `/exam`, `/exam/[id]` | Immediate-feedback quiz; timed simulator; per-question review with mistake logging |

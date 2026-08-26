@@ -5,13 +5,20 @@ import { daysBetween, today } from '@/db'
  * The motivation layer. Two rules keep it honest:
  *
  *   1. XP is only ever awarded for *recall* — answering, reviewing, building.
- *      Reading a lesson earns a token amount; getting a hard question right
- *      earns real XP. Otherwise the numbers reward the wrong behaviour.
+ *      Getting a hard question right earns real XP; reading earns nothing at
+ *      all. Otherwise the numbers reward the wrong behaviour.
  *   2. Nothing here is purchasable and nothing is random enough to feel like a
  *      slot machine. Streak freezes are earned by consistency, not bought.
  */
 
 export const XP = {
+  /**
+   * Both deliberately unused, and kept only so the intent is written down: the
+   * lesson player awards nothing for *reading* a lesson, exactly as marking a
+   * study step or a story chapter awards nothing. Reading is not evidence of
+   * recall. If you are here to wire these up, the answer is no — the checks
+   * below are what the lesson pays for.
+   */
   lessonSection: 2,
   lessonComplete: 15,
   checkCorrect: 5,

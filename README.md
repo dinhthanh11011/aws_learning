@@ -18,11 +18,13 @@ npm run dev          # http://localhost:3000
 |---|---|
 | **Big Picture** | Every layer of a real AWS system on one canvas, tinted by your own mastery, with seven traceable flows (a web request, private egress, async work, identity, AZ failure, where the money goes) and the failure symptom for each hop. |
 | **Roadmap** | Five phases over ~22–29 weeks, gated on mastery. Foundations → core services → build & break → exam prep → DVA delta. |
+| **Lessons** | One idea taught in the order that makes it stick: a picture before the definition, a real rule block read out line by line, the wrong answer written out before it is rejected. Security groups is the first, with a packet you step through to watch the reply come back on a rule you never wrote. |
+| **Story Mode** | One system built over thirteen chapters, each one caused by the last one's limitation, with the architecture growing on a single diagram rather than jumping between fourteen. You name the service before the chapter reveals it. |
 | **Service Atlas** | 141 in-scope services, tiered by how deeply you actually need each one. Every card carries when *not* to use it, the numbers to memorise, the exam traps, and the services it gets confused with. |
 | **Concepts** | 37 primitives the exam assumes and never defines — CIDR, subnet, route table, RTO and RPO, consistency, idempotency, ARNs. Each one leads with the sentence that decides questions rather than a definition, and every service card links back to the ones it takes for granted. |
 | **Keyword Decoder** | 47 trigger phrases — the wording that gives the answer away — each with the plausible option it was engineered to make you pick instead. |
 | **Decision Trees** | Which compute / database / storage / integration / edge service, walked one question at a time. |
-| **Recall Drill** | 1,709 cards, scheduled with FSRS-6. Derived from the atlas, so they can never contradict it. |
+| **Recall Drill** | 1,852 cards, scheduled with FSRS-6. Derived from the atlas, so they can never contradict it. |
 | **Exam Simulator** | 65 questions in 130 minutes, sampled to the real domain weighting, resumable after a reload. Scaled-score estimate, per-domain breakdown, marks-at-stake advice. |
 | **Labs** | VPC packet tracer (build it, then break it seven ways and predict the symptom), IAM policy puzzle (predict the decision, then read the evaluation trace), storage & teardown cost lab. |
 | **Progress** | Mastery per domain and service, readiness forecast, activity heatmap, exam-score trend, and a mistake log clustered by service. |

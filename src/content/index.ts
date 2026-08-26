@@ -37,6 +37,7 @@ import {
   conceptsForService,
 } from './concept-registry'
 import { chapterById, stories, storiesFor, story, storyBySlug } from './story-registry'
+import { lesson, lessonById, lessons, lessonsFor } from './lesson-registry'
 import { phases } from './phases'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
@@ -129,6 +130,8 @@ export {
 // exported. `export ... from` for a name that is also imported gives the
 // bundler two paths to it and one of them can resolve to undefined.
 export { stories, storyBySlug, story, storiesFor, chapterById }
+// Same rule again: imported once above, then the local binding is exported.
+export { lessons, lessonById, lesson, lessonsFor }
 export { OPTION_SET_OWED }
 
 /** Services a task statement points at, in tier order (core first). */
@@ -289,5 +292,6 @@ export function contentStats(certId?: CertId) {
     steps: certId ? stepsFor(certId).length : phases.flatMap((p) => p.steps).length,
     stories: certId ? storiesFor(certId).length : stories.length,
     chapters: (certId ? storiesFor(certId) : stories).reduce((n, s) => n + s.chapters.length, 0),
+    lessons: certId ? lessonsFor(certId).length : lessons.length,
   }
 }
