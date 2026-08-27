@@ -7,6 +7,9 @@ import { whyCantItReachTheInternet } from './lessons/why-cant-it-reach-the-inter
 import { howIamDecides } from './lessons/how-iam-decides'
 import { rolesNotKeys } from './lessons/roles-not-keys'
 import { kmsAndEnvelopeEncryption } from './lessons/kms-and-envelope-encryption'
+import { blockFileObject } from './lessons/block-file-object'
+import { s3StorageClasses } from './lessons/s3-storage-classes'
+import { s3DurabilityVsAvailability } from './lessons/s3-durability-vs-availability'
 
 /**
  * Aggregates the lessons.
@@ -27,6 +30,9 @@ export const lessons: Lesson[] = [
   howIamDecides,
   rolesNotKeys,
   kmsAndEnvelopeEncryption,
+  blockFileObject,
+  s3StorageClasses,
+  s3DurabilityVsAvailability,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

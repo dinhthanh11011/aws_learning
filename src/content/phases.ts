@@ -305,6 +305,9 @@ export const phases: Phase[] = [
       'how-iam-decides',
       'roles-not-keys',
       'kms-and-envelope-encryption',
+      'block-file-object',
+      's3-storage-classes',
+      's3-durability-vs-availability',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -425,7 +428,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ebs', 'instance-store', 'efs', 'fsx', 's3'],
-        lessonIds: [],
+        lessonIds: ['block-file-object'],
         reading: [
           {
             label: 'EBS volume types — memorise the IOPS ceilings',
@@ -449,7 +452,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['s3', 's3-glacier', 'kms'],
-        lessonIds: [],
+        lessonIds: ['s3-storage-classes', 's3-durability-vs-availability'],
         reading: [
           {
             label: 'Storage classes and retrieval times',

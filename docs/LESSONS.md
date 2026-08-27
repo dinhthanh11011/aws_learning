@@ -293,15 +293,37 @@ neither the lesson nor the diagram.
 **A lesson cannot link to another lesson** — there is no `[[lesson-id]]`. Name
 it in bold by its title and let `requires` and `/learn` carry the navigation.
 
-### Batch 3 — storage, where the exam asks you to choose
+### Batch 3 — storage, where the exam asks you to choose _(done)_
 
 `npm run lesson:brief -- s3 ebs efs s3-glacier`
 
-| Lesson                          |                                                                                                                                  |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `s3-storage-classes`            | The `optionSet` already holds the table; the lesson is the _decision_, driven by what the requirement says about access pattern. |
-| `block-file-object`             | Three shapes of storage and the sentence in a requirement that picks each.                                                       |
-| `s3-durability-vs-availability` | Eleven nines of one thing is not the other thing.                                                                                |
+All three written: `block-file-object`, `s3-storage-classes` and
+`s3-durability-vs-availability` — 46 sections and 11 checks, 39 minutes. The
+first chain where every lesson depends on the one before it, so the order on
+`/learn` is the order to read them in.
+
+| Lesson                          |                                                                                                                                                                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `block-file-object`             | Three shapes of storage and the sentence in a requirement that picks each. Template B fan-in-the-middle for the second server, plus template C for "S3 is not in the VPC".                               |
+| `s3-storage-classes`            | The `optionSet` already holds the table; the lesson is the _decision_, driven by what the requirement says about access pattern. Template B with **no** fan — a plain four-node chain at `rows: 3`.       |
+| `s3-durability-vs-availability` | Eleven nines of one thing is not the other thing. Template B fan-in-the-middle again, because the claim being made _is_ "the same journey, differing at one point".                                       |
+
+Two things this batch cost that the next one need not.
+
+**A caret line in a `code` block must sit directly under what it points at**, and
+"directly" means counting the columns rather than eyeballing them. Both wrong-answer
+blocks were written with the annotation a line or two below its target and the
+carets a few columns off; nothing catches it — `content:check` sees a valid
+string and `diagram:audit` never looks at code — and in the browser it reads as a
+stray row of punctuation. Compute the index of the token and pad to it.
+
+**An `optionSet` on the service is a reason to pick different `compare` axes, not
+a reason to skip `compare`.** The seven storage classes are already a derived
+table (invariant 21), so a class-by-class comparison here would have been a second
+copy of it. The retrieval windows are not on that table — they live in
+`s3-glacier`'s `keyNumbers` — so "the window the question names → the retrieval
+you must ask for" is a table the option set cannot render, and it is the one
+`saa-d4-001` actually tests.
 
 ### Batch 4 — resilience, the largest SAA domain
 

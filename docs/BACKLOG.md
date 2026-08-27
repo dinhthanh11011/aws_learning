@@ -63,9 +63,9 @@ the UI says so rather than padding the list to look complete.
 **Done, differently than proposed here.** A step can now name a lesson, via
 `StudyStep.lessonIds` — not the union on `reading` this entry suggested. Those
 minutes are budget-checked against external pages and a lesson is in-app work, so
-folding them together would have made the budget check lie. Eight steps across
+folding them together would have made the budget check lie. Ten steps across
 three phases point at a lesson today; the rest still read AWS docs, because the
-other four lesson batches are unwritten.
+other three lesson batches are unwritten.
 
 ## Not built
 
@@ -237,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, batch 1 written
+### 1. The lesson player — built, batches 1–3 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -281,30 +281,38 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** Two batches are written. Batch 1 — the reachability
+**What is owed here.** Three batches are written. Batch 1 — the reachability
 cluster — is `security-groups`, `subnets-and-route-tables`,
 `why-cant-it-reach-the-internet` and `network-acls`, 83 sections and 16 checks.
 Batch 2 — identity — is `how-iam-decides`, `roles-not-keys` and
 `kms-and-envelope-encryption`, 61 sections and 12 checks, 39 minutes; both of the
 latter declare `requires: ['how-iam-decides']`, making it the first three-lesson
-chain in the corpus. Seven lessons, 144 sections, 28 checks, 93 minutes.
+chain in the corpus. Batch 3 — storage — is `block-file-object`,
+`s3-storage-classes` and `s3-durability-vs-availability`, 46 sections and 11
+checks, 39 minutes, and it is a *linear* chain: each one declares `requires` on
+the one before, so `/learn` reads in the order it should be read in. Ten lessons,
+190 sections, 39 checks, 132 minutes.
 
-**The remaining twelve, in four batches** — storage, resilience, serverless and
-events, and data and cost — ordered by how many questions in the bank touch each
-service, are in [`LESSONS.md` § The batches](LESSONS.md), kept there rather than
-here so there is one list rather than two drifting ones. Note all seven are
-SAA-tagged and DVA still has no lesson at all; a lesson carries exactly one
-`taskId`, so DVA coverage means DVA-tasked lessons rather than re-tagging these.
-Batch 2 was tempting to split — `roles-not-keys` maps cleanly onto `dva-2.1` —
-but roles are heavily SAA-tested too, and a DVA-tagged lesson wired into an
-SAA-only phase would be invisible to the reader who needs it most.
+**The remaining nine, in three batches** — resilience, serverless and events, and
+data and cost — ordered by how many questions in the bank touch each service, are
+in [`LESSONS.md` § The batches](LESSONS.md), kept there rather than here so there
+is one list rather than two drifting ones. Note all ten are SAA-tagged and DVA
+still has no lesson at all; a lesson carries exactly one `taskId`, so DVA coverage
+means DVA-tasked lessons rather than re-tagging these. Batch 2 was tempting to
+split — `roles-not-keys` maps cleanly onto `dva-2.1` — but roles are heavily
+SAA-tested too, and a DVA-tagged lesson wired into an SAA-only phase would be
+invisible to the reader who needs it most. Batch 3 is the same story: storage
+carries real DVA weight through `dva-1.3`, and the three lessons still sit on
+SAA task statements because the phases they are wired into are SAA-only.
 
 Batch 2 also moved two step budgets: `phase-0-s6` and `phase-1-s1` each went from
 90 to 105 minutes, because 80 and 65 minutes of external reading plus a lesson on
 top does not fit in 90, and assuming the reader is faster would make the plan a
 lie. `phase-1-s16` had the room already. That is the one number a lesson can
 silently invalidate, so check it every time — see
-[`LESSONS.md` § Wiring a lesson in](LESSONS.md).
+[`LESSONS.md` § Wiring a lesson in](LESSONS.md). Batch 3 moved none: its two
+steps, `phase-1-s6` and `phase-1-s7`, are 120 minutes each against 55 and 80
+minutes of reading, so 14 and 25 minutes of lesson fit without touching them.
 
 That document is also where the workflow lives, because the first lesson cost far
 more than writing it: most of the effort went on re-reading content files to find
@@ -416,9 +424,9 @@ Recorded because the symptoms pointed away from the causes.
 ```bash
 npm run content:check   # should print counts and "all content valid"
 npm run typecheck
-npm test                # 115 passing
+npm test                # 226 passing
 npx eslint src scripts  # 0 messages, warnings included
-npm run build           # 198 prerendered pages
+npm run build           # 211 prerendered pages
 ```
 
 If `content:check` warns about DVA coverage, that is expected and documented
