@@ -63,9 +63,9 @@ the UI says so rather than padding the list to look complete.
 **Done, differently than proposed here.** A step can now name a lesson, via
 `StudyStep.lessonIds` — not the union on `reading` this entry suggested. Those
 minutes are budget-checked against external pages and a lesson is in-app work, so
-folding them together would have made the budget check lie. Six steps across three
-phases point at a lesson today; the rest still read AWS docs, because the other
-five lesson batches are unwritten.
+folding them together would have made the budget check lie. Eight steps across
+three phases point at a lesson today; the rest still read AWS docs, because the
+other four lesson batches are unwritten.
 
 ## Not built
 
@@ -281,15 +281,30 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** Batch 1 — the reachability cluster — is written:
-`security-groups`, `subnets-and-route-tables`, `why-cant-it-reach-the-internet`
-and `network-acls`, 83 sections and 16 checks between them. That is one cluster of
-one domain. **The remaining fifteen, in five batches** ordered by how many
-questions in the bank touch each service, are in
-[`LESSONS.md` § The batches](LESSONS.md) — kept there rather than here so there is
-one list rather than two drifting ones. Note all four are SAA-tagged and DVA has
-no lesson at all; a lesson carries exactly one `taskId`, so DVA coverage means
-DVA-tasked lessons rather than re-tagging these.
+**What is owed here.** Two batches are written. Batch 1 — the reachability
+cluster — is `security-groups`, `subnets-and-route-tables`,
+`why-cant-it-reach-the-internet` and `network-acls`, 83 sections and 16 checks.
+Batch 2 — identity — is `how-iam-decides`, `roles-not-keys` and
+`kms-and-envelope-encryption`, 61 sections and 12 checks, 39 minutes; both of the
+latter declare `requires: ['how-iam-decides']`, making it the first three-lesson
+chain in the corpus. Seven lessons, 144 sections, 28 checks, 93 minutes.
+
+**The remaining twelve, in four batches** — storage, resilience, serverless and
+events, and data and cost — ordered by how many questions in the bank touch each
+service, are in [`LESSONS.md` § The batches](LESSONS.md), kept there rather than
+here so there is one list rather than two drifting ones. Note all seven are
+SAA-tagged and DVA still has no lesson at all; a lesson carries exactly one
+`taskId`, so DVA coverage means DVA-tasked lessons rather than re-tagging these.
+Batch 2 was tempting to split — `roles-not-keys` maps cleanly onto `dva-2.1` —
+but roles are heavily SAA-tested too, and a DVA-tagged lesson wired into an
+SAA-only phase would be invisible to the reader who needs it most.
+
+Batch 2 also moved two step budgets: `phase-0-s6` and `phase-1-s1` each went from
+90 to 105 minutes, because 80 and 65 minutes of external reading plus a lesson on
+top does not fit in 90, and assuming the reader is faster would make the plan a
+lie. `phase-1-s16` had the room already. That is the one number a lesson can
+silently invalidate, so check it every time — see
+[`LESSONS.md` § Wiring a lesson in](LESSONS.md).
 
 That document is also where the workflow lives, because the first lesson cost far
 more than writing it: most of the effort went on re-reading content files to find

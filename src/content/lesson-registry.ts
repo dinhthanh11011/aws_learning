@@ -4,6 +4,9 @@ import { securityGroups } from './lessons/security-groups'
 import { subnetsAndRouteTables } from './lessons/subnets-and-route-tables'
 import { networkAcls } from './lessons/network-acls'
 import { whyCantItReachTheInternet } from './lessons/why-cant-it-reach-the-internet'
+import { howIamDecides } from './lessons/how-iam-decides'
+import { rolesNotKeys } from './lessons/roles-not-keys'
+import { kmsAndEnvelopeEncryption } from './lessons/kms-and-envelope-encryption'
 
 /**
  * Aggregates the lessons.
@@ -21,6 +24,9 @@ export const lessons: Lesson[] = [
   subnetsAndRouteTables,
   whyCantItReachTheInternet,
   networkAcls,
+  howIamDecides,
+  rolesNotKeys,
+  kmsAndEnvelopeEncryption,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

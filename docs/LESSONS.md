@@ -260,15 +260,38 @@ before writing batch 2 — they are the only worked examples of a lesson that
 _depends_ on another (`requires`), and of the same template A coordinates reused
 deliberately so the reader recognises the picture and notices what moved.
 
-### Batch 2 — identity, the highest-value cluster on the paper
+### Batch 2 — identity, the highest-value cluster on the paper _(done)_
 
 `npm run lesson:brief -- iam sts organizations secrets-manager kms`
 
-| Lesson                        |                                                                                                                                                     |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `how-iam-decides`             | Explicit deny → SCP → resource policy → allow → implicit deny, as a walkthrough down one request. The single best fit for template A in the corpus. |
-| `roles-not-keys`              | Why an access key in an environment variable is the wrong answer to every question.                                                                 |
-| `kms-and-envelope-encryption` | Two keys, and which one leaves the region.                                                                                                          |
+All three written: `how-iam-decides`, `roles-not-keys` and
+`kms-and-envelope-encryption` — 61 sections and 12 checks, 39 minutes. Both of
+the latter declare `requires: ['how-iam-decides']`, so this is the first
+three-lesson chain in the corpus.
+
+| Lesson                        |                                                                                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `how-iam-decides`             | Explicit deny → SCP → resource policy → allow → implicit deny, as a walkthrough down one request. Template A, exactly as predicted here.     |
+| `roles-not-keys`              | Why an access key in an environment variable is the wrong answer to every question. Template B, the fan-at-the-end variant.                   |
+| `kms-and-envelope-encryption` | Two keys, and which one leaves the region. Template B fan-in-the-middle, plus template C for the two Regions.                                 |
+
+Three things this batch cost that the next one need not.
+
+**Only `md` fields and `compare` cells go through `formatMd`.** A `steps` item
+`title`, a `compare` row `label` or column heading, and every string in a
+`check` — prompt, option text, `why` — render as plain text, so a backtick or a
+`[[slug]]` in one of them appears on screen verbatim. `content:check` does not
+catch it, because the slug resolves perfectly well; only the browser does. Write
+those fields as plain prose and keep the markup in the `md` beneath them.
+
+**A `DiagramSpec` written as a TypeScript literal must spell out `groups: []`**
+even when it has none. The zod defaults apply to parsed data, not to an object
+literal typed as `Lesson`, and the omission crashes `content:check` inside
+`checkDiagram` with a bare `Cannot read properties of undefined` that names
+neither the lesson nor the diagram.
+
+**A lesson cannot link to another lesson** — there is no `[[lesson-id]]`. Name
+it in bold by its title and let `requires` and `/learn` carry the navigation.
 
 ### Batch 3 — storage, where the exam asks you to choose
 

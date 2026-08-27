@@ -48,13 +48,15 @@ export default function LearnIndex() {
         })}
 
         <p className="text-[13px] leading-relaxed text-fg-subtle">
-          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering reachability —
-          routing, the two filters, and why something cannot reach the internet. That is one cluster
-          of one exam domain, and the rest are not written yet: identity, storage, resilience,
-          serverless and events, and data and cost are planned and listed in docs/LESSONS.md. Until
-          they exist, those topics are taught through the Service Atlas, Concepts, Story Mode, the
-          Keyword Decoder and the labs — the atlas holds every fact either way, and a lesson only
-          ever puts facts in an order.
+          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering two clusters:
+          reachability — routing, the two filters, and why something cannot reach the internet — and
+          identity — how IAM decides, why a role beats an access key, and the two keys behind
+          envelope encryption. Four clusters are still unwritten: storage, resilience, serverless
+          and events, and data and cost. They are planned and listed in docs/LESSONS.md, and every
+          one of them is SAA-shaped — there is no DVA-tasked lesson yet either. Until they exist,
+          those topics are taught through the Service Atlas, Concepts, Story Mode, the Keyword
+          Decoder and the labs — the atlas holds every fact either way, and a lesson only ever puts
+          facts in an order.
         </p>
       </div>
     </Page>

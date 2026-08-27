@@ -62,6 +62,7 @@ export const phases: Phase[] = [
       'subnets-and-route-tables',
       'why-cant-it-reach-the-internet',
       'network-acls',
+      'how-iam-decides',
     ],
     labIds: ['iam-puzzle'],
     steps: [
@@ -181,9 +182,12 @@ export const phases: Phase[] = [
         title: 'How IAM actually decides',
         why: 'The evaluation order is a mechanical rule, and questions are built to catch people who half-remember it. Learn it as an algorithm and the deny/allow conflict questions become free.',
         kind: 'read',
-        minutes: 90,
+        // 105 rather than 90: the reading is 80 minutes and the lesson is 14 on
+        // top of it. Raising the budget is the honest move — see LESSONS.md
+        // § Wiring a lesson in.
+        minutes: 105,
         serviceSlugs: ['iam', 'sts', 'organizations'],
-        lessonIds: [],
+        lessonIds: ['how-iam-decides'],
         reading: [
           {
             label: 'Policy evaluation logic — read this one twice',
@@ -296,7 +300,12 @@ export const phases: Phase[] = [
       'saa-3.3',
       'saa-3.4',
     ],
-    lessonIds: ['why-cant-it-reach-the-internet'],
+    lessonIds: [
+      'why-cant-it-reach-the-internet',
+      'how-iam-decides',
+      'roles-not-keys',
+      'kms-and-envelope-encryption',
+    ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
       {
@@ -304,9 +313,11 @@ export const phases: Phase[] = [
         title: 'IAM beyond the basics',
         why: 'Identity is the one topic that appears inside questions about every other service. Roles and STS are what make the rest of the plan legible.',
         kind: 'read',
-        minutes: 90,
+        // 65 minutes of reading plus two lessons at 14 and 12 does not fit in
+        // 90, and pretending the reader is faster would make the plan a lie.
+        minutes: 105,
         serviceSlugs: ['iam', 'sts', 'iam-identity-center', 'organizations'],
-        lessonIds: [],
+        lessonIds: ['how-iam-decides', 'roles-not-keys'],
         reading: [
           {
             label: 'Roles, trust policies, assume-role',
@@ -658,7 +669,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['kms', 'secrets-manager', 'acm', 'cloudhsm', 'systems-manager'],
-        lessonIds: [],
+        lessonIds: ['kms-and-envelope-encryption'],
         reading: [
           {
             label: 'KMS concepts — CMK, data key, envelope encryption',
