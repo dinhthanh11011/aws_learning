@@ -237,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, batches 1–4 written
+### 1. The lesson player — built, batches 1–5 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -281,7 +281,7 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** Four batches are written. Batch 1 — the reachability
+**What is owed here.** Five batches are written. Batch 1 — the reachability
 cluster — is `security-groups`, `subnets-and-route-tables`,
 `why-cant-it-reach-the-internet` and `network-acls`, 83 sections and 16 checks.
 Batch 2 — identity — is `how-iam-decides`, `roles-not-keys` and
@@ -296,19 +296,29 @@ resilience, the largest SAA domain — is `multi-az-vs-read-replica`,
 12 checks, 44 minutes, a linear chain again and the first batch whose middle
 lesson restates almost nothing from a service card: RTO, RPO and the four
 strategies are all concept entries, so `lesson:brief` had to be called a second
-time with concept slugs. Thirteen lessons, 250 sections, 51 checks, 176 minutes.
+time with concept slugs. Batch 5 — serverless and events — is
+`lambda-execution-model`, `queue-topic-bus` and `retries-dlqs-and-idempotency`,
+48 sections and 12 checks, 45 minutes, and it is not a chain: the first two are
+independent and the third declares `requires` on both. **Sixteen lessons, 298
+sections, 63 checks, 221 minutes.**
 
-**The remaining six, in two batches** — serverless and events, and data and cost
-— ordered by how many questions in the bank touch each service, are
-in [`LESSONS.md` § The batches](LESSONS.md), kept there rather than here so there
-is one list rather than two drifting ones. Note all thirteen are SAA-tagged and DVA
-still has no lesson at all; a lesson carries exactly one `taskId`, so DVA coverage
-means DVA-tasked lessons rather than re-tagging these. Batch 2 was tempting to
-split — `roles-not-keys` maps cleanly onto `dva-2.1` — but roles are heavily
-SAA-tested too, and a DVA-tagged lesson wired into an SAA-only phase would be
-invisible to the reader who needs it most. Batch 3 is the same story: storage
-carries real DVA weight through `dva-1.3`, and the three lessons still sit on
-SAA task statements because the phases they are wired into are SAA-only.
+**The remaining three, in one batch** — data and cost — ordered by how many
+questions in the bank touch each service, are in
+[`LESSONS.md` § The batches](LESSONS.md), kept there rather than here so there is
+one list rather than two drifting ones.
+
+Batch 5 settled the DVA question the first four deferred. Batches 1–4 are all
+`families: ['saa']`, and the worry recorded here was that a DVA-tagged lesson
+wired into an SAA-only phase would be invisible to the reader who needs it most.
+It turns out nothing filters `lessonIds` by family at the step or phase level, so
+the answer is **both families with the task statement that fits**: batch 5's
+three are `['saa', 'dva']`, `lambda-execution-model` and
+`retries-dlqs-and-idempotency` carry `dva-1.2` and `dva-1.1`, `queue-topic-bus`
+carries `saa-2.1`, and all three render on SAA phases 1 and 2 *and* on DVA phase
+4. Phase 4 had no lesson on it at all before this; it now has all three.
+Thirteen lessons are still SAA-only, though, so DVA coverage beyond Lambda and
+messaging — API Gateway, DynamoDB modelling, Cognito, CI/CD, observability — is
+genuinely owed, and batch 6 does not touch it either.
 
 Batch 2 also moved two step budgets: `phase-0-s6` and `phase-1-s1` each went from
 90 to 105 minutes, because 80 and 65 minutes of external reading plus a lesson on
@@ -322,7 +332,11 @@ Batch 4 moved none either — `phase-1-s9` (120 against 90), `phase-1-s12` (120
 against 75) and `phase-2-s7` (90 against 45) all had the room. It also wired
 `multi-az-vs-read-replica` a second time, onto `phase-2-s5` "Lose an Availability
 Zone", which is the step that rehearses the lesson's whole question; the phase
-lists it too, so the card and the step agree.
+lists it too, so the card and the step agree. Batch 5 moved none either, and it
+is the first to wire across both exams: `phase-1-s14` (120 against 85),
+`phase-1-s15` (120 against 50), `phase-2-s4` (90 against 40), `phase-4-s2` (120
+against 95), `phase-4-s3` (120 against 60) and `phase-4-s4` (120 against 25) all
+had the room for a 14- to 16-minute lesson on top.
 
 Batch 4 also surfaced one thing worth stating as a rule: **`serviceSlugs` is a
 promise about backlinks, not a topic list.** The DR lesson was first written with

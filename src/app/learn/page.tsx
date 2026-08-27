@@ -48,17 +48,21 @@ export default function LearnIndex() {
         })}
 
         <p className="text-[13px] leading-relaxed text-fg-subtle">
-          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering four clusters:
+          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering five clusters:
           reachability — routing, the two filters, and why something cannot reach the internet;
           identity — how IAM decides, why a role beats an access key, and the two keys behind
           envelope encryption; storage — the three shapes, choosing an S3 storage class, and what
-          eleven nines actually measures; and resilience — Multi-AZ against a read replica, the two
+          eleven nines actually measures; resilience — Multi-AZ against a read replica, the two
           numbers that choose a disaster recovery architecture, and which load balancer the layer
-          decides. Two clusters are still unwritten: serverless and events, and data and cost. They
-          are planned and listed in docs/LESSONS.md, and every one of these is SAA-shaped — there is
-          no DVA-tasked lesson yet either. Until they exist, those topics are taught through the
-          Service Atlas, Concepts, Story Mode, the Keyword Decoder and the labs — the atlas holds
-          every fact either way, and a lesson only ever puts facts in an order.
+          decides; and serverless and events — what actually runs a Lambda function, whether the
+          hand-off is a queue, a topic or a bus, and what happens on the second delivery. One
+          cluster is still unwritten: data and cost — partition keys, where to cache, and paying
+          less for the same thing. It is planned and listed in docs/LESSONS.md. The serverless three
+          are the only lessons carrying a DVA task statement; the other thirteen are SAA-shaped, so
+          DVA coverage beyond Lambda and messaging is still owed. Until those exist, those topics
+          are taught through the Service Atlas, Concepts, Story Mode, the Keyword Decoder and the
+          labs — the atlas holds every fact either way, and a lesson only ever puts facts in an
+          order.
         </p>
       </div>
     </Page>

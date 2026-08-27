@@ -13,6 +13,9 @@ import { s3DurabilityVsAvailability } from './lessons/s3-durability-vs-availabil
 import { multiAzVsReadReplica } from './lessons/multi-az-vs-read-replica'
 import { rtoRpoAndTheFourDrStrategies } from './lessons/rto-rpo-and-the-four-dr-strategies'
 import { whichLoadBalancer } from './lessons/which-load-balancer'
+import { lambdaExecutionModel } from './lessons/lambda-execution-model'
+import { queueTopicBus } from './lessons/queue-topic-bus'
+import { retriesDlqsAndIdempotency } from './lessons/retries-dlqs-and-idempotency'
 
 /**
  * Aggregates the lessons.
@@ -39,6 +42,9 @@ export const lessons: Lesson[] = [
   multiAzVsReadReplica,
   rtoRpoAndTheFourDrStrategies,
   whichLoadBalancer,
+  lambdaExecutionModel,
+  queueTopicBus,
+  retriesDlqsAndIdempotency,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

@@ -310,6 +310,8 @@ export const phases: Phase[] = [
       's3-durability-vs-availability',
       'multi-az-vs-read-replica',
       'which-load-balancer',
+      'queue-topic-bus',
+      'lambda-execution-model',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -624,7 +626,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['sqs', 'sns', 'eventbridge', 'mq'],
-        lessonIds: [],
+        lessonIds: ['queue-topic-bus'],
         reading: [
           {
             label: 'SQS visibility timeout — the classic trap',
@@ -650,7 +652,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ecs', 'fargate', 'eks', 'lambda', 'elastic-beanstalk'],
-        lessonIds: [],
+        lessonIds: ['lambda-execution-model'],
         reading: [
           {
             label: 'ECS launch types — EC2 versus Fargate',
@@ -815,6 +817,7 @@ export const phases: Phase[] = [
       'why-cant-it-reach-the-internet',
       'multi-az-vs-read-replica',
       'rto-rpo-and-the-four-dr-strategies',
+      'retries-dlqs-and-idempotency',
     ],
     labIds: ['vpc-builder', 'request-racer', 'az-drill', 'storage-cost', 'iam-puzzle'],
     steps: [
@@ -870,7 +873,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['sqs', 'sns', 'lambda'],
-        lessonIds: [],
+        lessonIds: ['retries-dlqs-and-idempotency'],
         reading: [
           { label: 'Visibility timeout', url: `${SQS}/sqs-visibility-timeout.html`, minutes: 20 },
           { label: 'FIFO queues and deduplication', url: `${SQS}/FIFO-queues.html`, minutes: 20 },
@@ -1140,7 +1143,7 @@ export const phases: Phase[] = [
       'dva-4.2',
       'dva-4.3',
     ],
-    lessonIds: [],
+    lessonIds: ['lambda-execution-model', 'queue-topic-bus', 'retries-dlqs-and-idempotency'],
     labIds: ['ddb-keys', 'event-wiring'],
     steps: [
       {
@@ -1169,7 +1172,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['lambda'],
-        lessonIds: [],
+        lessonIds: ['lambda-execution-model'],
         reading: [
           {
             label: 'Execution environment lifecycle',
@@ -1199,7 +1202,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'sns', 'eventbridge', 'kinesis-data-streams'],
-        lessonIds: [],
+        lessonIds: ['queue-topic-bus', 'retries-dlqs-and-idempotency'],
         reading: [
           {
             label: 'Event source mappings',
@@ -1223,7 +1226,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'dynamodb', 'sam', 'step-functions'],
-        lessonIds: [],
+        lessonIds: ['retries-dlqs-and-idempotency'],
         reading: [
           {
             label: 'AWS SAM',

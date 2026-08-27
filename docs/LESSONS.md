@@ -363,15 +363,41 @@ diagram, so two `steps` diagrams on one page advance independently. The audit an
 the checker both handle it, and the only cost is remembering that the reader has
 to press two play controls rather than one.
 
-### Batch 5 — serverless and events (the DVA weight)
+### Batch 5 — serverless and events (the DVA weight) _(done)_
 
 `npm run lesson:brief -- lambda api-gateway sqs sns eventbridge step-functions`
 
-| Lesson                         |                                                                               |
-| ------------------------------ | ----------------------------------------------------------------------------- |
-| `lambda-execution-model`       | Cold start, concurrency, and why the handler must be idempotent.              |
-| `queue-topic-bus`              | SQS vs SNS vs EventBridge — the most-confused trio in the corpus. Template B. |
-| `retries-dlqs-and-idempotency` | What happens on the second delivery.                                          |
+All three written: `lambda-execution-model`, `queue-topic-bus` and
+`retries-dlqs-and-idempotency` — 48 sections and 12 checks, 45 minutes. The
+first batch tagged `families: ['saa', 'dva']`, and the first three lessons in
+the corpus to carry a DVA task statement, so `phase-4` stops being the one phase
+with no lesson on it. Not a linear chain: the first two are independent and the
+third declares `requires` on **both**, which is what the material actually does.
+
+| Lesson                         |                                                                                                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lambda-execution-model`       | The execution environment outlives the invocation, and every other Lambda fact follows from it. Template B fan-in-the-middle — the same request twice, forking on whether one exists. |
+| `queue-topic-bus`              | Two walkthroughs: a queue delivering to exactly one consumer, then a topic turning one publish into two. Template B fan-at-the-end, then fan-in-the-middle.                           |
+| `retries-dlqs-and-idempotency` | A duplicate charge produced by a timeout setting rather than a bug. Template B fan-in-the-middle read as a clock.                                                                     |
+
+Three things this batch cost that the next one need not.
+
+**A lesson's `families` and its `taskId` do not have to agree, and the checker
+only requires that the task resolves on _one_ paper the lesson is in scope for.**
+All three here are `['saa', 'dva']`, two carry DVA tasks and one carries
+`saa-2.1`. Nothing filters `lessonIds` by family at the step or phase level, so
+a DVA-tasked lesson listed on an SAA step still renders — which is what makes
+the dual tagging safe, and it is worth knowing before agonising over the choice
+the way `BACKLOG.md` did for batches 2 and 3.
+
+**Curly apostrophes are the house style in lesson prose.** Sixteen files use `’`
+and nothing enforces it; a straight `'` introduced by a search-and-replace is
+invisible to every gate and visible on screen next to a curly one.
+
+**Phase 4 is invisible on `/map` under the SAA cert**, so verifying a DVA
+wiring in the browser means flipping `profile.targetCert` to `DVA-C02` in
+IndexedDB and back again. Curling the route does not help — phase selection is
+client-side, so the served HTML is always phase 0.
 
 ### Batch 6 — data and cost
 
