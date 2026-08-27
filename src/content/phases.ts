@@ -312,6 +312,9 @@ export const phases: Phase[] = [
       'which-load-balancer',
       'queue-topic-bus',
       'lambda-execution-model',
+      'partition-keys',
+      'where-to-cache',
+      'paying-less-for-the-same-thing',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -412,7 +415,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ec2', 'spot', 'savings-plans', 'instance-store'],
-        lessonIds: [],
+        lessonIds: ['paying-less-for-the-same-thing'],
         reading: [
           { label: 'Instance types and families', url: `${EC2}/instance-types.html`, minutes: 25 },
           {
@@ -529,7 +532,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['dynamodb'],
-        lessonIds: [],
+        lessonIds: ['partition-keys'],
         reading: [
           {
             label: 'Core components — tables, items, keys',
@@ -553,7 +556,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['elasticache', 'cloudfront', 'dynamodb'],
-        lessonIds: [],
+        lessonIds: ['where-to-cache'],
         reading: [
           {
             label: 'ElastiCache — Redis versus Memcached',
@@ -1143,7 +1146,13 @@ export const phases: Phase[] = [
       'dva-4.2',
       'dva-4.3',
     ],
-    lessonIds: ['lambda-execution-model', 'queue-topic-bus', 'retries-dlqs-and-idempotency'],
+    lessonIds: [
+      'lambda-execution-model',
+      'queue-topic-bus',
+      'retries-dlqs-and-idempotency',
+      'partition-keys',
+      'where-to-cache',
+    ],
     labIds: ['ddb-keys', 'event-wiring'],
     steps: [
       {
@@ -1245,7 +1254,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['api-gateway', 'appsync', 'lambda'],
-        lessonIds: [],
+        lessonIds: ['where-to-cache'],
         reading: [
           { label: 'HTTP API versus REST API', url: `${APIGW}/http-api-vs-rest.html`, minutes: 30 },
           { label: 'API caching', url: `${APIGW}/apigateway-caching.html`, minutes: 25 },
@@ -1261,7 +1270,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 150,
         serviceSlugs: ['dynamodb'],
-        lessonIds: [],
+        lessonIds: ['partition-keys'],
         reading: [
           {
             label: 'NoSQL design — start from the access patterns',
@@ -1286,7 +1295,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['dynamodb'],
-        lessonIds: [],
+        lessonIds: ['partition-keys'],
         reading: [],
         actions: [{ label: 'Which database?', href: '/compare' }],
         doneWhen:

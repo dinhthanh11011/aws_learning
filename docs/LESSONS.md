@@ -399,18 +399,52 @@ wiring in the browser means flipping `profile.targetCert` to `DVA-C02` in
 IndexedDB and back again. Curling the route does not help — phase selection is
 client-side, so the served HTML is always phase 0.
 
-### Batch 6 — data and cost
+### Batch 6 — data and cost _(done)_
 
 `npm run lesson:brief -- dynamodb elasticache cloudfront savings-plans spot`
 
-| Lesson                           |                                                                                                                                                                                        |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `partition-keys`                 | Why the key choice is the whole design.                                                                                                                                                |
-| `where-to-cache`                 | CloudFront, ElastiCache, API Gateway and DAX — four caches, four distances from the user. DAX has no slug of its own; its facts are on the `dynamodb` entry, so the brief prints them. |
-| `paying-less-for-the-same-thing` | On-demand, Spot, Savings Plans, Reserved — a decision, not a price list.                                                                                                               |
+All three written: `partition-keys`, `where-to-cache` and
+`paying-less-for-the-same-thing` — 48 sections and 12 checks, 46 minutes. Not a
+chain: all three declare `requires: []`, because nothing here depends on
+anything else here. Two are `['saa', 'dva']` and one is SAA-only, which is what
+the material actually is — Spot and Savings Plans are not on the developer paper.
+
+| Lesson                           |                                                                                                                                                                                                                                         |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `partition-keys`                 | Throughput is per partition, not per table. Template B fan-in-the-middle — the identical thousand writes a second, forked on nothing but the attribute chosen as the key.                                                               |
+| `where-to-cache`                 | CloudFront, ElastiCache, API Gateway and DAX — four caches, four distances from the user. Two walkthroughs: template B fan-at-the-end for one request travelling inward, then fan-in-the-middle for lazy loading against write-through. |
+| `paying-less-for-the-same-thing` | On-demand, Spot, Savings Plans, Reserved — a decision, not a price list. Template B fan-in-the-middle, forked on one question asked of each hour of capacity.                                                                           |
+
+Three things this batch cost that a later one need not.
+
+**A `kind: 'service'` node id must resolve to a slug, and a plain-English id
+will not.** `table`, `app` and `commit` all failed `content:check` with _"node X
+is kind service but resolves to no service slug"_. The fix is either the real
+slug as the id — `dynamodb`, `savings-plans`, which is what the longest-prefix
+rule is for — or `kind: 'note'` when the box is not an AWS service at all, which
+is what "Your application" actually is. Decide that when placing the node, not
+after the checker says so.
+
+**DAX and API Gateway caching have no slugs of their own**, and neither needed
+one. DAX is a `keyNumber` and a trap on `dynamodb`; the API Gateway cache is a
+`keyNumber` and an `optionSet` gotcha on `api-gateway`. `lesson:brief` prints
+both when you ask for the parent, which is the case the brief's "ask for the
+parent" note was written for — and it means a four-cache lesson needs four
+`serviceSlugs` and no new atlas entry.
+
+**A fact that exists only in a question's takeaway is not in the atlas, and a
+lesson may not use it.** "DAX does not accelerate strongly consistent reads"
+comes from `dva-d4-010`, not from the `dynamodb` entry, so it is deliberately
+absent here. Invariant 23 permits restating the atlas and the concepts; a
+question explanation is neither. The honest options are to leave it out or to
+add it to the atlas first — and adding it changes `cards`, which is a bigger
+decision than one sentence in one lesson.
 
 After batch 6 the tier-1 services with real question weight are covered. Tier 2
 and 3 stay in the atlas: a lesson is expensive and they are recognise-only.
+The next lesson work is not another batch of this shape — it is DVA coverage
+beyond Lambda, messaging, keys and caching: API Gateway in its own right,
+Cognito, CI/CD and observability, none of which any lesson touches.
 
 ### Wiring a lesson in, once it exists
 

@@ -42,7 +42,7 @@ npm run content:fingerprint  # hash of the whole corpus — assert it around any
 npm run typecheck       # tsc --noEmit, strict
 npm test                # vitest over src/engines, src/content and src/db
 npx eslint src scripts  # must be 0 errors AND 0 warnings
-npm run build           # 217 prerendered pages
+npm run build           # 220 prerendered pages
 ```
 
 All six are currently clean. `npm run dev` for the app; drive it in a real
@@ -256,7 +256,7 @@ slugs, which is the whole research step for a lesson. Use it instead of reading
 | Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 40 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
-| Lessons | 16 (reachability + identity + storage + resilience + serverless clusters), 298 sections, 63 checks | 3 (the serverless cluster, shared and DVA-tasked) |
+| Lessons | 19 (reachability + identity + storage + resilience + serverless + data and cost clusters), 346 sections, 75 checks | 5 (the serverless three, plus partition keys and caching) |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

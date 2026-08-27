@@ -48,21 +48,22 @@ export default function LearnIndex() {
         })}
 
         <p className="text-[13px] leading-relaxed text-fg-subtle">
-          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering five clusters:
+          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering six clusters:
           reachability — routing, the two filters, and why something cannot reach the internet;
           identity — how IAM decides, why a role beats an access key, and the two keys behind
           envelope encryption; storage — the three shapes, choosing an S3 storage class, and what
           eleven nines actually measures; resilience — Multi-AZ against a read replica, the two
           numbers that choose a disaster recovery architecture, and which load balancer the layer
-          decides; and serverless and events — what actually runs a Lambda function, whether the
-          hand-off is a queue, a topic or a bus, and what happens on the second delivery. One
-          cluster is still unwritten: data and cost — partition keys, where to cache, and paying
-          less for the same thing. It is planned and listed in docs/LESSONS.md. The serverless three
-          are the only lessons carrying a DVA task statement; the other thirteen are SAA-shaped, so
-          DVA coverage beyond Lambda and messaging is still owed. Until those exist, those topics
-          are taught through the Service Atlas, Concepts, Story Mode, the Keyword Decoder and the
-          labs — the atlas holds every fact either way, and a lesson only ever puts facts in an
-          order.
+          decides; serverless and events — what actually runs a Lambda function, whether the
+          hand-off is a queue, a topic or a bus, and what happens on the second delivery; and data
+          and cost — why the partition key is the whole design, four caches at four distances from
+          the user, and paying less for exactly the same thing. That is every SAA cluster with real
+          question weight. What is still unwritten is developer-side: API Gateway in its own right,
+          Cognito, CI/CD and observability have no lesson at all, and only five of these carry a DVA
+          task statement, so DVA coverage beyond Lambda, messaging, key design and caching is owed.
+          Until those exist, those topics are taught through the Service Atlas, Concepts, Story
+          Mode, the Keyword Decoder and the labs — the atlas holds every fact either way, and a
+          lesson only ever puts facts in an order.
         </p>
       </div>
     </Page>

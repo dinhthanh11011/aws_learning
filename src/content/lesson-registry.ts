@@ -16,6 +16,9 @@ import { whichLoadBalancer } from './lessons/which-load-balancer'
 import { lambdaExecutionModel } from './lessons/lambda-execution-model'
 import { queueTopicBus } from './lessons/queue-topic-bus'
 import { retriesDlqsAndIdempotency } from './lessons/retries-dlqs-and-idempotency'
+import { partitionKeys } from './lessons/partition-keys'
+import { whereToCache } from './lessons/where-to-cache'
+import { payingLessForTheSameThing } from './lessons/paying-less-for-the-same-thing'
 
 /**
  * Aggregates the lessons.
@@ -45,6 +48,9 @@ export const lessons: Lesson[] = [
   lambdaExecutionModel,
   queueTopicBus,
   retriesDlqsAndIdempotency,
+  partitionKeys,
+  whereToCache,
+  payingLessForTheSameThing,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))
