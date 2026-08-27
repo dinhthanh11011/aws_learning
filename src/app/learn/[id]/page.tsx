@@ -30,6 +30,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
   const task = taskById.get(l.taskId)
   const domain = domainOfTask(l.taskId)
+  const prerequisites = l.requires.map((r) => findLesson(r)).filter((r) => r !== undefined)
 
   return (
     <Page title={l.title} lede={l.subtitle}>
@@ -46,6 +47,30 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
           ) : null}
           <Badge tone="neutral">{l.minutes} min</Badge>
         </div>
+
+        {/* `requires` is an ordering claim, and until it is rendered it is one
+            nobody can act on: search and the atlas both drop a reader straight
+            into the middle of a chain. Not a gate — a learner who already knows
+            the prerequisite should not have to click through it. */}
+        {prerequisites.length ? (
+          <section className="surface border-accent/25 p-4">
+            <p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-accent">
+              {prerequisites.length === 1 ? 'Read this one first' : 'Read these first'}
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {prerequisites.map((r) => (
+                <Link
+                  key={r.id}
+                  href={`/learn/${r.id}`}
+                  className="rounded-lg border border-border bg-bg-raised px-2.5 py-1.5 text-[13px] hover:border-accent"
+                >
+                  <span className="font-medium">{r.title}</span>{' '}
+                  <span className="nums text-[11.5px] text-fg-subtle">{r.minutes}m</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <article className="flex flex-col gap-5">
           <Sections sections={l.sections} headingLevel={2} />

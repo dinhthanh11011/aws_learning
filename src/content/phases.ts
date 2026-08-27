@@ -57,7 +57,12 @@ export const phases: Phase[] = [
       'Root MFA is on, an admin identity exists, and a $10 budget alarm is configured',
     ],
     taskIds: ['saa-1.1', 'saa-1.2'],
-    lessonIds: ['security-groups'],
+    lessonIds: [
+      'security-groups',
+      'subnets-and-route-tables',
+      'why-cant-it-reach-the-internet',
+      'network-acls',
+    ],
     labIds: ['iam-puzzle'],
     steps: [
       {
@@ -67,6 +72,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 45,
         serviceSlugs: ['global-infrastructure', 'well-architected-tool'],
+        lessonIds: [],
         reading: [
           {
             label: 'Regions, Availability Zones and Local Zones',
@@ -95,6 +101,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 45,
         serviceSlugs: ['iam', 'iam-identity-center', 'budgets'],
+        lessonIds: [],
         reading: [
           {
             label: 'Root user — and why you stop using it today',
@@ -119,6 +126,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['vpc'],
+        lessonIds: ['subnets-and-route-tables'],
         reading: [
           { label: 'What is Amazon VPC', url: `${VPC}/what-is-amazon-vpc.html`, minutes: 15 },
           { label: 'Subnet CIDR blocks and sizing', url: `${VPC}/subnet-sizing.html`, minutes: 20 },
@@ -133,8 +141,9 @@ export const phases: Phase[] = [
         title: 'The two filters, and which one is stateful',
         why: 'Security group versus NACL is asked on both exams, and it is asked as a symptom: "traffic goes out but nothing comes back". You want the table in your head, not a vague sense of it.',
         kind: 'read',
-        minutes: 45,
+        minutes: 60,
         serviceSlugs: ['security-group', 'nacl'],
+        lessonIds: ['security-groups', 'network-acls'],
         reading: [
           { label: 'Security groups', url: `${VPC}/vpc-security-groups.html`, minutes: 15 },
           {
@@ -143,10 +152,7 @@ export const phases: Phase[] = [
             minutes: 15,
           },
         ],
-        actions: [
-          { label: 'Security groups lesson', href: '/learn/security-groups' },
-          { label: 'VPC Packet Tracer', href: '/labs/vpc-builder' },
-        ],
+        actions: [{ label: 'VPC Packet Tracer', href: '/labs/vpc-builder' }],
         doneWhen:
           'From memory you can write the security group versus NACL table, and predict the exact symptom when a NACL allows inbound 443 but not the ephemeral return range.',
       },
@@ -157,6 +163,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 60,
         serviceSlugs: ['route53', 'cloudfront'],
+        lessonIds: [],
         reading: [
           {
             label: 'How DNS resolution works',
@@ -176,6 +183,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['iam', 'sts', 'organizations'],
+        lessonIds: [],
         reading: [
           {
             label: 'Policy evaluation logic — read this one twice',
@@ -209,6 +217,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['vpc', 'nat-gateway', 'security-group', 'nacl'],
+        lessonIds: [],
         reading: [{ label: 'NAT gateways', url: `${VPC}/vpc-nat-gateway.html`, minutes: 15 }],
         actions: [
           { label: 'VPC Packet Tracer', href: '/labs/vpc-builder' },
@@ -224,6 +233,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 60,
         serviceSlugs: ['vpc', 'nat-gateway'],
+        lessonIds: ['why-cant-it-reach-the-internet'],
         reading: [],
         actions: [{ label: 'Break-it challenges', href: '/labs/vpc-builder' }],
         doneWhen:
@@ -236,6 +246,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 60,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Recall Drill', href: '/drill' },
@@ -251,6 +262,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 45,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Quick Quiz', href: '/quiz' }],
         doneWhen:
@@ -284,7 +296,7 @@ export const phases: Phase[] = [
       'saa-3.3',
       'saa-3.4',
     ],
-    lessonIds: [],
+    lessonIds: ['why-cant-it-reach-the-internet'],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
       {
@@ -294,6 +306,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['iam', 'sts', 'iam-identity-center', 'organizations'],
+        lessonIds: [],
         reading: [
           {
             label: 'Roles, trust policies, assume-role',
@@ -322,6 +335,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['vpc', 'nat-gateway', 'security-group', 'nacl'],
+        lessonIds: [],
         reading: [
           { label: 'Route tables', url: `${VPC}/VPC_Route_Tables.html`, minutes: 20 },
           { label: 'NAT gateways', url: `${VPC}/vpc-nat-gateway.html`, minutes: 20 },
@@ -337,6 +351,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['privatelink', 'nat-gateway', 's3'],
+        lessonIds: ['why-cant-it-reach-the-internet'],
         reading: [
           {
             label: 'VPC endpoints and PrivateLink',
@@ -355,6 +370,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['vpc-peering', 'transit-gateway', 'site-to-site-vpn', 'direct-connect'],
+        lessonIds: [],
         reading: [
           {
             label: 'VPC peering — and why it is not transitive',
@@ -378,6 +394,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ec2', 'spot', 'savings-plans', 'instance-store'],
+        lessonIds: [],
         reading: [
           { label: 'Instance types and families', url: `${EC2}/instance-types.html`, minutes: 25 },
           {
@@ -397,6 +414,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ebs', 'instance-store', 'efs', 'fsx', 's3'],
+        lessonIds: [],
         reading: [
           {
             label: 'EBS volume types — memorise the IOPS ceilings',
@@ -420,6 +438,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['s3', 's3-glacier', 'kms'],
+        lessonIds: [],
         reading: [
           {
             label: 'Storage classes and retrieval times',
@@ -449,6 +468,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 90,
         serviceSlugs: ['s3', 'ebs', 'nat-gateway', 'elb'],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Storage & Teardown Cost Lab', href: '/labs/storage-cost' }],
         doneWhen:
@@ -461,6 +481,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['rds', 'aurora', 'aurora-serverless', 'rds-proxy'],
+        lessonIds: [],
         reading: [
           {
             label: 'Multi-AZ deployments',
@@ -490,6 +511,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['dynamodb'],
+        lessonIds: [],
         reading: [
           {
             label: 'Core components — tables, items, keys',
@@ -513,6 +535,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['elasticache', 'cloudfront', 'dynamodb'],
+        lessonIds: [],
         reading: [
           {
             label: 'ElastiCache — Redis versus Memcached',
@@ -536,6 +559,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['elb', 'global-accelerator'],
+        lessonIds: [],
         reading: [
           {
             label: 'Application Load Balancer',
@@ -560,6 +584,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['ec2-auto-scaling', 'auto-scaling', 'cloudwatch'],
+        lessonIds: [],
         reading: [
           {
             label: 'Scaling your group — the policy types',
@@ -583,6 +608,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['sqs', 'sns', 'eventbridge', 'mq'],
+        lessonIds: [],
         reading: [
           {
             label: 'SQS visibility timeout — the classic trap',
@@ -608,6 +634,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ecs', 'fargate', 'eks', 'lambda', 'elastic-beanstalk'],
+        lessonIds: [],
         reading: [
           {
             label: 'ECS launch types — EC2 versus Fargate',
@@ -631,6 +658,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['kms', 'secrets-manager', 'acm', 'cloudhsm', 'systems-manager'],
+        lessonIds: [],
         reading: [
           {
             label: 'KMS concepts — CMK, data key, envelope encryption',
@@ -662,6 +690,7 @@ export const phases: Phase[] = [
           'budgets',
           'trusted-advisor',
         ],
+        lessonIds: [],
         reading: [
           { label: 'CloudWatch alarms', url: `${CW}/AlarmThatSendsEmail.html`, minutes: 25 },
           {
@@ -681,6 +710,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['snow-family', 'datasync', 'storage-gateway', 'dms', 'transfer-family'],
+        lessonIds: [],
         reading: [
           {
             label: 'Storage Gateway',
@@ -709,6 +739,7 @@ export const phases: Phase[] = [
         kind: 'drill',
         minutes: 90,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Decision trees', href: '/compare' },
@@ -724,6 +755,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 120,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Recall Drill', href: '/drill' }],
         doneWhen:
@@ -736,6 +768,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 120,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Quick Quiz', href: '/quiz' },
@@ -762,7 +795,7 @@ export const phases: Phase[] = [
       'You can rebuild a three-tier VPC from an empty canvas without hints',
     ],
     taskIds: ['saa-1.2', 'saa-2.1', 'saa-2.2', 'saa-3.4', 'saa-4.4'],
-    lessonIds: [],
+    lessonIds: ['why-cant-it-reach-the-internet'],
     labIds: ['vpc-builder', 'request-racer', 'az-drill', 'storage-cost', 'iam-puzzle'],
     steps: [
       {
@@ -772,6 +805,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['vpc', 'nat-gateway', 'elb', 'ec2-auto-scaling'],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'VPC Packet Tracer', href: '/labs/vpc-builder' }],
         doneWhen:
@@ -784,6 +818,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['vpc', 'nat-gateway'],
+        lessonIds: ['why-cant-it-reach-the-internet'],
         reading: [{ label: 'Route tables', url: `${VPC}/VPC_Route_Tables.html`, minutes: 15 }],
         actions: [{ label: 'Break-it challenges', href: '/labs/vpc-builder' }],
         doneWhen:
@@ -796,6 +831,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['iam', 'sts', 'organizations', 's3'],
+        lessonIds: [],
         reading: [
           {
             label: 'Policy evaluation logic',
@@ -814,6 +850,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['sqs', 'sns', 'lambda'],
+        lessonIds: [],
         reading: [
           { label: 'Visibility timeout', url: `${SQS}/sqs-visibility-timeout.html`, minutes: 20 },
           { label: 'FIFO queues and deduplication', url: `${SQS}/FIFO-queues.html`, minutes: 20 },
@@ -829,6 +866,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['ec2-auto-scaling', 'rds', 'elb', 'efs'],
+        lessonIds: [],
         reading: [
           {
             label: 'Well-Architected reliability pillar',
@@ -847,6 +885,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['cloudformation', 'cdk', 'sam', 'cli'],
+        lessonIds: [],
         reading: [
           {
             label: 'CloudFormation',
@@ -865,6 +904,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['backup', 'rds', 's3', 'route53'],
+        lessonIds: [],
         reading: [
           {
             label: 'Disaster recovery of workloads on AWS',
@@ -883,6 +923,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 90,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'VPC Packet Tracer', href: '/labs/vpc-builder' },
@@ -919,6 +960,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [
           {
             label: 'SAA exam guide and format',
@@ -937,6 +979,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Review the paper', href: '/exam' },
@@ -952,6 +995,7 @@ export const phases: Phase[] = [
         kind: 'drill',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Mistake clusters', href: '/progress' },
@@ -967,6 +1011,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 150,
         serviceSlugs: ['well-architected-tool', 'trusted-advisor'],
+        lessonIds: [],
         reading: [
           { label: 'Security pillar', url: `${WA}/security-pillar/welcome.html`, minutes: 45 },
           {
@@ -991,6 +1036,7 @@ export const phases: Phase[] = [
         kind: 'drill',
         minutes: 90,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Keyword Decoder', href: '/decoder' }],
         doneWhen:
@@ -1003,6 +1049,7 @@ export const phases: Phase[] = [
         kind: 'drill',
         minutes: 90,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Decision trees', href: '/compare' },
@@ -1018,6 +1065,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Exam simulator', href: '/exam' }],
         doneWhen:
@@ -1030,6 +1078,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 120,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Recall Drill', href: '/drill' },
@@ -1081,6 +1130,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 60,
         serviceSlugs: ['lambda', 'api-gateway', 'dynamodb', 'cognito', 'sam'],
+        lessonIds: [],
         reading: [
           {
             label: 'DVA exam guide and format',
@@ -1099,6 +1149,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['lambda'],
+        lessonIds: [],
         reading: [
           {
             label: 'Execution environment lifecycle',
@@ -1128,6 +1179,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'sns', 'eventbridge', 'kinesis-data-streams'],
+        lessonIds: [],
         reading: [
           {
             label: 'Event source mappings',
@@ -1151,6 +1203,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'dynamodb', 'sam', 'step-functions'],
+        lessonIds: [],
         reading: [
           {
             label: 'AWS SAM',
@@ -1169,6 +1222,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['api-gateway', 'appsync', 'lambda'],
+        lessonIds: [],
         reading: [
           { label: 'HTTP API versus REST API', url: `${APIGW}/http-api-vs-rest.html`, minutes: 30 },
           { label: 'API caching', url: `${APIGW}/apigateway-caching.html`, minutes: 25 },
@@ -1184,6 +1238,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 150,
         serviceSlugs: ['dynamodb'],
+        lessonIds: [],
         reading: [
           {
             label: 'NoSQL design — start from the access patterns',
@@ -1208,6 +1263,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['dynamodb'],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Which database?', href: '/compare' }],
         doneWhen:
@@ -1220,6 +1276,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['cognito', 'iam', 'sts'],
+        lessonIds: [],
         reading: [
           {
             label: 'User pools — authentication',
@@ -1243,6 +1300,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['secrets-manager', 'systems-manager', 'appconfig', 'kms'],
+        lessonIds: [],
         reading: [
           {
             label: 'Rotating secrets',
@@ -1271,6 +1329,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 150,
         serviceSlugs: ['codepipeline', 'codebuild', 'codedeploy', 'cloudformation', 'sam'],
+        lessonIds: [],
         reading: [
           {
             label: 'CodeDeploy deployment configurations',
@@ -1294,6 +1353,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['xray', 'cloudwatch'],
+        lessonIds: [],
         reading: [
           {
             label: 'X-Ray — segments, subsegments, sampling',
@@ -1313,6 +1373,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [{ label: 'Exam simulator', href: '/exam' }],
         doneWhen: 'A full DVA paper submitted under time, with the domain breakdown recorded.',
@@ -1324,6 +1385,7 @@ export const phases: Phase[] = [
         kind: 'recall',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Progress and mistake log', href: '/progress' },
@@ -1339,6 +1401,7 @@ export const phases: Phase[] = [
         kind: 'quiz',
         minutes: 150,
         serviceSlugs: [],
+        lessonIds: [],
         reading: [],
         actions: [
           { label: 'Exam simulator', href: '/exam' },

@@ -960,6 +960,13 @@ export const StudyStepSchema = z.object({
   minutes: z.number().int().positive(),
   /** Atlas entries to internalise. Rendered as quick-look references. */
   serviceSlugs: z.array(z.string()).default([]),
+  /**
+   * Lessons that teach this step's idea in order. Deliberately not folded into
+   * `reading`: those minutes are budget-checked against external pages, and a
+   * lesson is in-app work. Nor into `actions`, which is where the practice
+   * happens. Rendered before the docs, which is the point of the layer.
+   */
+  lessonIds: z.array(z.string()).default([]),
   reading: z.array(ReadingSchema).default([]),
   /** Where in the app the work happens. */
   actions: z.array(z.object({ label: z.string().min(1), href: z.string().min(1) })).default([]),

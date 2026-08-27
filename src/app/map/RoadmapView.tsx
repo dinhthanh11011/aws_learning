@@ -7,6 +7,7 @@ import {
   CATEGORIES,
   domainById,
   labById,
+  lessonById,
   phasesFor,
   questionsForDomain,
   serviceLabel,
@@ -237,6 +238,33 @@ export function RoadmapView() {
                       </ul>
                     </div>
 
+                    {phase.lessonIds.length ? (
+                      <div className="mb-4">
+                        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-fg-subtle">
+                          Lessons in this phase
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {[...new Set(phase.lessonIds)].map((id) => {
+                            const l = lessonById.get(id)
+                            if (!l) return null
+                            return (
+                              <Link
+                                key={id}
+                                href={`/learn/${id}`}
+                                className="rounded-lg border border-border bg-bg-raised px-2.5 py-1 text-[12.5px] hover:border-accent"
+                              >
+                                <span className="font-medium">{l.title}</span>{' '}
+                                <span className="nums text-[11.5px] text-fg-subtle">
+                                  {l.minutes}m · {l.checks.length} recall{' '}
+                                  {l.checks.length === 1 ? 'check' : 'checks'}
+                                </span>
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ) : null}
+
                     {phase.labIds.length ? (
                       <div className="mb-4">
                         <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-fg-subtle">
@@ -351,7 +379,7 @@ export function RoadmapView() {
         </p>
         <ol className="mt-4 grid gap-2 sm:grid-cols-5">
           {[
-            ['Read', 'Docs or a lesson on this week’s topic'],
+            ['Read', 'The lesson if the step names one, then the docs'],
             ['Build', 'Build it — the lab, or a real account'],
             ['Rebuild', 'Do it again from the CLI or a template'],
             ['Break it', 'Remove a route, strip a permission, watch it fail'],

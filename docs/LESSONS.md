@@ -167,6 +167,27 @@ d  x 15.2  y 0.9  w 3.0  h 1.3      (fan up)
 e  x 15.2  y 5.7  w 3.4  h 1.3      (fan down)
 ```
 
+Batch 1 added a variant that also audits clean, for when the **fan is in the
+middle** — two parallel tails that are the same journey with a different object at
+the junction (`srt-two-tables` in `subnets-and-route-tables.ts`):
+
+```
+cols 21  rows 8
+a  x  0.2  y 3.3  w 2.8  h 1.3      (outside every group)
+b  x  5.4  y 3.3  w 3.4  h 1.3
+c  x 11.0  y 0.9  w 3.2  h 1.3      (junction, up)
+d  x 11.0  y 5.7  w 3.2  h 1.3      (junction, down)
+e  x 17.0  y 0.9  w 3.0  h 1.3      (tail, up)
+f  x 17.0  y 5.7  w 3.0  h 1.3      (tail, down)
+```
+
+Two things that cost a round of audit there, both worth knowing in advance:
+**a self-edge cannot carry a legible label** — a packet that dies needs a node to
+die at, which is also better teaching — and **edge labels want a gap of about 2.5
+grid units**, so `the packet` fits between two boxes where
+`where does this go?` does not. Shortening the label is usually the right fix;
+the caption is where the sentence belongs.
+
 **A node that should be outside a group must be well clear of it.** A group's
 rectangle is the union of its members' boxes plus padding, so a node placed level
 with the group's members lands inside the rectangle and reads as a member.
@@ -229,15 +250,15 @@ Ranked by questions in the bank that touch each service, which is the best proxy
 available for exam weight. Each batch is one `lesson:brief` call and one browser
 pass. Sizes are the four to six sections that carry the idea, not a limit.
 
-### Batch 1 — the reachability cluster _(security-groups is done)_
+### Batch 1 — the reachability cluster _(done)_
 
 `npm run lesson:brief -- vpc subnet route-table nat-gateway internet-gateway nacl`
 
-| Lesson                           | The idea the atlas states correctly and teaches badly                                                           |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `subnets-and-route-tables`       | Nothing makes a subnet public except a route. Template B, walkthrough.                                          |
-| `why-cant-it-reach-the-internet` | The four things a public instance needs, and which one the question removed. Template A.                        |
-| `network-acls`                   | Stateless means the reply is a separate packet. Now that `security-groups` exists, this is the contrast lesson. |
+All four written: `security-groups`, `subnets-and-route-tables`,
+`why-cant-it-reach-the-internet` and `network-acls`. Worth reading as a set
+before writing batch 2 — they are the only worked examples of a lesson that
+_depends_ on another (`requires`), and of the same template A coordinates reused
+deliberately so the reader recognises the picture and notices what moved.
 
 ### Batch 2 — identity, the highest-value cluster on the paper
 
@@ -292,6 +313,25 @@ pass. Sizes are the four to six sections that carry the idea, not a limit.
 After batch 6 the tier-1 services with real question weight are covered. Tier 2
 and 3 stay in the atlas: a lesson is expensive and they are recognise-only.
 
-Add each lesson's id to its phase's `lessonIds` in `phases.ts`, and consider
-pointing the relevant study step's `actions` at it — `content:check` derives the
-`/learn/<id>` routes, so a step may link one as soon as it exists.
+### Wiring a lesson in, once it exists
+
+Three places, all in `phases.ts` unless noted, and none of them optional — an
+unwired lesson is reachable only from `/learn` and from a search someone has to
+know to type:
+
+1. The **step** that teaches its idea gets `lessonIds: ['<id>']`. This is a field
+   of its own rather than an entry in `reading` (whose minutes are budget-checked
+   against external pages) or in `actions` (which is where the _practice_
+   happens). The roadmap renders it above the reading list. If the step's budget
+   does not cover the lesson on top of its docs, raise the budget — do not
+   quietly assume the reader reads faster.
+2. The **phase** gets the id in `lessonIds`. `RoadmapView` renders that as
+   "Lessons in this phase". A lesson revisited by a later phase's step should be
+   listed on that phase too, so the card and the step agree.
+3. `/learn`'s closing paragraph in `src/app/learn/page.tsx` names which clusters
+   are covered and which are not. The counts are derived; that sentence is not,
+   deliberately — a generated list of covered services would be accurate and
+   would not tell a learner what is still missing.
+
+Nothing else needs touching: ⌘K picks lessons up from the registry, and every
+atlas entry for a slug in `serviceSlugs` grows a link back on its own.

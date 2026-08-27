@@ -14,7 +14,7 @@ import { IconSearch } from '@/components/ui/Icon'
 import { cn } from '@/lib/cn'
 
 /**
- * ⌘K search over services, concepts, task statements and trigger phrases. On a corpus
+ * ⌘K search over services, concepts, lessons, task statements and trigger phrases. On a corpus
  * this size, getting to a service card in two keystrokes matters more than any
  * amount of navigation hierarchy.
  *
@@ -88,6 +88,10 @@ function PaletteDialog() {
     } else if (hit.kind === 'concept') {
       if (navigate) router.push(`/concepts/${hit.concept.slug}`)
       else openConcept(hit.concept.slug)
+    } else if (hit.kind === 'lesson') {
+      // No `navigate` branch: a lesson has no quick-look surface, and it is a
+      // sitting rather than a look-up, so both Enter and ⌘-Enter go there.
+      router.push(`/learn/${hit.lesson.id}`)
     } else if (hit.kind === 'task') router.push(`/map#${hit.task.id}`)
     else router.push('/decoder')
   }
@@ -179,6 +183,21 @@ function PaletteDialog() {
                           </span>
                         </span>
                         <span className="shrink-0 text-[10px] text-fg-subtle">Concept</span>
+                      </>
+                    ) : hit.kind === 'lesson' ? (
+                      <>
+                        <span className="h-6 w-1 shrink-0 rounded-full bg-accent" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-medium">
+                            {hit.lesson.title}
+                          </span>
+                          <span className="block truncate text-[11px] text-fg-subtle">
+                            {hit.lesson.subtitle}
+                          </span>
+                        </span>
+                        <span className="nums shrink-0 text-[10px] text-fg-subtle">
+                          Lesson · {hit.lesson.minutes}m
+                        </span>
                       </>
                     ) : hit.kind === 'task' ? (
                       <>

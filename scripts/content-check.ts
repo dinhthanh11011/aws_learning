@@ -216,9 +216,6 @@ const ROUTES = new Set([
   '/settings',
   '/story',
   '/learn',
-  // Derived, not listed: a study step pointing at a lesson must not be able to
-  // go stale when a lesson is renamed, and a hand-maintained list would.
-  ...lessons.map((l) => `/learn/${l.id}`),
 ])
 
 const stepIds = new Set<string>()
@@ -258,6 +255,9 @@ for (const p of phases) {
 
     for (const slug of step.serviceSlugs) {
       if (!serviceBySlug.has(slug)) fail(where, `references unknown service "${slug}"`)
+    }
+    for (const id of step.lessonIds) {
+      if (!lessonById.has(id)) fail(where, `lessonIds names unknown lesson "${id}"`)
     }
     for (const a of step.actions) {
       if (!ROUTES.has(a.href))
@@ -871,7 +871,8 @@ for (const l of lessons) {
     if (s.kind === 'diagram') checkDiagram(where, s.spec)
     if (s.kind === 'services') {
       for (const slug of s.slugs) {
-        if (!serviceBySlug.has(slug)) fail(where, `services section names unknown service "${slug}"`)
+        if (!serviceBySlug.has(slug))
+          fail(where, `services section names unknown service "${slug}"`)
       }
     }
     // A short row renders as silently missing table cells — the same bug the
@@ -993,7 +994,9 @@ if (singles.length) {
  * atlas-gap signals that are actionable today. The list is curated rather than
  * inferred — see `src/content/option-coverage.ts` for why.
  */
-const missingOptions = OPTION_SET_OWED.filter((slug) => !serviceBySlug.get(slug)?.optionSets?.length)
+const missingOptions = OPTION_SET_OWED.filter(
+  (slug) => !serviceBySlug.get(slug)?.optionSets?.length,
+)
 if (missingOptions.length) {
   warn(
     'options',

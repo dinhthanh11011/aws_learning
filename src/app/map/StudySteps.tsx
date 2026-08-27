@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'motion/react'
-import type { Phase, StepKind, StudyStep } from '@/content'
+import { lessonById, type Phase, type StepKind, type StudyStep } from '@/content'
 import { setStepDone } from '@/db/repo'
 import { ServiceRef } from '@/components/service/ServiceRef'
 import { Badge } from '@/components/ui/Badge'
@@ -188,6 +188,34 @@ function StepRow({
           className="overflow-hidden border-t border-border px-3 py-3"
         >
           <p className="text-[12.5px] leading-relaxed text-fg-muted">{step.why}</p>
+
+          {step.lessonIds.length ? (
+            <div className="mt-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-fg-subtle">
+                Start with the lesson
+              </p>
+              <div className="mt-1.5 flex flex-col gap-1.5">
+                {step.lessonIds.map((id) => {
+                  const l = lessonById.get(id)
+                  // Skipped rather than thrown: content:check already fails an
+                  // unknown id, so this is only ever reached mid-edit.
+                  return l ? (
+                    <Link
+                      key={l.id}
+                      href={`/learn/${l.id}`}
+                      className="rounded-lg border border-accent/40 bg-accent-soft px-2.5 py-1.5 text-[12.5px] hover:border-accent"
+                    >
+                      <span className="font-medium">{l.title}</span>{' '}
+                      <span className="nums text-[11.5px] text-fg-subtle">
+                        {l.minutes}m · {l.checks.length} recall{' '}
+                        {l.checks.length === 1 ? 'check' : 'checks'}
+                      </span>
+                    </Link>
+                  ) : null
+                })}
+              </div>
+            </div>
+          ) : null}
 
           {step.reading.length ? (
             <div className="mt-3">

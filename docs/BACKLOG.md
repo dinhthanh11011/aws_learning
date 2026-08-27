@@ -60,10 +60,12 @@ A checkbox is a self-report and mastery is measured from what was recalled,
 answered or built. Guided minutes total 107 h of the 178 h the phases budget, and
 the UI says so rather than padding the list to look complete.
 
-**The obvious next thing here:** steps' `read` targets are external AWS pages
-because there are no lessons. When the lesson player lands, a step should be able
-to point at a lesson id instead of a URL — the schema change is a union on
-`reading`, and the step frame already survives it.
+**Done, differently than proposed here.** A step can now name a lesson, via
+`StudyStep.lessonIds` — not the union on `reading` this entry suggested. Those
+minutes are budget-checked against external pages and a lesson is in-app work, so
+folding them together would have made the budget check lie. Six steps across three
+phases point at a lesson today; the rest still read AWS docs, because the other
+five lesson batches are unwritten.
 
 ## Not built
 
@@ -235,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, one lesson written
+### 1. The lesson player — built, batch 1 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -279,10 +281,15 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** One lesson is not a lesson layer. The next eighteen, in
-six batches ordered by how many questions in the bank touch each service, are in
+**What is owed here.** Batch 1 — the reachability cluster — is written:
+`security-groups`, `subnets-and-route-tables`, `why-cant-it-reach-the-internet`
+and `network-acls`, 83 sections and 16 checks between them. That is one cluster of
+one domain. **The remaining fifteen, in five batches** ordered by how many
+questions in the bank touch each service, are in
 [`LESSONS.md` § The batches](LESSONS.md) — kept there rather than here so there is
-one list rather than two drifting ones.
+one list rather than two drifting ones. Note all four are SAA-tagged and DVA has
+no lesson at all; a lesson carries exactly one `taskId`, so DVA coverage means
+DVA-tasked lessons rather than re-tagging these.
 
 That document is also where the workflow lives, because the first lesson cost far
 more than writing it: most of the effort went on re-reading content files to find
@@ -293,9 +300,20 @@ dead space from `layout.ts` without opening a browser. The audit was checked
 against the actual broken geometry of the first lesson: it reports all five bugs
 that screenshot loop found.
 
-Two smaller follow-ups: a study step's `reading` should be able to name a lesson
-id instead of a URL (schema change is a union on `reading`, touches 47 steps),
-and `phases.lessonIds` is wired but only phase 0 has an entry.
+Both smaller follow-ups are closed. `phases.lessonIds` is now read by
+`RoadmapView` and populated on three phases, and a step names lessons through its
+own `lessonIds` field (see §"Study steps" above for why not `reading`). Batch 1
+also wired the two discovery paths that were missing: lessons are in the ⌘K index
+(scored just *below* the atlas entry for the same words, deliberately — the
+palette's default is "remind me", and a lesson is the one hit kind that navigates
+rather than opening a peek), and every atlas entry for a slug in a lesson's
+`serviceSlugs` links back — first on the page, last in the peek, because
+mid-question a prominent link out of the peek costs the question.
+
+One thing batch 1 surfaced and fixed: `Lesson.requires` had been in the schema
+since the start and was rendered nowhere, so the two lessons that declare a
+prerequisite would have dropped a reader into the middle of a chain. `/learn/[id]`
+now renders it as a "read this one first" card — a pointer, not a gate.
 
 ### 2. Question banks — done, with one engine caveat
 

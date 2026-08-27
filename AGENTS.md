@@ -21,6 +21,7 @@ in [`docs/`](docs/).
 | You need the full map — content model, engines, data flow, routes | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | You are adding or editing teaching content | [`docs/CONTENT.md`](docs/CONTENT.md) |
 | You are writing a lesson — read this **first**, it replaces exploring | [`docs/LESSONS.md`](docs/LESSONS.md) |
+| You want to hand a fresh session the next lesson batch | [`docs/CONTINUE-LESSONS.md`](docs/CONTINUE-LESSONS.md) |
 | You want to know what is unfinished and what to do next | [`docs/BACKLOG.md`](docs/BACKLOG.md) |
 | You want the user-facing overview | [`README.md`](README.md) |
 
@@ -255,7 +256,7 @@ slugs, which is the whole research step for a lesson. Use it instead of reading
 | Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 39 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
-| Lessons | 1 (security groups), 25 sections, 4 checks | not written yet |
+| Lessons | 4 (reachability cluster), 83 sections, 16 checks | not written yet |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

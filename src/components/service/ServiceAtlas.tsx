@@ -7,6 +7,7 @@ import {
   conceptsForService,
   domainById,
   idleCosts,
+  lessonsForService,
   serviceBySlug,
   tasksForService,
   TIER_META,
@@ -104,6 +105,43 @@ export function ServiceAtlas({
       {children}
     </a>
   )
+
+  /**
+   * The way back into the lesson layer. The atlas is a reference — every fact at
+   * once, in no particular order — so if a lesson has put these facts in an
+   * order, that is where someone meeting the service should start.
+   *
+   * It navigates rather than pushing onto the peek stack: there is no lesson
+   * quick-look, and a lesson is a sitting rather than a look-up. That is also
+   * why the panel renders it last while the page renders it first — mid-question
+   * a prominent link out of the peek costs the question (invariant 11), and the
+   * panel is the surface a question opens.
+   */
+  const taughtBy = lessonsForService(s.slug)
+  const lessonLinks = taughtBy.length ? (
+    <section className={cn('surface border-accent/25', pad)}>
+      <h2 className={cn(h2Tight, 'text-accent')}>
+        {taughtBy.length === 1 ? 'There is a lesson on this' : 'There are lessons on this'}
+      </h2>
+      <p className="mb-3 text-[12.5px] leading-relaxed text-fg-muted">
+        The same facts in an order, with a recall check at the end of each idea.
+      </p>
+      <div className="flex flex-col gap-1.5">
+        {taughtBy.map((l) => (
+          <Link
+            key={l.id}
+            href={`/learn/${l.id}`}
+            className="rounded-lg border border-border bg-bg-raised px-2.5 py-1.5 text-[13px] hover:border-accent"
+          >
+            <span className="font-medium">{l.title}</span>{' '}
+            <span className="nums text-[11.5px] text-fg-subtle">
+              {l.minutes}m · {l.checks.length} recall {l.checks.length === 1 ? 'check' : 'checks'}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  ) : null
 
   const whatItIs = (
     <section className={cn('surface', pad)}>
@@ -504,6 +542,7 @@ export function ServiceAtlas({
         {phrases}
         {examined}
         {alongside}
+        {lessonLinks}
       </div>
     )
   }
@@ -512,6 +551,7 @@ export function ServiceAtlas({
     <>
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex min-w-0 flex-col gap-5">
+          {lessonLinks}
           {whyItExists}
           {whatItIs}
           {whenTo}

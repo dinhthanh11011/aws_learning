@@ -1,4 +1,4 @@
-import type { CertId, Concept, Domain, Service, Task } from './schema'
+import type { CertId, Concept, Domain, Lesson, Service, Task } from './schema'
 import {
   DEFAULT_CERT_ID,
   certById,
@@ -37,7 +37,7 @@ import {
   conceptsForService,
 } from './concept-registry'
 import { chapterById, stories, storiesFor, story, storyBySlug } from './story-registry'
-import { lesson, lessonById, lessons, lessonsFor } from './lesson-registry'
+import { lesson, lessonById, lessons, lessonsFor, lessonsForService } from './lesson-registry'
 import { phases } from './phases'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
@@ -131,7 +131,7 @@ export {
 // bundler two paths to it and one of them can resolve to undefined.
 export { stories, storyBySlug, story, storiesFor, chapterById }
 // Same rule again: imported once above, then the local binding is exported.
-export { lessons, lessonById, lesson, lessonsFor }
+export { lessons, lessonById, lesson, lessonsFor, lessonsForService }
 export { OPTION_SET_OWED }
 
 /** Services a task statement points at, in tier order (core first). */
@@ -169,6 +169,7 @@ export const idleCostTotal = idleCosts.reduce((sum, c) => sum + c.usdPerMonth, 0
 export type SearchHit =
   | { kind: 'service'; score: number; service: Service }
   | { kind: 'concept'; score: number; concept: Concept }
+  | { kind: 'lesson'; score: number; lesson: Lesson }
   | { kind: 'task'; score: number; task: Task; domain: Domain }
   | { kind: 'trigger'; score: number; trigger: (typeof triggers)[number] }
 
@@ -207,6 +208,25 @@ export function search(rawQuery: string, certId?: CertId, limit = 20): SearchHit
     else if (c.oneLiner.toLowerCase().includes(q)) score = 40
     else if (c.keyIdea.toLowerCase().includes(q) || c.whatItIs.toLowerCase().includes(q)) score = 20
     if (score) hits.push({ kind: 'concept', score, concept: c })
+  }
+
+  // Scored to land just *below* the atlas entry for the same words, and first
+  // only when the query is distinctly a lesson title. That is deliberate and it
+  // is the opposite of the obvious choice: the palette's whole default is that
+  // searching a service is "remind me" rather than "take me there", because
+  // mid-question the second one costs the question — and a lesson is the only
+  // hit kind that navigates rather than opening a peek. Ranking it first would
+  // hijack the reflex lookup. Second, labelled "Lesson", is discoverable
+  // without doing that, and it matches where `ServiceAtlas` puts the same link.
+  for (const l of certId ? lessonsFor(certId) : lessons) {
+    const title = l.title.toLowerCase()
+    let score = 0
+    if (title === q || l.id === q) score = 115
+    else if (title.startsWith(q)) score = 95
+    else if (title.includes(q)) score = 80
+    else if (l.id.includes(q)) score = 60
+    else if (l.subtitle.toLowerCase().includes(q)) score = 40
+    if (score) hits.push({ kind: 'lesson', score, lesson: l })
   }
 
   for (const t of certId ? tasksFor(certId) : tasks) {

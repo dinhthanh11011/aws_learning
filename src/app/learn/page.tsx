@@ -10,11 +10,15 @@ export const metadata = {
 }
 
 /**
- * The lesson index. One lesson today, and the page says so plainly — the same
- * honesty rule the story index follows. A list of one dressed up as a library is
- * the kind of small lie that makes a learner stop trusting the rest of the app,
- * and here it would also hide the useful information: where the teaching for
- * everything else currently lives.
+ * The lesson index. It says plainly how much of the syllabus the layer covers —
+ * the same honesty rule the story index follows. A short list dressed up as a
+ * library is the kind of small lie that makes a learner stop trusting the rest of
+ * the app, and here it would also hide the useful information: where the teaching
+ * for everything else currently lives.
+ *
+ * The counts are derived, but the *topic* sentence is hand-written, so it needs
+ * editing when a batch lands. That is deliberate: a generated list of covered
+ * services would be accurate and would not tell a learner what is missing.
  */
 export default function LearnIndex() {
   return (
@@ -44,10 +48,13 @@ export default function LearnIndex() {
         })}
 
         <p className="text-[13px] leading-relaxed text-fg-subtle">
-          {lessons.length === 1 ? 'One lesson so far' : `${lessons.length} lessons so far`} — this
-          is the first, and the format is deliberately being proved on one topic before more are
-          written. Everything else is taught through the Service Atlas, Concepts, Story Mode, the
-          Keyword Decoder and the labs.
+          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering reachability —
+          routing, the two filters, and why something cannot reach the internet. That is one cluster
+          of one exam domain, and the rest are not written yet: identity, storage, resilience,
+          serverless and events, and data and cost are planned and listed in docs/LESSONS.md. Until
+          they exist, those topics are taught through the Service Atlas, Concepts, Story Mode, the
+          Keyword Decoder and the labs — the atlas holds every fact either way, and a lesson only
+          ever puts facts in an order.
         </p>
       </div>
     </Page>
