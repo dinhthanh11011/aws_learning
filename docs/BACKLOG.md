@@ -237,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, batches 1–3 written
+### 1. The lesson player — built, batches 1–4 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -281,7 +281,7 @@ accessibility on `/learn/security-groups` is **100** in dark and 96 in light, th
 96 being only the pre-existing `--warn` / `text-accent` token contrast issue in
 §4 below.
 
-**What is owed here.** Three batches are written. Batch 1 — the reachability
+**What is owed here.** Four batches are written. Batch 1 — the reachability
 cluster — is `security-groups`, `subnets-and-route-tables`,
 `why-cant-it-reach-the-internet` and `network-acls`, 83 sections and 16 checks.
 Batch 2 — identity — is `how-iam-decides`, `roles-not-keys` and
@@ -290,13 +290,18 @@ latter declare `requires: ['how-iam-decides']`, making it the first three-lesson
 chain in the corpus. Batch 3 — storage — is `block-file-object`,
 `s3-storage-classes` and `s3-durability-vs-availability`, 46 sections and 11
 checks, 39 minutes, and it is a *linear* chain: each one declares `requires` on
-the one before, so `/learn` reads in the order it should be read in. Ten lessons,
-190 sections, 39 checks, 132 minutes.
+the one before, so `/learn` reads in the order it should be read in. Batch 4 —
+resilience, the largest SAA domain — is `multi-az-vs-read-replica`,
+`rto-rpo-and-the-four-dr-strategies` and `which-load-balancer`, 60 sections and
+12 checks, 44 minutes, a linear chain again and the first batch whose middle
+lesson restates almost nothing from a service card: RTO, RPO and the four
+strategies are all concept entries, so `lesson:brief` had to be called a second
+time with concept slugs. Thirteen lessons, 250 sections, 51 checks, 176 minutes.
 
-**The remaining nine, in three batches** — resilience, serverless and events, and
-data and cost — ordered by how many questions in the bank touch each service, are
+**The remaining six, in two batches** — serverless and events, and data and cost
+— ordered by how many questions in the bank touch each service, are
 in [`LESSONS.md` § The batches](LESSONS.md), kept there rather than here so there
-is one list rather than two drifting ones. Note all ten are SAA-tagged and DVA
+is one list rather than two drifting ones. Note all thirteen are SAA-tagged and DVA
 still has no lesson at all; a lesson carries exactly one `taskId`, so DVA coverage
 means DVA-tasked lessons rather than re-tagging these. Batch 2 was tempting to
 split — `roles-not-keys` maps cleanly onto `dva-2.1` — but roles are heavily
@@ -313,6 +318,19 @@ silently invalidate, so check it every time — see
 [`LESSONS.md` § Wiring a lesson in](LESSONS.md). Batch 3 moved none: its two
 steps, `phase-1-s6` and `phase-1-s7`, are 120 minutes each against 55 and 80
 minutes of reading, so 14 and 25 minutes of lesson fit without touching them.
+Batch 4 moved none either — `phase-1-s9` (120 against 90), `phase-1-s12` (120
+against 75) and `phase-2-s7` (90 against 45) all had the room. It also wired
+`multi-az-vs-read-replica` a second time, onto `phase-2-s5` "Lose an Availability
+Zone", which is the step that rehearses the lesson's whole question; the phase
+lists it too, so the card and the step agree.
+
+Batch 4 also surfaced one thing worth stating as a rule: **`serviceSlugs` is a
+promise about backlinks, not a topic list.** The DR lesson was first written with
+the four slugs its study step carries, which put a link to it on the S3 and AWS
+Backup atlas entries for a lesson that names neither service. `content:check`
+cannot see this — four resolving slugs are four resolving slugs — so it is a
+browser-pass check, and the fix is to list only the entries the lesson actually
+restates.
 
 That document is also where the workflow lives, because the first lesson cost far
 more than writing it: most of the effort went on re-reading content files to find

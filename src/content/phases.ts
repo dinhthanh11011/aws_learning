@@ -308,6 +308,8 @@ export const phases: Phase[] = [
       'block-file-object',
       's3-storage-classes',
       's3-durability-vs-availability',
+      'multi-az-vs-read-replica',
+      'which-load-balancer',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -495,7 +497,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['rds', 'aurora', 'aurora-serverless', 'rds-proxy'],
-        lessonIds: [],
+        lessonIds: ['multi-az-vs-read-replica'],
         reading: [
           {
             label: 'Multi-AZ deployments',
@@ -573,7 +575,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['elb', 'global-accelerator'],
-        lessonIds: [],
+        lessonIds: ['which-load-balancer'],
         reading: [
           {
             label: 'Application Load Balancer',
@@ -809,7 +811,11 @@ export const phases: Phase[] = [
       'You can rebuild a three-tier VPC from an empty canvas without hints',
     ],
     taskIds: ['saa-1.2', 'saa-2.1', 'saa-2.2', 'saa-3.4', 'saa-4.4'],
-    lessonIds: ['why-cant-it-reach-the-internet'],
+    lessonIds: [
+      'why-cant-it-reach-the-internet',
+      'multi-az-vs-read-replica',
+      'rto-rpo-and-the-four-dr-strategies',
+    ],
     labIds: ['vpc-builder', 'request-racer', 'az-drill', 'storage-cost', 'iam-puzzle'],
     steps: [
       {
@@ -880,7 +886,7 @@ export const phases: Phase[] = [
         kind: 'break',
         minutes: 90,
         serviceSlugs: ['ec2-auto-scaling', 'rds', 'elb', 'efs'],
-        lessonIds: [],
+        lessonIds: ['multi-az-vs-read-replica'],
         reading: [
           {
             label: 'Well-Architected reliability pillar',
@@ -918,7 +924,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['backup', 'rds', 's3', 'route53'],
-        lessonIds: [],
+        lessonIds: ['rto-rpo-and-the-four-dr-strategies'],
         reading: [
           {
             label: 'Disaster recovery of workloads on AWS',

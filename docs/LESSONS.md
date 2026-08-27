@@ -269,11 +269,11 @@ All three written: `how-iam-decides`, `roles-not-keys` and
 the latter declare `requires: ['how-iam-decides']`, so this is the first
 three-lesson chain in the corpus.
 
-| Lesson                        |                                                                                                                                              |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `how-iam-decides`             | Explicit deny → SCP → resource policy → allow → implicit deny, as a walkthrough down one request. Template A, exactly as predicted here.     |
-| `roles-not-keys`              | Why an access key in an environment variable is the wrong answer to every question. Template B, the fan-at-the-end variant.                   |
-| `kms-and-envelope-encryption` | Two keys, and which one leaves the region. Template B fan-in-the-middle, plus template C for the two Regions.                                 |
+| Lesson                        |                                                                                                                                          |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `how-iam-decides`             | Explicit deny → SCP → resource policy → allow → implicit deny, as a walkthrough down one request. Template A, exactly as predicted here. |
+| `roles-not-keys`              | Why an access key in an environment variable is the wrong answer to every question. Template B, the fan-at-the-end variant.              |
+| `kms-and-envelope-encryption` | Two keys, and which one leaves the region. Template B fan-in-the-middle, plus template C for the two Regions.                            |
 
 Three things this batch cost that the next one need not.
 
@@ -302,11 +302,11 @@ All three written: `block-file-object`, `s3-storage-classes` and
 first chain where every lesson depends on the one before it, so the order on
 `/learn` is the order to read them in.
 
-| Lesson                          |                                                                                                                                                                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `block-file-object`             | Three shapes of storage and the sentence in a requirement that picks each. Template B fan-in-the-middle for the second server, plus template C for "S3 is not in the VPC".                               |
-| `s3-storage-classes`            | The `optionSet` already holds the table; the lesson is the _decision_, driven by what the requirement says about access pattern. Template B with **no** fan — a plain four-node chain at `rows: 3`.       |
-| `s3-durability-vs-availability` | Eleven nines of one thing is not the other thing. Template B fan-in-the-middle again, because the claim being made _is_ "the same journey, differing at one point".                                       |
+| Lesson                          |                                                                                                                                                                                                     |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `block-file-object`             | Three shapes of storage and the sentence in a requirement that picks each. Template B fan-in-the-middle for the second server, plus template C for "S3 is not in the VPC".                          |
+| `s3-storage-classes`            | The `optionSet` already holds the table; the lesson is the _decision_, driven by what the requirement says about access pattern. Template B with **no** fan — a plain four-node chain at `rows: 3`. |
+| `s3-durability-vs-availability` | Eleven nines of one thing is not the other thing. Template B fan-in-the-middle again, because the claim being made _is_ "the same journey, differing at one point".                                 |
 
 Two things this batch cost that the next one need not.
 
@@ -325,15 +325,43 @@ copy of it. The retrieval windows are not on that table — they live in
 you must ask for" is a table the option set cannot render, and it is the one
 `saa-d4-001` actually tests.
 
-### Batch 4 — resilience, the largest SAA domain
+### Batch 4 — resilience, the largest SAA domain _(done)_
 
 `npm run lesson:brief -- rds aurora elb ec2-auto-scaling route53`
 
-| Lesson                               |                                                                             |
-| ------------------------------------ | --------------------------------------------------------------------------- |
-| `multi-az-vs-read-replica`           | Two features that both make a second database and solve different problems. |
-| `rto-rpo-and-the-four-dr-strategies` | Two numbers that choose an architecture.                                    |
-| `which-load-balancer`                | Four of them; the `optionSet` is the table, the lesson is the layer.        |
+All three written: `multi-az-vs-read-replica`, `rto-rpo-and-the-four-dr-strategies`
+and `which-load-balancer` — 60 sections and 12 checks, 44 minutes. A linear chain
+like batch 3, so the order on `/learn` is the order to read them in. The concept
+brief is a second call worth making here: `npm run lesson:brief -- rto rpo
+dr-strategies multi-az-vs-multi-region high-availability-vs-fault-tolerance`
+prints the entire DR lesson's material, and none of it is on a service entry.
+
+| Lesson                               |                                                                                                                                                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `multi-az-vs-read-replica`           | Two features that both make a second database and solve different problems. Template B fan-in-the-middle — the claim _is_ "the same journey, differing at one point" — plus template C for the Region. |
+| `rto-rpo-and-the-four-dr-strategies` | Two numbers that choose an architecture. Two walkthroughs: one failure with an arrow going each way, then the four strategies as rungs you switch on in order.                                         |
+| `which-load-balancer`                | Four of them; the `optionSet` is the table, the lesson is the layer. Template B fan-in-the-middle again, forking at the point where the request is opened.                                             |
+
+Three things this batch cost that the next one need not.
+
+**A lesson's material may be entirely on concept entries, and `lesson:brief`
+takes concept slugs.** The DR lesson restates `rto`, `rpo` and `dr-strategies`
+and almost nothing from a service card, so the service brief for the batch was
+the wrong brief for one third of it. Ask for the concepts by slug rather than
+inferring them from the "concepts this service assumes" list, which prints one
+line each and not the `keyNumbers` you need.
+
+**`serviceSlugs` is a promise about backlinks, not a topic list.** The DR lesson
+was first written with `['rds', 'route53', 'backup', 's3']` because those are the
+step's services — which put a link to it on the S3 and AWS Backup atlas entries,
+for a lesson that names neither. Put a slug there only if the lesson actually
+restates that entry's facts; the browser pass is where this shows up, because
+`content:check` sees four slugs that resolve perfectly well.
+
+**A second walkthrough in one lesson is fine, and cheap.** `traceAt` is per
+diagram, so two `steps` diagrams on one page advance independently. The audit and
+the checker both handle it, and the only cost is remembering that the reader has
+to press two play controls rather than one.
 
 ### Batch 5 — serverless and events (the DVA weight)
 

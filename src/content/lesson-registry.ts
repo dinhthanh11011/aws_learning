@@ -10,6 +10,9 @@ import { kmsAndEnvelopeEncryption } from './lessons/kms-and-envelope-encryption'
 import { blockFileObject } from './lessons/block-file-object'
 import { s3StorageClasses } from './lessons/s3-storage-classes'
 import { s3DurabilityVsAvailability } from './lessons/s3-durability-vs-availability'
+import { multiAzVsReadReplica } from './lessons/multi-az-vs-read-replica'
+import { rtoRpoAndTheFourDrStrategies } from './lessons/rto-rpo-and-the-four-dr-strategies'
+import { whichLoadBalancer } from './lessons/which-load-balancer'
 
 /**
  * Aggregates the lessons.
@@ -33,6 +36,9 @@ export const lessons: Lesson[] = [
   blockFileObject,
   s3StorageClasses,
   s3DurabilityVsAvailability,
+  multiAzVsReadReplica,
+  rtoRpoAndTheFourDrStrategies,
+  whichLoadBalancer,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

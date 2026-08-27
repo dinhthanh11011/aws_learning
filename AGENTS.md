@@ -256,7 +256,7 @@ slugs, which is the whole research step for a lesson. Use it instead of reading
 | Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 79 h guided of 130 h | 24 across 2 phases, 40 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
-| Lessons | 10 (reachability + identity + storage clusters), 190 sections, 39 checks | not written yet |
+| Lessons | 13 (reachability + identity + storage + resilience clusters), 250 sections, 51 checks | not written yet |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler
