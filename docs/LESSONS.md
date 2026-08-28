@@ -442,9 +442,55 @@ decision than one sentence in one lesson.
 
 After batch 6 the tier-1 services with real question weight are covered. Tier 2
 and 3 stay in the atlas: a lesson is expensive and they are recognise-only.
-The next lesson work is not another batch of this shape — it is DVA coverage
-beyond Lambda, messaging, keys and caching: API Gateway in its own right,
-Cognito, CI/CD and observability, none of which any lesson touches.
+
+### Batch 7 — the developer cluster _(done)_
+
+```bash
+npm run lesson:brief -- api-gateway cognito
+npm run lesson:brief -- codepipeline codebuild codedeploy
+npm run lesson:brief -- cloudwatch xray cloudtrail
+npm run lesson:brief -- deployment-strategies    # the concept the CI/CD lesson leans on
+```
+
+The batch the previous paragraph here asked for: DVA coverage beyond Lambda,
+messaging, keys and caching. All four written: `api-gateway-request-path`,
+`user-pool-or-identity-pool`, `shipping-a-change-safely` and
+`metrics-traces-and-logs` — 70 sections and 16 checks, 66 minutes. Not a chain;
+all four declare `requires: []`. Three are `['saa', 'dva']` and
+`shipping-a-change-safely` is the corpus's first **DVA-only** lesson.
+
+| Lesson                       |                                                                                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api-gateway-request-path`   | 429, 502 and 504 as three points on one path rather than three numbers. Template B fan-in-the-middle, forked on which of the two things the front door calls is the one that ends the request.    |
+| `user-pool-or-identity-pool` | The same JWT going two places. Template B fan-in-the-middle again — the branches _are_ the two pools, which is what makes the shape earn its place rather than being reused.                      |
+| `shipping-a-change-safely`   | Two walkthroughs: the division of labour as a plain four-node chain at `rows: 3`, then the canary release as template B fan-at-the-end, forked on what the alarm says.                            |
+| `metrics-traces-and-logs`    | One slow checkout asked two ways. Template B fan-in-the-middle; CloudTrail arrives last and deliberately without a diagram, because its whole contribution is that it is _not_ on the path drawn. |
+
+Three things this batch cost that a later one need not.
+
+**The inline formatter does not nest.** A code span inside a bold span renders
+its backticks literally — a bolded sentence with a code span inside it came out
+on screen with the backticks visible. Nothing catches it: `content:check` sees a
+valid string, and it took a text-node scan in the browser to find. Keep code
+spans and bold spans as siblings, never one inside the other.
+
+**A status code is a fact, and only some of them are in the atlas.** The first
+draft of the API Gateway diagram ended a rejected request at a `403`, which is
+in a question takeaway and in no atlas entry — so it would have been the lesson
+introducing a fact (invariant 23). 429, 502 and 504 _are_ on the entry; 401 and
+403 are not. The node became "Rejected at the edge" instead, which is a
+restatement of `whenToUse`, and it teaches better anyway.
+
+**Not every service the lesson names belongs in `serviceSlugs`.** The Cognito
+lesson draws API Gateway, Lambda and S3 boxes and restates no fact from any of
+those entries, so `serviceSlugs` is `['cognito']` alone — a diagram node is not
+a promise about backlinks, and only `serviceSlugs` is. Same rule batch 4 wrote
+down, applied to nodes rather than to a study step's service list.
+
+What is left is a long tail rather than a cluster — SAM and CloudFormation, ECS
+and Fargate task definitions, Kinesis against SQS, Step Functions state types —
+and none of it carries the question weight of the seven batches above. The list
+in this document has stopped being a queue and is now a record.
 
 ### Wiring a lesson in, once it exists
 

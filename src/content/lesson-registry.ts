@@ -19,6 +19,10 @@ import { retriesDlqsAndIdempotency } from './lessons/retries-dlqs-and-idempotenc
 import { partitionKeys } from './lessons/partition-keys'
 import { whereToCache } from './lessons/where-to-cache'
 import { payingLessForTheSameThing } from './lessons/paying-less-for-the-same-thing'
+import { apiGatewayRequestPath } from './lessons/api-gateway-request-path'
+import { userPoolOrIdentityPool } from './lessons/user-pool-or-identity-pool'
+import { shippingAChangeSafely } from './lessons/shipping-a-change-safely'
+import { metricsTracesAndLogs } from './lessons/metrics-traces-and-logs'
 
 /**
  * Aggregates the lessons.
@@ -51,6 +55,10 @@ export const lessons: Lesson[] = [
   partitionKeys,
   whereToCache,
   payingLessForTheSameThing,
+  apiGatewayRequestPath,
+  userPoolOrIdentityPool,
+  shippingAChangeSafely,
+  metricsTracesAndLogs,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

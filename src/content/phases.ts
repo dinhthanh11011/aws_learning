@@ -315,6 +315,7 @@ export const phases: Phase[] = [
       'partition-keys',
       'where-to-cache',
       'paying-less-for-the-same-thing',
+      'metrics-traces-and-logs',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -711,7 +712,7 @@ export const phases: Phase[] = [
           'budgets',
           'trusted-advisor',
         ],
-        lessonIds: [],
+        lessonIds: ['metrics-traces-and-logs'],
         reading: [
           { label: 'CloudWatch alarms', url: `${CW}/AlarmThatSendsEmail.html`, minutes: 25 },
           {
@@ -1152,6 +1153,10 @@ export const phases: Phase[] = [
       'retries-dlqs-and-idempotency',
       'partition-keys',
       'where-to-cache',
+      'api-gateway-request-path',
+      'user-pool-or-identity-pool',
+      'shipping-a-change-safely',
+      'metrics-traces-and-logs',
     ],
     labIds: ['ddb-keys', 'event-wiring'],
     steps: [
@@ -1254,7 +1259,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['api-gateway', 'appsync', 'lambda'],
-        lessonIds: ['where-to-cache'],
+        lessonIds: ['api-gateway-request-path', 'where-to-cache'],
         reading: [
           { label: 'HTTP API versus REST API', url: `${APIGW}/http-api-vs-rest.html`, minutes: 30 },
           { label: 'API caching', url: `${APIGW}/apigateway-caching.html`, minutes: 25 },
@@ -1308,7 +1313,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['cognito', 'iam', 'sts'],
-        lessonIds: [],
+        lessonIds: ['user-pool-or-identity-pool'],
         reading: [
           {
             label: 'User pools — authentication',
@@ -1361,7 +1366,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 150,
         serviceSlugs: ['codepipeline', 'codebuild', 'codedeploy', 'cloudformation', 'sam'],
-        lessonIds: [],
+        lessonIds: ['shipping-a-change-safely'],
         reading: [
           {
             label: 'CodeDeploy deployment configurations',
@@ -1385,7 +1390,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 90,
         serviceSlugs: ['xray', 'cloudwatch'],
-        lessonIds: [],
+        lessonIds: ['metrics-traces-and-logs'],
         reading: [
           {
             label: 'X-Ray — segments, subsegments, sampling',

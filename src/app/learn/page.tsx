@@ -48,22 +48,26 @@ export default function LearnIndex() {
         })}
 
         <p className="text-[13px] leading-relaxed text-fg-subtle">
-          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering six clusters:
+          {lessons.length} {lessons.length === 1 ? 'lesson' : 'lessons'}, covering seven clusters:
           reachability — routing, the two filters, and why something cannot reach the internet;
           identity — how IAM decides, why a role beats an access key, and the two keys behind
           envelope encryption; storage — the three shapes, choosing an S3 storage class, and what
           eleven nines actually measures; resilience — Multi-AZ against a read replica, the two
           numbers that choose a disaster recovery architecture, and which load balancer the layer
           decides; serverless and events — what actually runs a Lambda function, whether the
-          hand-off is a queue, a topic or a bus, and what happens on the second delivery; and data
-          and cost — why the partition key is the whole design, four caches at four distances from
-          the user, and paying less for exactly the same thing. That is every SAA cluster with real
-          question weight. What is still unwritten is developer-side: API Gateway in its own right,
-          Cognito, CI/CD and observability have no lesson at all, and only five of these carry a DVA
-          task statement, so DVA coverage beyond Lambda, messaging, key design and caching is owed.
-          Until those exist, those topics are taught through the Service Atlas, Concepts, Story
-          Mode, the Keyword Decoder and the labs — the atlas holds every fact either way, and a
-          lesson only ever puts facts in an order.
+          hand-off is a queue, a topic or a bus, and what happens on the second delivery; data and
+          cost — why the partition key is the whole design, four caches at four distances from the
+          user, and paying less for exactly the same thing; and the developer cluster — what the API
+          Gateway front door does before your code runs, which of Cognito’s two pools a requirement
+          is asking for, which of the three Code-something services owns which job, and which of
+          CloudWatch, X-Ray and CloudTrail can answer the sentence in front of you. That is every
+          SAA cluster with real question weight, and the four developer topics that had no lesson at
+          all. What is still unwritten is the tail of the developer paper: SAM and CloudFormation as
+          the thing you actually deploy with, ECS and Fargate task definitions, Kinesis against SQS
+          for ordering and replay, and the Step Functions state types. Until those exist, those
+          topics are taught through the Service Atlas, Concepts, Story Mode, the Keyword Decoder and
+          the labs — the atlas holds every fact either way, and a lesson only ever puts facts in an
+          order.
         </p>
       </div>
     </Page>

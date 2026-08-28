@@ -237,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, batches 1–6 written
+### 1. The lesson player — built, batches 1–7 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -303,12 +303,19 @@ independent and the third declares `requires` on both. Batch 6 — data and cost
 is `partition-keys`, `where-to-cache` and `paying-less-for-the-same-thing`, 48
 sections and 12 checks, 46 minutes, and it is not a chain either: all three
 declare `requires: []`, because none of the three depends on either of the
-others. **Nineteen lessons, 346 sections, 75 checks, 267 minutes.**
+others. Batch 7 — the developer cluster, and the first batch written for DVA
+rather than adapted to it — is `api-gateway-request-path`,
+`user-pool-or-identity-pool`, `shipping-a-change-safely` and
+`metrics-traces-and-logs`, 70 sections and 16 checks, 66 minutes, and it is not
+a chain: all four declare `requires: []`, because none of the four needs
+another. **Twenty-three lessons, 416 sections, 91 checks, 333 minutes.**
 
 **Every batch in [`LESSONS.md` § The batches](LESSONS.md) is now marked done**,
-which means the tier-1 services with real question weight all have a lesson and
-the list there is no longer a queue. What is owed next is not another batch of
-that shape — see the DVA paragraph below.
+including the developer batch that the previous revision of this section named
+as the outstanding work. Nine of the twenty-three now carry the DVA family and
+one — the CI/CD lesson — is DVA only, which is the first lesson in the corpus
+that an SAA reader will never see. What is owed here is no longer a cluster; it
+is the long tail, and the honest list is below.
 
 Batch 5 settled the DVA question the first four deferred. Batches 1–4 are all
 `families: ['saa']`, and the worry recorded here was that a DVA-tagged lesson
@@ -322,11 +329,25 @@ carries `saa-2.1`, and all three render on SAA phases 1 and 2 *and* on DVA phase
 Batch 6 added two more to that set — `partition-keys` carries `dva-1.3` and
 `where-to-cache` carries `saa-3.3`, both tagged for both families — and
 `paying-less-for-the-same-thing` is deliberately SAA-only, because Spot and
-Savings Plans are not on the developer paper. So five of the nineteen are DVA
-lessons and fourteen are SAA-only. DVA coverage beyond Lambda, messaging, key
-design and caching — API Gateway in its own right, Cognito, CI/CD,
-observability — is **the outstanding lesson work**, and it is now the only
-lesson work with nothing queued in front of it.
+Savings Plans are not on the developer paper.
+
+Batch 7 closed the gap that paragraph named. `api-gateway-request-path`
+(`dva-1.1`), `user-pool-or-identity-pool` (`dva-2.1`) and
+`metrics-traces-and-logs` (`dva-4.1`) are tagged for both families, because API
+Gateway, Cognito, CloudWatch, X-Ray and CloudTrail are all tier 1 and carry SAA
+questions as well; `shipping-a-change-safely` (`dva-3.4`) is the corpus's first
+**DVA-only** lesson, because CodePipeline, CodeBuild and CodeDeploy are tier 2
+and dva-tagged in the atlas and tagging the lesson for SAA would put a
+developer-tools reading list on a phase that never mentions them. So nine of the
+twenty-three are DVA lessons, twenty-two are SAA lessons, and phase 4 goes from
+five lessons to nine.
+
+What is left is a long tail rather than a cluster, and each item is now a lesson
+or two rather than a batch: SAM and CloudFormation as the thing a developer
+actually deploys with, ECS and Fargate task definitions, Kinesis against SQS for
+ordering and replay, and Step Functions state types. None of them is close to
+the question weight of the seven batches that are written, which is why the
+batch list stopped being a queue at batch 6 and is now a record.
 
 Batch 2 also moved two step budgets: `phase-0-s6` and `phase-1-s1` each went from
 90 to 105 minutes, because 80 and 65 minutes of external reading plus a lesson on
@@ -344,7 +365,10 @@ lists it too, so the card and the step agree. Batch 5 moved none either, and it
 is the first to wire across both exams: `phase-1-s14` (120 against 85),
 `phase-1-s15` (120 against 50), `phase-2-s4` (90 against 40), `phase-4-s2` (120
 against 95), `phase-4-s3` (120 against 60) and `phase-4-s4` (120 against 25) all
-had the room for a 14- to 16-minute lesson on top. Batch 6 moved none either:
+had the room for a 14- to 16-minute lesson on top. Batch 7 moved none either:
+`phase-4-s5` (120 against 55 and a lesson already on it), `phase-4-s8` (90
+against 60), `phase-4-s10` (150 against 55), `phase-4-s11` (90 against 55) and
+`phase-1-s17` (90 against 45) all had room for a 15- to 18-minute lesson. Batch 6 moved none either:
 `phase-1-s5` (120 against 55), `phase-1-s10` (120 against 55), `phase-1-s11` (90
 against 50), `phase-4-s5` (120 against 55), `phase-4-s6` (150 against 100) and
 `phase-4-s7` (120 against nothing) all had 40 minutes or more spare. It wires two
