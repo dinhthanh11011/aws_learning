@@ -4,7 +4,7 @@ Content is typed data. Adding to it means editing an array and re-running the
 checker — you should almost never need to write a component.
 
 ```bash
-npm run content:check && npm run typecheck && npm test
+npm run verify -- --fast     # or `npm run verify` with the build
 ```
 
 ## Where things live
@@ -13,7 +13,7 @@ npm run content:check && npm run typecheck && npm test
 | -------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | A service                  | `src/content/services/<category>.ts`                                 | Cards generate automatically                                                           |
 | A concept                  | `src/content/concepts/<group>.ts`                                    | For anything that is not an AWS service                                                |
-| A question                 | `src/content/questions/` — `saa-d1.ts` … `saa-d4.ts`, `dva.ts`       | Every option needs a `why`                                                             |
+| A question                 | `src/content/questions/` — `saa-d1.ts` … `saa-d4.ts`, `dva-d1.ts` … `dva-d4.ts`       | Every option needs a `why`                                                             |
 | A trigger phrase           | `src/content/triggers.ts`                                            | Include `notThis` — the trap is the value                                              |
 | A decision tree            | `src/content/decision-trees.ts`                                      |                                                                                        |
 | A break-it challenge       | `src/engines/network/topologies.ts`                                  | Tests assert it really breaks                                                          |

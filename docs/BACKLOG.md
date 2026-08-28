@@ -315,7 +315,7 @@ minutes; all four are tagged for both families, and only `queue-or-stream`
 declares a prerequisite. **Twenty-seven lessons, 481 sections, 107 checks, 398
 minutes.**
 
-**Every batch in [`LESSONS.md` § The batches](LESSONS.md) is now marked done**,
+**Every batch in [`LESSONS-BATCHES.md`](LESSONS-BATCHES.md) is now marked done**,
 including the long tail that the previous revision of this section named as the
 outstanding work. Thirteen of the twenty-seven now carry the DVA family and one
 — the CI/CD lesson — is DVA only, which is the first lesson in the corpus that

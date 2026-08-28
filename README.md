@@ -123,9 +123,7 @@ counts a full paper needs: [`docs/CONTENT.md`](docs/CONTENT.md).
 Then:
 
 ```bash
-npm run content:check
-npm run typecheck
-npm test
+npm run verify
 ```
 
 ## Scripts
@@ -137,12 +135,16 @@ npm test
 | `npm run typecheck` | TypeScript, strict |
 | `npm test` | Vitest over the engines |
 | `npm run content:check` | Schema + referential integrity + coverage report |
+| `npm run verify` | Every gate above, cheapest first, stopping at the first failure |
+| `npm run where -- <id>` | Where an id lives in `src/content`; `--print` emits just those lines |
+| `npm run lesson:brief -- <slug>` | Every fact in the corpus about a slug |
 
 ## Working on this
 
 | | |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | Invariants that bite if undone — read first |
+| [`AGENTS.md`](AGENTS.md) | The brief, the gates, and the invariants one line each — read first |
+| [`docs/INVARIANTS.md`](docs/INVARIANTS.md) | Why each invariant exists — required before touching `src/content` |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Content model, engines, data flow, routes |
 | [`docs/CONTENT.md`](docs/CONTENT.md) | How to add services, questions, triggers, labs |
 | [`docs/BACKLOG.md`](docs/BACKLOG.md) | What is built, what is not, and what to do next |

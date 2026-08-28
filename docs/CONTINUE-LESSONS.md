@@ -9,11 +9,13 @@ Continue the lesson layer in this repo until the next batch is finished and ever
 gate is green. Work autonomously — do not stop to ask me which batch or which
 service unless something is genuinely undecidable.
 
-**Read first, in this order.** `AGENTS.md`, then `docs/LESSONS.md` (the process —
-it replaces exploring the codebase), then `docs/CONTENT.md § A lesson` (the
-shape). `docs/BACKLOG.md` § "The lesson player" says where the layer stands.
+**Read first, in this order.** `AGENTS.md`, then `docs/INVARIANTS.md` (the reasons
+behind the one-liners — required before touching `src/content/`), then
+`docs/LESSONS.md` (the process — it replaces exploring the codebase), then
+`docs/CONTENT.md § A lesson` (the shape). `docs/BACKLOG.md` § "The lesson player" says where the layer stands.
 
-**Pick the work.** `docs/LESSONS.md § The batches` lists the batches in priority
+**Pick the work.** `docs/LESSONS.md § The batches` summarises them and
+`docs/LESSONS-BATCHES.md` has the full record, in priority
 order, ranked by how many questions in the bank touch each service. Take the
 first batch that is not marked done and write **all** of its lessons in one pass.
 Batching is the point: they share one brief, one set of diagram coordinates and
@@ -48,11 +50,11 @@ output, not a summary of your intentions:
 npm run content:fingerprint   # before and after: only lessons/steps/phases may change
 npm run content:check         # loop until clean
 npm run diagram:audit         # loop until clean; run before any browser pass
-npm run typecheck
-npm test
-npx eslint src scripts        # must be 0 errors AND 0 warnings
-npm run build                 # +1 prerendered page per lesson
+npm run verify                # the rest of the gates; build is +1 page per lesson
 ```
+
+To edit an existing atlas entry rather than research one, `npm run where -- <slug> --print`
+prints just that entry instead of the file around it.
 
 Then **one browser pass for the whole batch** (`npm run dev`), for the one thing
 no script catches: whether the order actually teaches. Step each walkthrough,

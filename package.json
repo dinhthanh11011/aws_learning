@@ -13,7 +13,9 @@
     "content:check": "tsx scripts/content-check.ts",
     "content:fingerprint": "tsx scripts/content-dump.ts",
     "lesson:brief": "tsx scripts/lesson-brief.ts",
-    "diagram:audit": "tsx scripts/diagram-audit.ts"
+    "diagram:audit": "tsx scripts/diagram-audit.ts",
+    "where": "tsx scripts/where.ts",
+    "verify": "tsx scripts/verify.ts"
   },
   "dependencies": {
     "@xyflow/react": "^12.11.3",
