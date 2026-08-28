@@ -21,6 +21,7 @@ export const queueOrStream: Lesson = {
   id: 'queue-or-stream',
   families: ['saa', 'dva'],
   taskId: 'saa-3.5',
+  cluster: 'long-tail',
   title: 'When a queue is the wrong shape',
   subtitle:
     'Processing a message destroys it. That is the entire difference between a queue and a stream, and it is why the second team who asks for the same events cannot have them — no matter how much capacity you add. Three words in a stem tell you which of the two the question is really about.',

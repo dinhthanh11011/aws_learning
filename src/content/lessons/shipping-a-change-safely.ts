@@ -25,6 +25,7 @@ export const shippingAChangeSafely: Lesson = {
   id: 'shipping-a-change-safely',
   families: ['dva'],
   taskId: 'dva-3.4',
+  cluster: 'developer',
   title: 'Three services called Code-something, and one release',
   subtitle:
     'CodePipeline, CodeBuild and CodeDeploy are offered as alternatives in questions where only one of them owns the job being described. They are not alternatives — they are three consecutive layers, and the exam is testing whether you know which layer a given sentence belongs to.',

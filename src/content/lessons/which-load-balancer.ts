@@ -19,6 +19,7 @@ export const whichLoadBalancer: Lesson = {
   id: 'which-load-balancer',
   families: ['saa'],
   taskId: 'saa-3.4',
+  cluster: 'resilience',
   title: 'Which load balancer, and why the layer decides',
   subtitle:
     'Four of them, and the choice is never really a preference. It is decided by how deep into the request you need something to look — and every exam tell, from a static IP to a WAF rule, follows from that one answer.',

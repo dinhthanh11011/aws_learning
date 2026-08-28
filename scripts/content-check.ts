@@ -41,6 +41,8 @@ import {
   LessonSchema,
   lessons,
   lessonById,
+  LESSON_CLUSTERS,
+  lessonClusterById,
   cardById,
   type DiagramSpec,
   type LessonSection,
@@ -838,6 +840,10 @@ for (const l of lessons) {
     if (id === l.id) fail(where, 'requires itself')
   }
 
+  if (!lessonClusterById.has(l.cluster)) {
+    fail(where, `cluster "${l.cluster}" is not declared in lesson-clusters.ts`)
+  }
+
   // Every `[[slug]]` in every string a reader can see. Unresolvable ones render
   // as the bare slug — visible, but only to whoever happens to read that line.
   const mdStrings = (s: LessonSection): string[] => {
@@ -902,6 +908,48 @@ for (const l of lessons) {
   // sticks. A warning rather than a failure: a purely diagrammatic lesson could
   // legitimately exist one day.
   if (!l.checks.length) warn(where, 'has no recall checks — reading alone leaves no trace')
+}
+
+/**
+ * The registry array is the reading order and `LESSON_CLUSTERS` is the cluster
+ * order; before this check they were two independent orderings with nothing
+ * holding them together, so a lesson appended to the wrong run would have been
+ * invisible until somebody read `/learn` and noticed the heading was wrong.
+ *
+ * Requiring contiguity rather than sorting on render keeps the array the single
+ * source of order — a sort would quietly accept a corpus whose file no longer
+ * reads in the order the learner gets.
+ */
+{
+  const runs: string[] = []
+  for (const l of lessons) {
+    if (runs[runs.length - 1] !== l.cluster) runs.push(l.cluster)
+  }
+  const seen = new Set<string>()
+  for (const id of runs) {
+    if (seen.has(id)) {
+      fail(
+        `cluster ${id}`,
+        'appears in more than one run in lesson-registry.ts — a cluster\u2019s lessons must be contiguous',
+      )
+    }
+    seen.add(id)
+  }
+
+  const declared = LESSON_CLUSTERS.map((c) => c.id)
+  const expected = declared.filter((id) => seen.has(id))
+  const actual = runs.filter((id, i) => runs.indexOf(id) === i)
+  if (expected.join() !== actual.join()) {
+    fail(
+      'lesson clusters',
+      `lesson-registry.ts orders them ${actual.join(' → ')}, lesson-clusters.ts declares ${expected.join(' → ')}`,
+    )
+  }
+
+  for (const c of LESSON_CLUSTERS) {
+    // An empty cluster renders as a heading with nothing under it.
+    if (!seen.has(c.id)) fail(`cluster ${c.id}`, 'is declared but no lesson is in it')
+  }
 }
 
 /* ── 5. Coverage warnings (not failures) ─────────────────────────────────── */

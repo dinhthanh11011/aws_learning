@@ -21,6 +21,7 @@ export const retriesDlqsAndIdempotency: Lesson = {
   id: 'retries-dlqs-and-idempotency',
   families: ['saa', 'dva'],
   taskId: 'dva-1.1',
+  cluster: 'serverless-and-events',
   title: 'What happens on the second delivery',
   subtitle:
     'At-least-once is not a caveat in the small print, it is the contract — and the most-asked failure in the messaging domain is caused by a timeout setting rather than by any bug. Here is the duplicate happening, and the three fixes people confuse with each other.',

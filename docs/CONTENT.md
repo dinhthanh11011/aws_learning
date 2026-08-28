@@ -9,21 +9,21 @@ npm run content:check && npm run typecheck && npm test
 
 ## Where things live
 
-| Adding | Edit | Notes |
-|---|---|---|
-| A service | `src/content/services/<category>.ts` | Cards generate automatically |
-| A concept | `src/content/concepts/<group>.ts` | For anything that is not an AWS service |
-| A question | `src/content/questions/` — `saa-d1.ts` … `saa-d4.ts`, `dva.ts` | Every option needs a `why` |
-| A trigger phrase | `src/content/triggers.ts` | Include `notThis` — the trap is the value |
-| A decision tree | `src/content/decision-trees.ts` | |
-| A break-it challenge | `src/engines/network/topologies.ts` | Tests assert it really breaks |
-| An IAM puzzle | `src/engines/policy/puzzles.ts` | One rule per puzzle |
-| A big-picture node or flow | `src/content/big-picture.ts` | Keep it ~25 nodes; the atlas is for lookup |
-| A phase change | `src/content/phases.ts` | Mirrors the user's Notion roadmap — keep in sync |
-| A study step | `src/content/phases.ts`, in that phase's `steps` | Ids must match position; check every URL resolves |
-| A story chapter | `src/content/stories/<slug>.ts`, in `chapters` | Ids must match position; every id in `adds` must exist in the story's own architecture |
-| A lesson | `src/content/lessons/<id>.ts`, then one line in `lesson-registry.ts` | Restates the atlas, introduces nothing — see below |
-| A `whyItExists` | the service or concept entry | Motivation, not mechanism — see below |
+| Adding                     | Edit                                                                 | Notes                                                                                  |
+| -------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| A service                  | `src/content/services/<category>.ts`                                 | Cards generate automatically                                                           |
+| A concept                  | `src/content/concepts/<group>.ts`                                    | For anything that is not an AWS service                                                |
+| A question                 | `src/content/questions/` — `saa-d1.ts` … `saa-d4.ts`, `dva.ts`       | Every option needs a `why`                                                             |
+| A trigger phrase           | `src/content/triggers.ts`                                            | Include `notThis` — the trap is the value                                              |
+| A decision tree            | `src/content/decision-trees.ts`                                      |                                                                                        |
+| A break-it challenge       | `src/engines/network/topologies.ts`                                  | Tests assert it really breaks                                                          |
+| An IAM puzzle              | `src/engines/policy/puzzles.ts`                                      | One rule per puzzle                                                                    |
+| A big-picture node or flow | `src/content/big-picture.ts`                                         | Keep it ~25 nodes; the atlas is for lookup                                             |
+| A phase change             | `src/content/phases.ts`                                              | Mirrors the user's Notion roadmap — keep in sync                                       |
+| A study step               | `src/content/phases.ts`, in that phase's `steps`                     | Ids must match position; check every URL resolves                                      |
+| A story chapter            | `src/content/stories/<slug>.ts`, in `chapters`                       | Ids must match position; every id in `adds` must exist in the story's own architecture |
+| A lesson                   | `src/content/lessons/<id>.ts`, then one line in `lesson-registry.ts` | Restates the atlas, introduces nothing — see below                                     |
+| A `whyItExists`            | the service or concept entry                                         | Motivation, not mechanism — see below                                                  |
 
 ## A lesson
 
@@ -45,13 +45,13 @@ So what a lesson contributes is **sequence**. Copy
    earns the format — a step the reader advances themselves, onto an arrow they
    were never asked to write a rule for, is believed in a way a sentence is not.
    Leave `steps` empty when the whole picture needs to be seen at once.
-3. A `callout` giving the idea its name, *after* it has been seen.
+3. A `callout` giving the idea its name, _after_ it has been seen.
 4. A `code` block of the real configuration, then a `steps` section reading it
    out one line at a time. Dense syntax becomes legible one line at a time and
    stays opaque as a block.
 5. The wrong answer written out as real syntax, then a `trap` callout rejecting
    it. Showing what you cannot write teaches more than saying it is impossible.
-6. `compare` for the head-to-head, *last* — a table before both halves are
+6. `compare` for the head-to-head, _last_ — a table before both halves are
    understood is something to memorise rather than something to follow.
 7. `numbers` at the end, lifted verbatim from the atlas's `keyNumbers`.
 8. `checks` — 3 options, authored correct-first (they are shuffled), one correct.
@@ -61,7 +61,15 @@ So what a lesson contributes is **sequence**. Copy
 Rules `content:check` enforces: every `[[slug]]` resolves to a service or
 concept, `cardIds` resolve, `taskId` resolves on a current paper, check ids are
 prefixed with the lesson id, a `compare` row has one cell per column, and a
-walkthrough has no edge that no step lights. Use `[[slug|display text]]` when the
+walkthrough has no edge that no step lights.
+
+**`cluster`** names one of the eight groups declared in
+`src/content/lesson-clusters.ts`, and `/learn` renders the lessons under those
+headings. It is a grouping _and_ an ordering: the lessons of a cluster must be
+contiguous in `lesson-registry.ts` and the clusters must appear there in the
+order `lesson-clusters.ts` declares, both enforced. That is what stops the array
+order and the cluster order becoming two independent things — which they were
+while the grouping lived only as prose on the index page. Use `[[slug|display text]]` when the
 short label reads badly mid-sentence — `[[security-group]]` renders "SG".
 
 If a lesson wants a fact the atlas lacks: edit the atlas entry first. The card
@@ -74,7 +82,7 @@ The fields that carry the teaching load, in order of value:
 
 1. **`whenNotToUse`** — the half most study material skips, and the half that
    decides scenario questions. Never leave it empty.
-2. **`examTraps`** — the specific ways this service makes a *wrong* answer look
+2. **`examTraps`** — the specific ways this service makes a _wrong_ answer look
    right. Core services should have 3+; `content:check` warns otherwise.
 3. **`confusedWith`** — the pair that appears as two plausible options in one
    question, plus the dividing line. Generates `contrast` cards.
@@ -82,7 +90,7 @@ The fields that carry the teaching load, in order of value:
    often as `volatile: true`; those are excluded from card generation and shown
    with a "verify" nudge instead of stated as fact.
 5. **`oneLiner`** — one sentence, used on dense canvases and to generate the
-   `whichService` card. Write it so it reads as a *requirement* when reversed.
+   `whichService` card. Write it so it reads as a _requirement_ when reversed.
 
 ```ts
 {
@@ -116,8 +124,8 @@ subnet, route table, RTO, RPO, idempotency, the shape of an ARN. If it has no
 pricing page and no console, it is a concept — see invariant 14 for why these
 are not a fourth service tier.
 
-Write one when you notice a term being *used* across several service cards and
-*defined* in none of them. That was the whole gap this corpus closed.
+Write one when you notice a term being _used_ across several service cards and
+_defined_ in none of them. That was the whole gap this corpus closed.
 
 The fields that carry the teaching load, in order of value:
 
@@ -131,7 +139,7 @@ The fields that carry the teaching load, in order of value:
    is the thing this corpus exists to not be.
 3. **`onTheExam`** — the phrasings that mean a question is really about this.
    Quote the stem wording where you can.
-4. **`confusedWith`** — points at other *concepts*, not services. This is where
+4. **`confusedWith`** — points at other _concepts_, not services. This is where
    RTO and RPO separate, which is the single most swapped pair on SAA-C03.
 5. **`serviceSlugs`** — the services where this is the thing being configured.
    It drives the "Assumes you know" panel on every one of those service cards,
@@ -196,23 +204,23 @@ Enforced by schema or checker:
   explanation derives no SRS card, appears in no search, and is missing from the
   quick-look panel the learner opens mid-question. `content:check` warns as
   `atlas gap: question <id> teaches "25 %" but no atlas entry for aurora
-  mentions the figure`; the fix is always to add it to the service card, never
+mentions the figure`; the fix is always to add it to the service card, never
   to soften the explanation.
 
 ### How many you need
 
 A full paper needs `round(weight% × questionCount)` per domain with no repeats:
 
-| Cert | Domain | Need | Have |
-|---|---|---|---|
-| SAA-C03 | d1 Secure 30% | 19 | 40 |
-| | d2 Resilient 26% | 17 | 36 |
-| | d3 High-Performing 24% | 16 | 34 |
-| | d4 Cost-Optimized 20% | 13 | 32 |
-| DVA-C02 | d1 Development 32% | 21 | 42 |
-| | d2 Security 26% | 17 | 34 |
-| | d3 Deployment 24% | 16 | 32 |
-| | d4 Troubleshooting 18% | 12 | 24 |
+| Cert    | Domain                 | Need | Have |
+| ------- | ---------------------- | ---- | ---- |
+| SAA-C03 | d1 Secure 30%          | 19   | 40   |
+|         | d2 Resilient 26%       | 17   | 36   |
+|         | d3 High-Performing 24% | 16   | 34   |
+|         | d4 Cost-Optimized 20%  | 13   | 32   |
+| DVA-C02 | d1 Development 32%     | 21   | 42   |
+|         | d2 Security 26%        | 17   | 34   |
+|         | d3 Deployment 24%      | 16   | 32   |
+|         | d4 Troubleshooting 18% | 12   | 24   |
 
 Both certs now serve **two** consecutive full 65-question papers with zero
 overlap — verified by sampling twice with the first paper's ids excluded. A third
@@ -220,7 +228,7 @@ consecutive paper cannot be filled from unseen questions.
 
 Note a sampler behaviour that matters when you extend this: `sample()` prefers
 unseen questions but falls back to the full candidate set when a domain has too
-few, and it does *not* report that as a shortfall. So a third paper silently
+few, and it does _not_ report that as a shortfall. So a third paper silently
 repeats rather than warning. If you add a repeat count to `SampleResult`, surface
 it in `/exam` — invariant 9 says the learner should be told.
 
@@ -349,5 +357,5 @@ bullet in `certs/*.ts` are copied from the official AWS exam guides:
 - DVA-C02 — <https://docs.aws.amazon.com/aws-certification/latest/developer-associate-02/developer-associate-02.html>
 
 If AWS revises a guide, re-fetch and diff rather than editing from memory. Note
-DVA states its content as numbered *skills* rather than SAA's Knowledge/Skills
+DVA states its content as numbered _skills_ rather than SAA's Knowledge/Skills
 split, which is why `knowledge` is empty for DVA tasks by design.

@@ -17,6 +17,7 @@ export const kmsAndEnvelopeEncryption: Lesson = {
   id: 'kms-and-envelope-encryption',
   families: ['saa'],
   taskId: 'saa-1.3',
+  cluster: 'identity',
   title: 'KMS and envelope encryption',
   subtitle:
     'Two keys, one of which never leaves the service and one of which you hold for a moment — and the policy that decides everything, which is not the one you were looking at.',

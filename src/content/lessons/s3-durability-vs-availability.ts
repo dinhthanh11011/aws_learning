@@ -16,6 +16,7 @@ export const s3DurabilityVsAvailability: Lesson = {
   id: 's3-durability-vs-availability',
   families: ['saa'],
   taskId: 'saa-2.2',
+  cluster: 'storage',
   title: 'Eleven nines is durability',
   subtitle:
     'The most quoted number in AWS, almost always quoted for the wrong thing. Durability and availability fail separately, are sold separately, and a requirement always means exactly one of them.',

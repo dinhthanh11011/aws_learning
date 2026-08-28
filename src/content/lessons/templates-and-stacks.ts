@@ -24,6 +24,7 @@ export const templatesAndStacks: Lesson = {
   id: 'templates-and-stacks',
   families: ['saa', 'dva'],
   taskId: 'dva-3.1',
+  cluster: 'long-tail',
   title: 'The stack is the unit, not the resource',
   subtitle:
     'Somebody deletes the staging stack on a Friday to stop paying for it, and the database goes with it. Nothing was misconfigured — that is what a stack is. Every CloudFormation question on either paper is really asking whether you know which of your resources the stack owns and what it will do to them next.',

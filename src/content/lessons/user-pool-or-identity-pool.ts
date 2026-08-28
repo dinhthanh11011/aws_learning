@@ -24,6 +24,7 @@ export const userPoolOrIdentityPool: Lesson = {
   id: 'user-pool-or-identity-pool',
   families: ['saa', 'dva'],
   taskId: 'dva-2.1',
+  cluster: 'developer',
   title: 'Two pools, and only one of them logs anybody in',
   subtitle:
     'A user pool and an identity pool are constantly presented as alternatives, and they are not — they are consecutive steps that a question can ask for one of, or both of. Reading which one a stem wants takes a single sentence, once you have watched them do different things to the same token.',

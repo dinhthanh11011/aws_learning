@@ -18,6 +18,7 @@ export const subnetsAndRouteTables: Lesson = {
   id: 'subnets-and-route-tables',
   families: ['saa'],
   taskId: 'saa-3.4',
+  cluster: 'reachability',
   title: 'Subnets and route tables',
   subtitle:
     'There is no setting that makes a subnet public. Two subnets can be identical in every visible way and behave differently, and the difference is one line in a table that is not part of either of them.',

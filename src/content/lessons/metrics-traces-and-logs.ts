@@ -26,6 +26,7 @@ export const metricsTracesAndLogs: Lesson = {
   id: 'metrics-traces-and-logs',
   families: ['saa', 'dva'],
   taskId: 'dva-4.1',
+  cluster: 'developer',
   title: 'Something is wrong. Which of the three tells you?',
   subtitle:
     'CloudWatch, X-Ray and CloudTrail are offered together in questions where only one of them can answer the sentence being asked. Each is a different question about the same system, and reading which question a stem is really asking takes about four words.',

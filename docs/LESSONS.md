@@ -73,7 +73,8 @@ that is the signal to add it to the atlas — not to the lesson. Add it there, a
 
 Copy `src/content/lessons/security-groups.ts` and keep its section order —
 [`CONTENT.md`](CONTENT.md) explains why each position is where it is. Add one
-line to `src/content/lesson-registry.ts`.
+line to `src/content/lesson-registry.ts`, **inside its cluster's run** rather
+than at the end — see "Wiring a lesson in" below.
 
 Diagram coordinates: **do not invent them.** Use a template below.
 
@@ -557,10 +558,17 @@ know to type:
 2. The **phase** gets the id in `lessonIds`. `RoadmapView` renders that as
    "Lessons in this phase". A lesson revisited by a later phase's step should be
    listed on that phase too, so the card and the step agree.
-3. `/learn`'s closing paragraph in `src/app/learn/page.tsx` names which clusters
-   are covered and which are not. The counts are derived; that sentence is not,
-   deliberately — a generated list of covered services would be accurate and
-   would not tell a learner what is still missing.
+3. The lesson's `cluster` field names one of the eight groups in
+   `src/content/lesson-clusters.ts`, and the file goes in that cluster's run in
+   `lesson-registry.ts` — `content:check` fails a run that is not contiguous or
+   clusters that are not in the declared order, so appending to the end of the
+   array is only right for a `long-tail` lesson. A new cluster is one entry in
+   `lesson-clusters.ts`; its `title` and `blurb` render above its lessons.
+   `/learn`'s closing paragraph now says only what is _not_ written yet, so it
+   needs editing when a batch clears a topic off that list — not for every
+   lesson. That sentence stays hand-written deliberately: a generated list of
+   covered services would be accurate and would not tell a learner what is
+   still missing.
 
 Nothing else needs touching: ⌘K picks lessons up from the registry, and every
 atlas entry for a slug in `serviceSlugs` grows a link back on its own.

@@ -17,6 +17,7 @@ export const rolesNotKeys: Lesson = {
   id: 'roles-not-keys',
   families: ['saa'],
   taskId: 'saa-1.1',
+  cluster: 'identity',
   title: 'Roles, not keys',
   subtitle:
     'Why an access key in an environment variable is the wrong answer to every question, and what arrives instead on an instance nobody put a credential on.',

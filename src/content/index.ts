@@ -38,6 +38,7 @@ import {
 } from './concept-registry'
 import { chapterById, stories, storiesFor, story, storyBySlug } from './story-registry'
 import { lesson, lessonById, lessons, lessonsFor, lessonsForService } from './lesson-registry'
+import { LESSON_CLUSTERS, lessonClusterById } from './lesson-clusters'
 import { phases } from './phases'
 import { triggers } from './triggers'
 import { idleCosts } from './idle-costs'
@@ -132,6 +133,8 @@ export {
 export { stories, storyBySlug, story, storiesFor, chapterById }
 // Same rule again: imported once above, then the local binding is exported.
 export { lessons, lessonById, lesson, lessonsFor, lessonsForService }
+export { LESSON_CLUSTERS, lessonClusterById }
+export type { LessonCluster } from './lesson-clusters'
 export { OPTION_SET_OWED }
 
 /** Services a task statement points at, in tier order (core first). */

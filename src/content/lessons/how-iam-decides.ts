@@ -18,6 +18,7 @@ export const howIamDecides: Lesson = {
   id: 'how-iam-decides',
   families: ['saa'],
   taskId: 'saa-1.1',
+  cluster: 'identity',
   title: 'How IAM decides',
   subtitle:
     'One request, four checks, in an order that never varies. Learn it as an algorithm and every deny-versus-allow question on the paper becomes arithmetic.',

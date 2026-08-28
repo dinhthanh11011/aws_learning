@@ -21,6 +21,7 @@ export const apiGatewayRequestPath: Lesson = {
   id: 'api-gateway-request-path',
   families: ['saa', 'dva'],
   taskId: 'dva-1.1',
+  cluster: 'developer',
   title: 'What API Gateway does before your code runs',
   subtitle:
     'A request can fail with your function never invoked, invoked and ignored, or invoked and answered wrongly — and the caller sees a different number in each case. The exam asks for those numbers directly, and they are only memorable once you can see where along the path each one is produced.',

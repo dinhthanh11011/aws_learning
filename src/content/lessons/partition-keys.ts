@@ -22,6 +22,7 @@ export const partitionKeys: Lesson = {
   id: 'partition-keys',
   families: ['saa', 'dva'],
   taskId: 'dva-1.3',
+  cluster: 'data-and-cost',
   title: 'The partition key is the design',
   subtitle:
     'A table can throttle at 5% of the capacity you are paying for, and nothing in the console will look wrong. Every exam question that describes that symptom is asking about one attribute — the one you chose before there was any data in the table.',

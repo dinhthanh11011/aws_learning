@@ -772,6 +772,13 @@ export const LessonSchema = z.object({
   families: z.array(CertFamilySchema).min(1),
   versionScope: VersionScopeSchema.optional(),
   taskId: z.string().min(1),
+  /**
+   * Which of the eight clusters in `lesson-clusters.ts` this belongs to. A
+   * plain string checked referentially by `content:check` rather than a zod
+   * enum, so adding a cluster stays a one-file edit — same treatment `taskId`
+   * and `serviceSlugs` get.
+   */
+  cluster: z.string().min(1),
   title: z.string().min(1),
   /** The hook: why this lesson earns your next 8 minutes. */
   subtitle: z.string().min(1),

@@ -17,6 +17,7 @@ export const whyCantItReachTheInternet: Lesson = {
   id: 'why-cant-it-reach-the-internet',
   families: ['saa'],
   taskId: 'saa-1.2',
+  cluster: 'reachability',
   title: 'Why can’t it reach the internet?',
   subtitle:
     'Four things have to be true, and an exam question removes exactly one of them. Knowing which order to check them in turns the most common scenario on the paper into about fifteen seconds of work.',

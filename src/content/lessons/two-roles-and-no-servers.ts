@@ -23,6 +23,7 @@ export const twoRolesAndNoServers: Lesson = {
   id: 'two-roles-and-no-servers',
   families: ['saa', 'dva'],
   taskId: 'saa-3.2',
+  cluster: 'long-tail',
   title: 'Two roles, and who owns the server',
   subtitle:
     'A container task fails in two completely different ways that both read as “permissions”: it never starts, or it starts and your code cannot do its job. Which one you are looking at tells you which of the two IAM roles in the task definition is wrong — and neither of them is the one most people reach for.',

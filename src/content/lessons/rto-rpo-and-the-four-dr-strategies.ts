@@ -18,6 +18,7 @@ export const rtoRpoAndTheFourDrStrategies: Lesson = {
   id: 'rto-rpo-and-the-four-dr-strategies',
   families: ['saa'],
   taskId: 'saa-2.2',
+  cluster: 'resilience',
   title: 'Two numbers choose the architecture',
   subtitle:
     'A disaster recovery question is arithmetic wearing a scenario. Two numbers are stated, four designs are available, and the mark goes to the cheapest one that clears both — not the most resilient one on the list.',

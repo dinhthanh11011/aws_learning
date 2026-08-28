@@ -20,6 +20,7 @@ export const multiAzVsReadReplica: Lesson = {
   id: 'multi-az-vs-read-replica',
   families: ['saa'],
   taskId: 'saa-2.2',
+  cluster: 'resilience',
   title: 'Multi-AZ is not a read replica',
   subtitle:
     'Both make a second database in another Availability Zone. One of them will not serve you a single row, and the other will not fail over on its own. Questions that offer you both are testing precisely this.',

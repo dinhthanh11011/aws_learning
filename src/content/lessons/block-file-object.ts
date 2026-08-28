@@ -16,6 +16,7 @@ export const blockFileObject: Lesson = {
   id: 'block-file-object',
   families: ['saa'],
   taskId: 'saa-3.1',
+  cluster: 'storage',
   title: 'Block, file and object',
   subtitle:
     'Three shapes of storage, and the sentence in a requirement that picks each one. The wrong answer in a storage question is almost never the wrong product — it is the right product in the wrong shape.',

@@ -16,6 +16,7 @@ export const networkAcls: Lesson = {
   id: 'network-acls',
   families: ['saa'],
   taskId: 'saa-1.2',
+  cluster: 'reachability',
   title: 'Network ACLs',
   subtitle:
     'A filter that does not remember anything. The reply to a request it just allowed is, as far as it is concerned, a new packet arriving from a stranger — and everything people get wrong about NACLs follows from that.',

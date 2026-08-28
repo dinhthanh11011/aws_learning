@@ -24,6 +24,7 @@ export const securityGroups: Lesson = {
   id: 'security-groups',
   families: ['saa'],
   taskId: 'saa-1.2',
+  cluster: 'reachability',
   title: 'Security groups',
   subtitle:
     'A firewall where you write the rule for the request and never write one for the reply. Once that stops being surprising, half the VPC questions on the paper get easier.',

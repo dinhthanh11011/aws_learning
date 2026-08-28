@@ -21,6 +21,7 @@ export const whereToCache: Lesson = {
   id: 'where-to-cache',
   families: ['saa', 'dva'],
   taskId: 'saa-3.3',
+  cluster: 'data-and-cost',
   title: 'Four caches, four distances from the user',
   subtitle:
     'CloudFront, API Gateway, ElastiCache and DAX all answer "make it faster and cheaper", and they turn up together as four options in one question. What separates them is not what they store — it is how far the request has already travelled before something can say yes.',

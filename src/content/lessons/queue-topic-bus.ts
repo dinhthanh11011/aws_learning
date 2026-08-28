@@ -22,6 +22,7 @@ export const queueTopicBus: Lesson = {
   id: 'queue-topic-bus',
   families: ['saa', 'dva'],
   taskId: 'saa-2.1',
+  cluster: 'serverless-and-events',
   title: 'Queue, topic or bus',
   subtitle:
     'Three services answer "decouple these two components" and a stem never names which. It describes the shape of the hand-off instead — one consumer or all of them, a message that must survive an outage, a decision made by reading the inside of an event.',

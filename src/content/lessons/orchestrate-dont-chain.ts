@@ -18,6 +18,7 @@ export const orchestrateDontChain: Lesson = {
   id: 'orchestrate-dont-chain',
   families: ['saa', 'dva'],
   taskId: 'saa-2.1',
+  cluster: 'long-tail',
   title: 'Where the state lives when step three fails',
   subtitle:
     'A function calls a function calls a function, and one day the middle one fails. The card is charged, the stock may or may not be reserved, nothing shipped, and the only record of the order is a timestamp in three separate log groups. That is not a bug to fix — it is what happens when the workflow exists only as the call stack of whatever was running.',

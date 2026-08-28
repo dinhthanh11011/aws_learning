@@ -24,6 +24,7 @@ export const payingLessForTheSameThing: Lesson = {
   id: 'paying-less-for-the-same-thing',
   families: ['saa'],
   taskId: 'saa-4.2',
+  cluster: 'data-and-cost',
   title: 'Paying less for the same thing',
   subtitle:
     'None of these change what is running. They are billing constructs, and each one is the answer to a different sentence about the *shape* of the workload — which is why a cost question is really a comprehension question about the stem.',

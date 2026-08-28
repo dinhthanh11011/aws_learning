@@ -18,6 +18,7 @@ export const s3StorageClasses: Lesson = {
   id: 's3-storage-classes',
   families: ['saa'],
   taskId: 'saa-4.1',
+  cluster: 'storage',
   title: 'S3 storage classes',
   subtitle:
     'Seven classes, one durability figure between them, and a question that never names the class it wants. What varies is not how safe the bytes are — it is what it costs to reach them, and how long you wait.',

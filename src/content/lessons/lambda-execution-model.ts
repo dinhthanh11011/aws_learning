@@ -21,6 +21,7 @@ export const lambdaExecutionModel: Lesson = {
   id: 'lambda-execution-model',
   families: ['saa', 'dva'],
   taskId: 'dva-1.2',
+  cluster: 'serverless-and-events',
   title: 'What actually runs your Lambda function',
   subtitle:
     'The environment outlives the invocation, and almost every Lambda question on either paper is that one fact wearing a different hat — cold starts, the two concurrency settings that sound alike, and why the line your SDK client sits on decides your latency.',
