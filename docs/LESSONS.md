@@ -487,10 +487,60 @@ those entries, so `serviceSlugs` is `['cognito']` alone — a diagram node is no
 a promise about backlinks, and only `serviceSlugs` is. Same rule batch 4 wrote
 down, applied to nodes rather than to a study step's service list.
 
-What is left is a long tail rather than a cluster — SAM and CloudFormation, ECS
-and Fargate task definitions, Kinesis against SQS, Step Functions state types —
-and none of it carries the question weight of the seven batches above. The list
-in this document has stopped being a queue and is now a record.
+### Batch 8 — the long tail _(done)_
+
+```bash
+npm run lesson:brief -- cloudformation sam
+npm run lesson:brief -- ecs fargate
+npm run lesson:brief -- kinesis-data-streams
+npm run lesson:brief -- step-functions
+```
+
+The four items the paragraph here used to list as "a long tail rather than a
+cluster". All four written: `templates-and-stacks`, `two-roles-and-no-servers`,
+`queue-or-stream` and `orchestrate-dont-chain` — 65 sections and 16 checks, 65
+minutes. All four are `['saa', 'dva']`; only `queue-or-stream` declares a
+prerequisite (`queue-topic-bus`), because it is the one that starts from a shape
+another lesson already established.
+
+| Lesson                     |                                                                                                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `templates-and-stacks`     | One update, and the two things it can do to a resource. Template B fan-in-the-middle, plus a plain four-node chain at `rows: 3` for the SAM transform — deliberately with **no** steps, because the claim is that there is only one destination. |
+| `two-roles-and-no-servers` | The two moments IAM is consulted while a task starts. Template B fan-in-the-middle for the roles, then fan-at-the-end for the launch types, the second one stepless for the same reason.                                                         |
+| `queue-or-stream`          | One event sent two ways, stopping at the moment the second consumer looks. Template B fan-in-the-middle.                                                                                                                                         |
+| `orchestrate-dont-chain`   | One failing step in two designs. Template B fan-in-the-middle, forked on where the state lives.                                                                                                                                                  |
+
+Three things this batch cost that a later one need not.
+
+**The nesting bug from batch 7 has three more shapes, and only one of them was
+written down.** A `[[slug]]` inside a `**bold**` span renders its brackets
+literally; so does a code span inside a bold span; and so does a code span
+inside an `*italic*` span. Five strings across three of these lessons hit it and
+every gate passed. The cheap detector is a text-node walk in the browser —
+`document.querySelectorAll('*')`, skip `script` and `pre`, and report any text
+node matching ``/\[\[|\*\*|`/`` — which finds all three shapes in one pass and
+costs no screenshot. Run it against every page in the batch before looking at
+anything.
+
+**`diagram:audit` cannot see that an edge crosses a node it has nothing to do
+with.** The Step Functions walkthrough first drew its dead-end edge from the
+_fork_ node to the far-right box, so it passed straight over the branch node
+between them and collided with the other branch's label. The audit was clean;
+the browser was not. When both branches of a fan-in-the-middle end in a tail,
+draw the tail from the branch node, never from the fork — the geometry is legal
+either way and only one of them reads.
+
+**A `DiagramEdge` written as a TypeScript literal must spell out `tone`**, the
+same way `groups: []` must be spelled out (batch 2). The zod default applies to
+parsed data, not to an object literal typed as `Lesson`, and seven edges across
+the batch failed `typecheck` — after `content:check` and `diagram:audit` had
+both passed, because both of those parse.
+
+What is left after this batch is a second rank rather than a tail: DNS and the
+Route 53 routing policies, joining networks together (peering, Transit Gateway,
+PrivateLink), Auto Scaling and what it cannot fix, migration and hybrid, and
+secrets and configuration in code. Each is a study step with no lesson on it
+today. The list in this document has stopped being a queue and is now a record.
 
 ### Wiring a lesson in, once it exists
 

@@ -23,6 +23,10 @@ import { apiGatewayRequestPath } from './lessons/api-gateway-request-path'
 import { userPoolOrIdentityPool } from './lessons/user-pool-or-identity-pool'
 import { shippingAChangeSafely } from './lessons/shipping-a-change-safely'
 import { metricsTracesAndLogs } from './lessons/metrics-traces-and-logs'
+import { templatesAndStacks } from './lessons/templates-and-stacks'
+import { twoRolesAndNoServers } from './lessons/two-roles-and-no-servers'
+import { queueOrStream } from './lessons/queue-or-stream'
+import { orchestrateDontChain } from './lessons/orchestrate-dont-chain'
 
 /**
  * Aggregates the lessons.
@@ -59,6 +63,10 @@ export const lessons: Lesson[] = [
   userPoolOrIdentityPool,
   shippingAChangeSafely,
   metricsTracesAndLogs,
+  templatesAndStacks,
+  twoRolesAndNoServers,
+  queueOrStream,
+  orchestrateDontChain,
 ]
 
 export const lessonById = new Map(lessons.map((l) => [l.id, l]))

@@ -316,6 +316,9 @@ export const phases: Phase[] = [
       'where-to-cache',
       'paying-less-for-the-same-thing',
       'metrics-traces-and-logs',
+      'two-roles-and-no-servers',
+      'queue-or-stream',
+      'orchestrate-dont-chain',
     ],
     labIds: ['vpc-builder', 'iam-puzzle', 'storage-cost'],
     steps: [
@@ -628,9 +631,9 @@ export const phases: Phase[] = [
         title: 'Decoupling: queue, topic or bus',
         why: 'This is the heart of the "design resilient architectures" domain. The three are not interchangeable and the exam knows it.',
         kind: 'read',
-        minutes: 120,
-        serviceSlugs: ['sqs', 'sns', 'eventbridge', 'mq'],
-        lessonIds: ['queue-topic-bus'],
+        minutes: 150,
+        serviceSlugs: ['sqs', 'sns', 'eventbridge', 'mq', 'kinesis-data-streams', 'step-functions'],
+        lessonIds: ['queue-topic-bus', 'queue-or-stream', 'orchestrate-dont-chain'],
         reading: [
           {
             label: 'SQS visibility timeout — the classic trap',
@@ -656,7 +659,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['ecs', 'fargate', 'eks', 'lambda', 'elastic-beanstalk'],
-        lessonIds: ['lambda-execution-model'],
+        lessonIds: ['lambda-execution-model', 'two-roles-and-no-servers'],
         reading: [
           {
             label: 'ECS launch types — EC2 versus Fargate',
@@ -822,6 +825,7 @@ export const phases: Phase[] = [
       'multi-az-vs-read-replica',
       'rto-rpo-and-the-four-dr-strategies',
       'retries-dlqs-and-idempotency',
+      'templates-and-stacks',
     ],
     labIds: ['vpc-builder', 'request-racer', 'az-drill', 'storage-cost', 'iam-puzzle'],
     steps: [
@@ -912,7 +916,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['cloudformation', 'cdk', 'sam', 'cli'],
-        lessonIds: [],
+        lessonIds: ['templates-and-stacks'],
         reading: [
           {
             label: 'CloudFormation',
@@ -1157,6 +1161,9 @@ export const phases: Phase[] = [
       'user-pool-or-identity-pool',
       'shipping-a-change-safely',
       'metrics-traces-and-logs',
+      'templates-and-stacks',
+      'queue-or-stream',
+      'orchestrate-dont-chain',
     ],
     labIds: ['ddb-keys', 'event-wiring'],
     steps: [
@@ -1216,7 +1223,7 @@ export const phases: Phase[] = [
         kind: 'read',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'sns', 'eventbridge', 'kinesis-data-streams'],
-        lessonIds: ['queue-topic-bus', 'retries-dlqs-and-idempotency'],
+        lessonIds: ['queue-topic-bus', 'retries-dlqs-and-idempotency', 'queue-or-stream'],
         reading: [
           {
             label: 'Event source mappings',
@@ -1240,7 +1247,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 120,
         serviceSlugs: ['lambda', 'sqs', 'dynamodb', 'sam', 'step-functions'],
-        lessonIds: ['retries-dlqs-and-idempotency'],
+        lessonIds: ['retries-dlqs-and-idempotency', 'orchestrate-dont-chain'],
         reading: [
           {
             label: 'AWS SAM',
@@ -1366,7 +1373,7 @@ export const phases: Phase[] = [
         kind: 'build',
         minutes: 150,
         serviceSlugs: ['codepipeline', 'codebuild', 'codedeploy', 'cloudformation', 'sam'],
-        lessonIds: ['shipping-a-change-safely'],
+        lessonIds: ['shipping-a-change-safely', 'templates-and-stacks'],
         reading: [
           {
             label: 'CodeDeploy deployment configurations',

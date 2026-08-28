@@ -57,15 +57,15 @@ persistence across navigation, the deep link, and the next-step card advancing.
 
 Deliberately **not** done: ticking a step awards no XP and moves no mastery ring.
 A checkbox is a self-report and mastery is measured from what was recalled,
-answered or built. Guided minutes total 107 h of the 178 h the phases budget, and
+answered or built. Guided minutes total 108 h of the 178 h the phases budget, and
 the UI says so rather than padding the list to look complete.
 
 **Done, differently than proposed here.** A step can now name a lesson, via
 `StudyStep.lessonIds` — not the union on `reading` this entry suggested. Those
 minutes are budget-checked against external pages and a lesson is in-app work, so
-folding them together would have made the budget check lie. Ten steps across
-three phases point at a lesson today; the rest still read AWS docs, because the
-other three lesson batches are unwritten.
+folding them together would have made the budget check lie. Thirty-one steps
+across four phases point at a lesson today; the rest still read AWS docs,
+because no lesson has been written for what they cover.
 
 ## Not built
 
@@ -237,7 +237,7 @@ rows that are actually answers in *that* tree, no duplicate rows, and
 missing table cells). The new rules caught two bad rows in the matrices being
 added in the same commit, which is a fair advertisement for them.
 
-### 1. The lesson player — built, batches 1–7 written
+### 1. The lesson player — built, batches 1–8 written
 
 **Done (August 2026).** `/learn` and `/learn/[id]` exist. The route was the last
 20% of a feature whose hard parts story mode had already built: the `DiagramSpec`
@@ -308,14 +308,20 @@ rather than adapted to it — is `api-gateway-request-path`,
 `user-pool-or-identity-pool`, `shipping-a-change-safely` and
 `metrics-traces-and-logs`, 70 sections and 16 checks, 66 minutes, and it is not
 a chain: all four declare `requires: []`, because none of the four needs
-another. **Twenty-three lessons, 416 sections, 91 checks, 333 minutes.**
+another. Batch 8 — the long tail the previous revision of this section listed
+as what was owed — is `templates-and-stacks`, `two-roles-and-no-servers`,
+`queue-or-stream` and `orchestrate-dont-chain`, 65 sections and 16 checks, 65
+minutes; all four are tagged for both families, and only `queue-or-stream`
+declares a prerequisite. **Twenty-seven lessons, 481 sections, 107 checks, 398
+minutes.**
 
 **Every batch in [`LESSONS.md` § The batches](LESSONS.md) is now marked done**,
-including the developer batch that the previous revision of this section named
-as the outstanding work. Nine of the twenty-three now carry the DVA family and
-one — the CI/CD lesson — is DVA only, which is the first lesson in the corpus
-that an SAA reader will never see. What is owed here is no longer a cluster; it
-is the long tail, and the honest list is below.
+including the long tail that the previous revision of this section named as the
+outstanding work. Thirteen of the twenty-seven now carry the DVA family and one
+— the CI/CD lesson — is DVA only, which is the first lesson in the corpus that
+an SAA reader will never see. What is owed here is no longer a cluster or a
+tail; it is a second rank of individual study steps, and the honest list is
+below.
 
 Batch 5 settled the DVA question the first four deferred. Batches 1–4 are all
 `families: ['saa']`, and the worry recorded here was that a DVA-tagged lesson
@@ -342,12 +348,33 @@ developer-tools reading list on a phase that never mentions them. So nine of the
 twenty-three are DVA lessons, twenty-two are SAA lessons, and phase 4 goes from
 five lessons to nine.
 
-What is left is a long tail rather than a cluster, and each item is now a lesson
-or two rather than a batch: SAM and CloudFormation as the thing a developer
-actually deploys with, ECS and Fargate task definitions, Kinesis against SQS for
-ordering and replay, and Step Functions state types. None of them is close to
-the question weight of the seven batches that are written, which is why the
-batch list stopped being a queue at batch 6 and is now a record.
+Batch 8 wrote that long tail out: `templates-and-stacks` (`dva-3.1`),
+`two-roles-and-no-servers` (`saa-3.2`), `queue-or-stream` (`saa-3.5`) and
+`orchestrate-dont-chain` (`saa-2.1`), all four `['saa', 'dva']`. It moved one
+step budget — `phase-1-s14` from 120 to 150 minutes, because 85 minutes of
+reading and three lessons do not fit in 120 — and added `kinesis-data-streams`
+and `step-functions` to that step's `serviceSlugs`, so the step's service list
+and its lesson list agree. The other five wirings had the room: `phase-1-s15`
+(120 against 50 and one lesson), `phase-2-s6` (120 against 30 and none),
+`phase-4-s3` (120 against 60 and two), `phase-4-s4` (120 against 25 and one) and
+`phase-4-s10` (150 against 55 and one).
+
+What is left is no longer a tail with a theme. It is a second rank of study
+steps that carry no lesson at all: DNS and the Route 53 routing policies
+(`phase-0-s5`), joining networks together (`phase-1-s4`), what idle
+infrastructure costs (`phase-1-s8`), Auto Scaling and what it cannot fix
+(`phase-1-s13`), migration and hybrid (`phase-1-s18`), and secrets and
+configuration in code (`phase-4-s9`). None of them is close to the question
+weight of the eight batches that are written, which is why the batch list
+stopped being a queue at batch 6 and is now a record.
+
+Two gate gaps batch 8 found, both worth fixing before batch 9 rather than
+rediscovering: **the inline formatter's non-nesting bug has three shapes**, not
+the one batch 7 recorded — a `[[slug]]` or a code span inside `**bold**`, and a
+code span inside `*italic*` — and no gate sees any of them, only a text-node
+walk in the browser. And **`diagram:audit` cannot see an edge crossing a node it
+is unrelated to**: the Step Functions walkthrough drew a legal, clean-auditing
+edge straight over the node between its endpoints.
 
 Batch 2 also moved two step budgets: `phase-0-s6` and `phase-1-s1` each went from
 90 to 105 minutes, because 80 and 65 minutes of external reading plus a lesson on
