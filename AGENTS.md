@@ -256,7 +256,7 @@ slugs, which is the whole research step for a lesson. Use it instead of reading
 | Option matrices | 17 sets, 77 options on 15 services | shared corpus |
 | Study steps | 47 across 4 phases, 80 h guided of 130 h | 24 across 2 phases, 40 h of 60 h (phase 0 is shared) |
 | Story chapters | 13 in one arc, 9 h | not written yet |
-| Lessons | 26 (reachability + identity + storage + resilience + serverless + data and cost + the developer cluster + the long tail), 481 sections, 107 checks | 13 (the serverless three, partition keys, caching, the developer four, and the long-tail four) |
+| Lessons | 26 (reachability + identity + storage + resilience + serverless + data and cost + the developer cluster + the long tail), 485 sections, 108 checks | 13 (the serverless three, partition keys, caching, the developer four, and the long-tail four) |
 
 Both banks now serve two consecutive full papers with no repeated question. A
 third consecutive paper cannot be filled from unseen questions, and the sampler

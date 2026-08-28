@@ -49,6 +49,41 @@ export const securityGroups: Lesson = {
       md: 'A [[security-group|security group]] is a firewall, and every firewall you have met before made you write two rules for one conversation: let the request in, let the reply out. This one does not. You write the rule for the request, and the reply is allowed because the group *remembers* that it let the request through. Almost everything else about security groups follows from that, so it is worth watching happen before reading the word for it.',
     },
 
+    /* ── 1b. The two directions, named before anything else uses them ────── */
+    { kind: 'heading', text: 'Inbound and outbound are directions, not features' },
+    {
+      kind: 'prose',
+      md: 'Every rule you write sits in one of two lists, and the only thing separating them is which way the traffic is travelling **relative to the resource the group is attached to** — this instance, this load balancer, this database. The rule itself looks identical either way; the direction is a point of view.',
+    },
+    {
+      kind: 'steps',
+      title: 'Which list a rule belongs in',
+      items: [
+        {
+          title: 'Inbound — something else started it, and it is arriving here',
+          md: 'A browser asking your web server for a page. A load balancer forwarding a request to your app. Your app opening a connection to RDS — from the point of view of the *database*, that one is inbound. An inbound rule answers "who may start a conversation with me, and on which port?"',
+        },
+        {
+          title: 'Outbound — this resource started it, and it is leaving',
+          md: 'The same instance running a package install, calling the S3 API, or connecting to that database. An outbound rule answers "where may this resource reach out to?" A new group allows **all** of it, which is why you have probably never written one.',
+        },
+        {
+          title: 'The two lists even name their columns differently',
+          md: 'An inbound rule has a **source** — where the traffic is coming from. An outbound rule has a **destination** — where it is going. Same protocol and port columns; the address column flips meaning with the direction.',
+        },
+        {
+          title: 'One conversation always uses both directions',
+          md: 'A request travels one way and its reply comes back the other, so a single HTTPS call is inbound *and* outbound traffic at the server. That is where the confusion usually starts, and it is what the next section is about.',
+        },
+      ],
+    },
+    {
+      kind: 'callout',
+      tone: 'info',
+      title: 'The direction belongs to the resource, not to the port',
+      md: 'Port 443 arriving at the web server is an inbound rule on that server, and the *same* conversation is outbound at the client. So "is 443 inbound or outbound?" has no answer until you say whose group you are editing. Ask instead: who started this connection, and am I the one being reached?',
+    },
+
     /* ── 2. Watch it happen, before the definition ───────────────────────── */
     {
       kind: 'diagram',
@@ -158,13 +193,14 @@ export const securityGroups: Lesson = {
       kind: 'code',
       lang: 'text',
       caption: 'sg-web — the whole configuration of a working web server',
-      code: `INBOUND
+      code: `INBOUND                                    (source = who may reach me)
   protocol   port   source              why
   TCP        443    0.0.0.0/0           anyone, over HTTPS
   TCP         22    203.0.113.4/32      me, over SSH, from this address only
 
-OUTBOUND
-  (untouched — a new group already allows all outbound)`,
+OUTBOUND                                   (destination = where I may reach)
+  protocol   port   destination         why
+  ALL        ALL    0.0.0.0/0           the default on a new group — left alone`,
     },
     {
       kind: 'steps',
@@ -180,7 +216,7 @@ OUTBOUND
         },
         {
           title: 'Nothing about the reply, anywhere',
-          md: 'There is no inbound rule for the response and no outbound rule for it either. This is the block from the diagram above, complete. Two lines run a public web server.',
+          md: 'No inbound rule mentions the response, and the outbound line is only the default allow-all — it is not what lets the reply out. Delete it and the reply still gets back, because of the diagram above. Two inbound lines run a public web server.',
         },
         {
           title: 'And nothing that is not listed',
@@ -495,6 +531,28 @@ OUTBOUND
 
   /* ── Checks: the only part of this page that is retrieval ─────────────── */
   checks: [
+    {
+      id: 'security-groups-direction',
+      prompt:
+        'Your application instances open connections to an RDS database. Which rules govern that traffic?',
+      options: [
+        {
+          text: "An outbound rule on the app tier's group and an inbound rule on the database's group",
+          correct: true,
+          why: 'Direction is read from each resource separately: the same connection leaves the app tier, so it is outbound there, and arrives at the database, so it is inbound there.',
+        },
+        {
+          text: "An inbound rule on the app tier's group and an outbound rule on the database's group",
+          correct: false,
+          why: 'That is the same connection read backwards. The app tier started it, so at the app tier it is outbound.',
+        },
+        {
+          text: 'An inbound rule on both groups, since both ends receive traffic',
+          correct: false,
+          why: 'Both ends do send and receive, but only the end being reached is inbound. Whoever opened the connection is doing something outbound.',
+        },
+      ],
+    },
     {
       id: 'security-groups-stateful',
       prompt:
